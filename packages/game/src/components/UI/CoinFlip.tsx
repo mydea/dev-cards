@@ -23,11 +23,11 @@ function CoinFlip({ onComplete, result, isVisible }: CoinFlipProps) {
         setIsFlipping(false);
         setShowResult(true);
 
-        // Show result briefly, then complete
+        // Show result for 1 second, then complete
         setTimeout(() => {
           onComplete(result);
-        }, 800); // Show result for 800ms
-      }, 1000); // Flip for 1 second
+        }, 10000); // Show result for 1000ms
+      }, 1500); // Flip for 1.5 seconds
     }
   }, [isVisible, result, onComplete, isFlipping]);
 
@@ -61,13 +61,20 @@ function CoinFlip({ onComplete, result, isVisible }: CoinFlipProps) {
             animate={
               isFlipping
                 ? {
-                    rotateY: [0, 720], // Two full flips
+                    // Calculate rotation to end on correct face
+                    // Heads = even number of 180° rotations (0°, 360°, 720°)
+                    // Tails = odd number of 180° rotations (180°, 540°, 900°)
+                    rotateY: result === 'heads' ? [0, 360, 720] : [0, 360, 900],
                     scale: [1, 1.2, 1],
                   }
-                : {}
+                : {
+                    // When not flipping, show the final result
+                    rotateY: result === 'heads' ? 720 : 900,
+                    scale: 1,
+                  }
             }
             transition={{
-              duration: 1,
+              duration: isFlipping ? 1.5 : 0,
               ease: 'easeOut',
             }}
           >
