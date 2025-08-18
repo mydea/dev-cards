@@ -108,14 +108,12 @@ const Pile = forwardRef<HTMLDivElement, PileProps>(
               '--bg-color': colors.bg,
               '--border-color': colors.border,
               '--text-color': colors.text,
+              boxShadow:
+                cardCount > 0
+                  ? `0 4px 8px rgba(0, 0, 0, 0.1), 0 0 20px ${colors.glow}`
+                  : '0 2px 4px rgba(0, 0, 0, 0.05)',
             } as React.CSSProperties
           }
-          style={{
-            boxShadow:
-              cardCount > 0
-                ? `0 4px 8px rgba(0, 0, 0, 0.1), 0 0 20px ${colors.glow}`
-                : '0 2px 4px rgba(0, 0, 0, 0.05)',
-          }}
         >
           {/* Render background stack layers (behind top card) */}
           {stackLayers > 1 &&

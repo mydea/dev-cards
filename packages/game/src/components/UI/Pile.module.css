@@ -43,6 +43,7 @@
   justify-content: center;
   gap: var(--spacing-sm);
   z-index: 100;
+  transition: all var(--transition-base);
   
   /* Always the same shadow regardless of stack size */
   box-shadow: 
