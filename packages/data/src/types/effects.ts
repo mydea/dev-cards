@@ -2,7 +2,6 @@ import type { EffectType, RequirementType } from './enums';
 import {
   RANDOM_EFFECT_TYPE_STATIC,
   RANDOM_EFFECT_TYPE_COIN_FLIP,
-  RANDOM_EFFECT_TYPE_DICE_ROLL,
   REQUIREMENT_TYPE_SPEND_PP,
   REQUIREMENT_TYPE_DISCARD_CARDS,
   REQUIREMENT_TYPE_SEND_TO_GRAVEYARD,
@@ -34,17 +33,9 @@ export interface CoinFlipEffect extends BaseEffect {
 }
 
 /**
- * Effect determined by a dice roll (1-6)
- */
-export interface DiceRollEffect extends BaseEffect {
-  randomType: typeof RANDOM_EFFECT_TYPE_DICE_ROLL;
-  diceValues: [number, number, number, number, number, number]; // Values for 1,2,3,4,5,6
-}
-
-/**
  * Union type for all possible effects
  */
-export type CardEffect = StaticEffect | CoinFlipEffect | DiceRollEffect;
+export type CardEffect = StaticEffect | CoinFlipEffect;
 
 /**
  * Base interface for card requirements
@@ -90,5 +81,5 @@ export type CardRequirement =
 export interface EffectResolution {
   effect: CardEffect;
   resolvedValue: number;
-  randomOutcome?: 'heads' | 'tails' | number; // For coin flip or dice roll
+  randomOutcome?: 'heads' | 'tails'; // For coin flip
 }

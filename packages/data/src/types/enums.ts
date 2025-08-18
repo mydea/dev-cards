@@ -36,12 +36,10 @@ export type RequirementType =
  * Types of random effects that can be applied
  */
 export const RANDOM_EFFECT_TYPE_COIN_FLIP = 'COIN_FLIP';
-export const RANDOM_EFFECT_TYPE_DICE_ROLL = 'DICE_ROLL';
 export const RANDOM_EFFECT_TYPE_STATIC = 'STATIC';
 
 export type RandomEffectType =
   | typeof RANDOM_EFFECT_TYPE_COIN_FLIP
-  | typeof RANDOM_EFFECT_TYPE_DICE_ROLL
   | typeof RANDOM_EFFECT_TYPE_STATIC;
 
 /**

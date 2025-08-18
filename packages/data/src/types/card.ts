@@ -16,9 +16,6 @@ export interface Card {
   /** Fun quote or comment displayed at the bottom (cosmetic only) */
   quote: string;
 
-  /** Base productivity point cost to play this card (0-20) */
-  productivityCost: number;
-
   /** List of requirements that must be met to play this card */
   requirements: CardRequirement[];
 

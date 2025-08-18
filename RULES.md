@@ -48,7 +48,7 @@ Each card has the following properties:
 
 ### Card Effects
 
-Card effects can be a combination of AND and OR of the following list. X can either be a fixed number, or can be determined by a dice roll.
+Card effects can be a combination of AND and OR of the following list. X can either be a fixed number, or can be determined by a coin flip.
 
 - Add X%
 - Add/remove X 🐛
