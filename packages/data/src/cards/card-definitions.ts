@@ -460,3 +460,88 @@ export const CARD_INTEGRATION_TESTING = {
     },
   ],
 } as const satisfies Card;
+
+/**
+ * Rush Implementation - Fast progress but creates technical debt
+ */
+export const CARD_RUSH_IMPLEMENTATION = {
+  id: 'rush-implementation',
+  title: 'Rush Implementation',
+  image: '/images/cards/rush-implementation.jpg',
+  quote: "We'll fix it in the next sprint... maybe",
+  requirements: [
+    {
+      type: REQUIREMENT_TYPE_SPEND_PP,
+      value: 6,
+    },
+  ],
+  effects: [
+    {
+      type: EFFECT_TYPE_ADD_PROGRESS,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 9,
+    },
+    {
+      type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 2,
+    },
+  ],
+} as const satisfies Card;
+
+/**
+ * Copy-Paste Solution - Quick progress by reusing code
+ */
+export const CARD_COPY_PASTE_SOLUTION = {
+  id: 'copy-paste-solution',
+  title: 'Copy-Paste Solution',
+  image: '/images/cards/copy-paste.jpg',
+  quote: 'Why reinvent the wheel? Ctrl+C, Ctrl+V!',
+  requirements: [
+    {
+      type: REQUIREMENT_TYPE_SPEND_PP,
+      value: 5,
+    },
+  ],
+  effects: [
+    {
+      type: EFFECT_TYPE_ADD_PROGRESS,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 7,
+    },
+    {
+      type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 1,
+    },
+  ],
+} as const satisfies Card;
+
+/**
+ * Skip Code Review - Save time but risk quality
+ */
+export const CARD_SKIP_CODE_REVIEW = {
+  id: 'skip-code-review',
+  title: 'Skip Code Review',
+  image: '/images/cards/skip-review.jpg',
+  quote: 'Trust me, this code is perfect',
+  requirements: [
+    {
+      type: REQUIREMENT_TYPE_SPEND_PP,
+      value: 4,
+    },
+  ],
+  effects: [
+    {
+      type: EFFECT_TYPE_ADD_PROGRESS,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 6,
+    },
+    {
+      type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
+      randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
+      headsValue: 1,
+      tailsValue: 3,
+    },
+  ],
+} as const satisfies Card;
