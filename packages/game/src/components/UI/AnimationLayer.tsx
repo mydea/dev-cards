@@ -58,16 +58,21 @@ const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
         const startRect = startElement.getBoundingClientRect();
         const endRect = graveyardElement.getBoundingClientRect();
 
+        // Add scroll compensation for accurate positioning
+        const scrollX = window.scrollX || window.pageXOffset;
+        const scrollY = window.scrollY || window.pageYOffset;
+
         const flyingCard: FlyingCard = {
           id: `flying-${cardInstance.instanceId}-${Date.now()}`,
           cardInstance,
           startPosition: {
-            x: startRect.left,
-            y: startRect.top,
+            x: startRect.left + scrollX,
+            y: startRect.top + scrollY,
           },
           endPosition: {
-            x: endRect.left + endRect.width / 2 - startRect.width / 2,
-            y: endRect.top + endRect.height / 2 - startRect.height / 2,
+            x: endRect.left + scrollX + endRect.width / 2 - startRect.width / 2,
+            y:
+              endRect.top + scrollY + endRect.height / 2 - startRect.height / 2,
           },
           onComplete: () => {
             // Remove this flying card from the list
@@ -94,16 +99,21 @@ const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
         const startRect = startElement.getBoundingClientRect();
         const endRect = discardElement.getBoundingClientRect();
 
+        // Add scroll compensation for accurate positioning
+        const scrollX = window.scrollX || window.pageXOffset;
+        const scrollY = window.scrollY || window.pageYOffset;
+
         const flyingCard: FlyingCard = {
           id: `flying-discard-${cardInstance.instanceId}-${Date.now()}`,
           cardInstance,
           startPosition: {
-            x: startRect.left,
-            y: startRect.top,
+            x: startRect.left + scrollX,
+            y: startRect.top + scrollY,
           },
           endPosition: {
-            x: endRect.left + endRect.width / 2 - startRect.width / 2,
-            y: endRect.top + endRect.height / 2 - startRect.height / 2,
+            x: endRect.left + scrollX + endRect.width / 2 - startRect.width / 2,
+            y:
+              endRect.top + scrollY + endRect.height / 2 - startRect.height / 2,
           },
           onComplete: () => {
             // Remove this flying card from the list
@@ -130,16 +140,21 @@ const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
         const startRect = deckElement.getBoundingClientRect();
         const endRect = handElement.getBoundingClientRect();
 
+        // Add scroll compensation for accurate positioning
+        const scrollX = window.scrollX || window.pageXOffset;
+        const scrollY = window.scrollY || window.pageYOffset;
+
         const flyingCard: FlyingCard = {
           id: `flying-draw-${cardInstance.instanceId}-${Date.now()}`,
           cardInstance,
           startPosition: {
-            x: startRect.left,
-            y: startRect.top,
+            x: startRect.left + scrollX,
+            y: startRect.top + scrollY,
           },
           endPosition: {
-            x: endRect.left + endRect.width / 2 - startRect.width / 2,
-            y: endRect.top + endRect.height / 2 - startRect.height / 2,
+            x: endRect.left + scrollX + endRect.width / 2 - startRect.width / 2,
+            y:
+              endRect.top + scrollY + endRect.height / 2 - startRect.height / 2,
           },
           flipAnimation: true,
           onComplete: () => {
