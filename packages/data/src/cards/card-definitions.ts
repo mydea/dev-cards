@@ -53,7 +53,7 @@ export const CARD_WRITE_UNIT_TESTS = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 8,
+      value: 11,
     },
   ],
   effects: [
@@ -81,7 +81,7 @@ export const CARD_IMPLEMENT_FEATURE = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 9,
+      value: 15,
     },
   ],
   effects: [
@@ -110,7 +110,7 @@ export const CARD_CODE_REVIEW = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 8,
+      value: 10,
     },
     {
       type: REQUIREMENT_TYPE_DISCARD_CARDS,
@@ -147,7 +147,7 @@ export const CARD_REFACTOR_LEGACY = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 8,
+      value: 12,
     },
   ],
   effects: [
@@ -175,7 +175,7 @@ export const CARD_PAIR_PROGRAMMING = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 9,
+      value: 16,
     },
   ],
   effects: [
@@ -269,7 +269,7 @@ export const CARD_DOCUMENTATION = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 8,
+      value: 11,
     },
   ],
   effects: [
@@ -358,7 +358,7 @@ export const CARD_DATABASE_MIGRATION = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 8,
+      value: 13,
     },
   ],
   effects: [
@@ -444,7 +444,7 @@ export const CARD_INTEGRATION_TESTING = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 9,
+      value: 14,
     },
   ],
   effects: [
@@ -477,7 +477,7 @@ export const CARD_RUSH_IMPLEMENTATION = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 8,
+      value: 12,
     },
   ],
   effects: [
