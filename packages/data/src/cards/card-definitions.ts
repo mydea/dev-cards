@@ -25,7 +25,7 @@ export const CARD_QUICK_BUG_FIX = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 3,
+      value: 5,
     },
   ],
   effects: [
@@ -53,7 +53,7 @@ export const CARD_WRITE_UNIT_TESTS = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 7,
+      value: 8,
     },
   ],
   effects: [
@@ -81,7 +81,7 @@ export const CARD_IMPLEMENT_FEATURE = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 8,
+      value: 9,
     },
   ],
   effects: [
@@ -110,7 +110,7 @@ export const CARD_CODE_REVIEW = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 6,
+      value: 8,
     },
     {
       type: REQUIREMENT_TYPE_DISCARD_CARDS,
@@ -147,7 +147,7 @@ export const CARD_REFACTOR_LEGACY = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 7,
+      value: 8,
     },
   ],
   effects: [
@@ -175,7 +175,7 @@ export const CARD_PAIR_PROGRAMMING = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 8,
+      value: 9,
     },
   ],
   effects: [
@@ -208,7 +208,7 @@ export const CARD_STACK_OVERFLOW = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 5,
+      value: 6,
     },
   ],
   effects: [
@@ -232,7 +232,7 @@ export const CARD_ALL_NIGHTER = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 3,
+      value: 5,
     },
     {
       type: REQUIREMENT_TYPE_SEND_TO_GRAVEYARD,
@@ -269,7 +269,7 @@ export const CARD_DOCUMENTATION = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 7,
+      value: 8,
     },
   ],
   effects: [
@@ -297,7 +297,7 @@ export const CARD_EMERGENCY_HOTFIX = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 6,
+      value: 7,
     },
   ],
   effects: [
@@ -330,7 +330,7 @@ export const CARD_COFFEE_BREAK = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 4,
+      value: 5,
     },
   ],
   effects: [
@@ -358,7 +358,7 @@ export const CARD_DATABASE_MIGRATION = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 7,
+      value: 8,
     },
   ],
   effects: [
@@ -388,7 +388,7 @@ export const CARD_RUBBER_DUCK = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 5,
+      value: 6,
     },
   ],
   effects: [
@@ -417,7 +417,7 @@ export const CARD_TECH_DEBT_CLEANUP = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 6,
+      value: 7,
     },
     {
       type: REQUIREMENT_TYPE_DISCARD_CARDS,
@@ -444,7 +444,7 @@ export const CARD_INTEGRATION_TESTING = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 8,
+      value: 9,
     },
   ],
   effects: [
@@ -477,7 +477,7 @@ export const CARD_RUSH_IMPLEMENTATION = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 7,
+      value: 8,
     },
   ],
   effects: [
@@ -505,7 +505,7 @@ export const CARD_COPY_PASTE_SOLUTION = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 6,
+      value: 7,
     },
   ],
   effects: [
@@ -533,7 +533,7 @@ export const CARD_SKIP_CODE_REVIEW = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 5,
+      value: 6,
     },
   ],
   effects: [

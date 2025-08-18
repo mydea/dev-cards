@@ -1,5 +1,7 @@
 # Dev-Cards Project Rules
 
+Always look at RULES.md for the general game rules, as well as PLAN.md for the development plan.
+
 ## Package Management
 - Always use `pnpm` for installing dependencies and running scripts
 - Use workspace commands: `pnpm --filter <package>` for package-specific operations
@@ -44,3 +46,10 @@
 - Test files co-located with source code
 - Comprehensive unit tests for game logic
 - Integration tests for game flows
+
+## Cards
+- When adding new cards, make sure they are balanced with existing cards in card-definitions.ts
+- The player should generally be able to play 2-3 cards per round.
+- Some cards _can_ be exceptionally cheap or expensive, but most should be middle-ground cards
+- Cards should be generous in using randomness (coin flip)
+- Cards should be generous in adding both positive and negative effects, e.g. combining progress with adding TD
