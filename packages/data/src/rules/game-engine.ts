@@ -62,7 +62,6 @@ export class GameEngine {
     const initialStats: GameStats = {
       currentRound: 1,
       cardsPlayed: 0,
-      techDebtReductions: 0,
       startTime: Date.now(),
     };
 
@@ -254,9 +253,6 @@ export class GameEngine {
       0,
       newState.resources.technicalDebt - 2
     );
-
-    // Update stats
-    newState.stats.techDebtReductions++;
 
     // Add to history
     this.addHistoryEntry(

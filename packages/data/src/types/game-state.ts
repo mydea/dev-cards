@@ -31,9 +31,6 @@ export interface GameStats {
   /** Total number of cards played this game */
   cardsPlayed: number;
 
-  /** Total number of times player discarded all cards to reduce TD */
-  techDebtReductions: number;
-
   /** Game start timestamp */
   startTime: number;
 

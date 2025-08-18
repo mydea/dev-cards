@@ -56,18 +56,15 @@ describe('GameEngine', () => {
 
     expect(result.success).toBe(true);
     expect(result.newState).toBeDefined();
-    
+
     // Should have reduced technical debt (was 0, should still be 0 but action should succeed)
     expect(result.newState!.resources.technicalDebt).toBe(0);
-    
+
     // Should have new hand after ending turn
     expect(result.newState!.piles.hand.length).toBe(5);
-    
+
     // Should be in next round
     expect(result.newState!.stats.currentRound).toBe(2);
-    
-    // Should have updated stats
-    expect(result.newState!.stats.techDebtReductions).toBe(1);
   });
 
   it('should handle end turn correctly', () => {
