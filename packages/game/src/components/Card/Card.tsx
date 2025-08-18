@@ -62,7 +62,7 @@ function Card({
           break;
         case 'REMOVE_BUGS':
           if (effect.randomType === 'STATIC') {
-            return `-${effect.value} 🐛`;
+            return `-${effect.value} 🐛 Bugs`;
           } else if (effect.randomType === 'COIN_FLIP') {
             return (
               <span key={index} className={styles.coinFlipEffect}>
@@ -71,14 +71,14 @@ function Card({
                   alt="coin flip"
                   className={styles.coinFlipIcon}
                 />
-                -{effect.headsValue} or -{effect.tailsValue} 🐛
+                -{effect.headsValue} or -{effect.tailsValue} 🐛 Bugs
               </span>
             );
           }
           break;
         case 'ADD_BUGS':
           if (effect.randomType === 'STATIC') {
-            return `+${effect.value} 🐛`;
+            return `+${effect.value} 🐛 Bugs`;
           } else if (effect.randomType === 'COIN_FLIP') {
             return (
               <span key={index} className={styles.coinFlipEffect}>
@@ -87,14 +87,14 @@ function Card({
                   alt="coin flip"
                   className={styles.coinFlipIcon}
                 />
-                +{effect.headsValue} or +{effect.tailsValue} 🐛
+                +{effect.headsValue} or +{effect.tailsValue} 🐛 Bugs
               </span>
             );
           }
           break;
         case 'REMOVE_TECHNICAL_DEBT':
           if (effect.randomType === 'STATIC') {
-            return `-${effect.value} TD`;
+            return `-${effect.value} ⚡ TD`;
           } else if (effect.randomType === 'COIN_FLIP') {
             return (
               <span key={index} className={styles.coinFlipEffect}>
@@ -103,14 +103,14 @@ function Card({
                   alt="coin flip"
                   className={styles.coinFlipIcon}
                 />
-                -{effect.headsValue} or -{effect.tailsValue} TD
+                -{effect.headsValue} or -{effect.tailsValue} ⚡ TD
               </span>
             );
           }
           break;
         case 'ADD_TECHNICAL_DEBT':
           if (effect.randomType === 'STATIC') {
-            return `+${effect.value} TD`;
+            return `+${effect.value} ⚡ TD`;
           } else if (effect.randomType === 'COIN_FLIP') {
             return (
               <span key={index} className={styles.coinFlipEffect}>
@@ -119,7 +119,7 @@ function Card({
                   alt="coin flip"
                   className={styles.coinFlipIcon}
                 />
-                +{effect.headsValue} or +{effect.tailsValue} TD
+                +{effect.headsValue} or +{effect.tailsValue} ⚡ TD
               </span>
             );
           }
