@@ -33,28 +33,36 @@ function GameBoard({
 
   // Check for game over conditions whenever game state changes
   useEffect(() => {
-    const winCondition = checkWinCondition(gameState);
-    const loseCondition = checkLoseCondition(gameState);
+    const hasWon = checkWinCondition(gameState);
+    const hasLost = checkLoseCondition(gameState);
 
-    if (winCondition.hasWon) {
+    if (hasWon) {
       setGameOver({
         isGameOver: true,
         won: true,
         message: `Congratulations! You completed your project in ${gameState.stats.currentRound} rounds!`,
       });
-    } else if (loseCondition.hasLost) {
+    } else if (hasLost) {
       setGameOver({
         isGameOver: true,
         won: false,
-        message: loseCondition.reason || 'Game Over',
+        message: 'Not enough cards to continue playing!',
       });
     }
   }, [gameState]);
 
   const handlePlayCard = (cardInstanceId: string) => {
     try {
-      const newGameState = gameEngine.playCard(gameState, cardInstanceId);
-      setGameState(newGameState);
+      const result = gameEngine.processAction({
+        type: 'PLAY_CARD',
+        cardInstanceId,
+      });
+
+      if (result.success && result.newState) {
+        setGameState(result.newState);
+      } else {
+        console.error('Error playing card:', result.error);
+      }
     } catch (error) {
       console.error('Error playing card:', error);
     }
@@ -62,25 +70,37 @@ function GameBoard({
 
   const handleEndTurn = () => {
     try {
-      const newGameState = gameEngine.endTurn(gameState);
-      setGameState(newGameState);
+      const result = gameEngine.processAction({ type: 'END_TURN' });
+
+      if (result.success && result.newState) {
+        setGameState(result.newState);
+      } else {
+        console.error('Error ending turn:', result.error);
+        // Handle insufficient cards case
+        if (result.error && result.error.includes('cards')) {
+          setGameOver({
+            isGameOver: true,
+            won: false,
+            message: 'Not enough cards to continue playing!',
+          });
+        }
+      }
     } catch (error) {
       console.error('Error ending turn:', error);
-      // Handle insufficient cards case
-      if (error instanceof Error && error.message.includes('cards')) {
-        setGameOver({
-          isGameOver: true,
-          won: false,
-          message: 'Not enough cards to continue playing!',
-        });
-      }
     }
   };
 
   const handleTechnicalDebtReduction = () => {
     try {
-      const newGameState = gameEngine.reduceTechnicalDebt(gameState);
-      setGameState(newGameState);
+      const result = gameEngine.processAction({
+        type: 'DISCARD_ALL_FOR_TD_REDUCTION',
+      });
+
+      if (result.success && result.newState) {
+        setGameState(result.newState);
+      } else {
+        console.error('Error reducing technical debt:', result.error);
+      }
     } catch (error) {
       console.error('Error reducing technical debt:', error);
     }
@@ -109,7 +129,7 @@ function GameBoard({
             <div className={styles.pileCard} data-type="deck">
               <div className={styles.pileLabel}>Draw Pile</div>
               <div className={styles.pileCount}>
-                {gameState.piles.drawPile.length}
+                {gameState.piles.deck.length}
               </div>
             </div>
           </div>
@@ -118,7 +138,7 @@ function GameBoard({
             <div className={styles.pileCard} data-type="discard">
               <div className={styles.pileLabel}>Discard</div>
               <div className={styles.pileCount}>
-                {gameState.piles.discardPile.length}
+                {gameState.piles.discard.length}
               </div>
             </div>
           </div>
