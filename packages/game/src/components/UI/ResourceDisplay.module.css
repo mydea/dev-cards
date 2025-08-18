@@ -143,6 +143,15 @@
   color: var(--color-secondary-600);
 }
 
+/* Override high level color for bugs and technical debt to be red */
+.resource[data-type="bugs"] .resourceValue[data-level="high"] {
+  color: var(--color-danger-600);
+}
+
+.resource[data-type="technical-debt"] .resourceValue[data-level="high"] {
+  color: var(--color-danger-600);
+}
+
 .resourceValue[data-level="critical"] {
   color: var(--color-danger-700);
   animation: pulse 2s infinite;

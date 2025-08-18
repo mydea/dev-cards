@@ -76,17 +76,14 @@ function ResourceDisplay({ gameState }: ResourceDisplayProps) {
 
   const getBugsColor = (value: number) => {
     if (value === 0) return 'none';
-    if (value <= 2) return 'low';
-    if (value <= 5) return 'medium';
-    return 'high';
+    if (value <= 5) return 'low'; // Orange for 1-5
+    return 'high'; // Red for 6+
   };
 
   const getTechnicalDebtColor = (value: number) => {
     if (value === 0) return 'none';
-    if (value <= 5) return 'low';
-    if (value <= 10) return 'medium';
-    if (value <= 15) return 'high';
-    return 'critical';
+    if (value <= 5) return 'low'; // Orange for 1-5
+    return 'high'; // Red for 6+
   };
 
   const getProductivityColor = (value: number) => {
