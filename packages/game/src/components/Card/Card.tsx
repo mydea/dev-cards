@@ -319,15 +319,17 @@ function Card({
 
       <AnimatePresence>
         {showTooltip && validationError && (
-          <motion.div
-            className={styles.tooltip}
-            initial={{ opacity: 0, y: 10, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.9 }}
-            transition={{ duration: 0.2 }}
-          >
-            {validationError}
-          </motion.div>
+          <div className={styles.tooltipContainer}>
+            <motion.div
+              className={styles.tooltip}
+              initial={{ opacity: 0, y: 10, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.9 }}
+              transition={{ duration: 0.2 }}
+            >
+              {validationError}
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </motion.div>

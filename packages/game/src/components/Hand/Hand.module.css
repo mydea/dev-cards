@@ -20,6 +20,7 @@
   flex-wrap: wrap;
   max-width: 100%;
   padding: var(--spacing-md);
+  padding-top: var(--spacing-xl); /* Extra space for tooltips */
 }
 
 .handHint {

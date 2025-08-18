@@ -28,24 +28,24 @@
   z-index: 10;
 }
 
-.card[data-playable="true"] {
+.card[data-playable='true'] {
   border-color: var(--color-secondary-400);
   box-shadow: 0 2px 8px var(--color-secondary-200);
 }
 
-.card[data-playable="true"]:hover {
+.card[data-playable='true']:hover {
   border-color: var(--color-secondary-500);
   box-shadow: 0 8px 25px var(--color-secondary-300);
   transform: translateY(-6px) scale(1.05);
 }
 
-.card[data-disabled="true"] {
+.card[data-disabled='true'] {
   opacity: 0.6;
   cursor: not-allowed;
   filter: grayscale(0.3);
 }
 
-.card[data-disabled="true"]:hover {
+.card[data-disabled='true']:hover {
   transform: none;
   box-shadow: 0 2px 8px var(--shadow-color);
   border-color: var(--border-color);
@@ -193,24 +193,29 @@
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
-.tooltip {
+.tooltipContainer {
   position: absolute;
   bottom: calc(100% + var(--spacing-sm));
   left: 50%;
   transform: translateX(-50%);
+  z-index: var(--z-tooltip);
+  pointer-events: none;
+}
+
+.tooltip {
   background: var(--color-gray-800);
   color: var(--text-inverse);
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   white-space: nowrap;
-  z-index: var(--z-tooltip);
   box-shadow: 0 4px 12px var(--shadow-color-strong);
   max-width: 250px;
   text-align: center;
+  pointer-events: none;
 }
 
-.tooltip::after {
+.tooltipContainer::after {
   content: '';
   position: absolute;
   top: 100%;
@@ -221,7 +226,7 @@
 }
 
 /* Hover effects for playable cards */
-.card[data-playable="true"]::before {
+.card[data-playable='true']::before {
   content: '';
   position: absolute;
   top: -2px;
@@ -235,7 +240,7 @@
   transition: opacity var(--transition-base);
 }
 
-.card[data-playable="true"]:hover::before {
+.card[data-playable='true']:hover::before {
   opacity: 0.1;
 }
 
@@ -323,4 +328,3 @@
     flex: 0 0 2.5rem;
   }
 }
-
