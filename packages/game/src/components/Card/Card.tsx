@@ -197,7 +197,7 @@ function Card({
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     },
     animating: {
-      opacity: 0.3,
+      opacity: 0,
       scale: 0.95,
       filter: 'grayscale(0.5)',
       transition: {
