@@ -374,17 +374,14 @@ export class GameEngine {
       };
     }
 
-    const newState = { ...this.gameState };
+    const newState = {
+      ...this.gameState,
 
-    // Move all cards from hand to discard pile
-    newState.piles.discard.push(...newState.piles.hand);
-    newState.piles.hand = [];
-
-    // Reduce technical debt by 2
-    newState.resources.technicalDebt = Math.max(
-      0,
-      newState.resources.technicalDebt - 2
-    );
+      resources: {
+        ...this.gameState.resources,
+        technicalDebt: Math.max(0, this.gameState.resources.technicalDebt - 2),
+      },
+    };
 
     // Add to history
     this.addHistoryEntry(
@@ -407,30 +404,53 @@ export class GameEngine {
       return { success: false, error: 'No game state' };
     }
 
-    let newState = { ...this.gameState };
-
     // Move remaining cards in hand to discard pile
-    newState.piles.discard.push(...newState.piles.hand);
-    newState.piles.hand = [];
+    const stateWithDiscardedHand = {
+      ...this.gameState,
+      piles: {
+        deck: [...this.gameState.piles.deck],
+        hand: [],
+        discard: [
+          ...this.gameState.piles.discard,
+          ...this.gameState.piles.hand,
+        ],
+        graveyard: [...this.gameState.piles.graveyard],
+      },
+    };
 
     // Draw new hand (5 cards)
-    const result = this.drawCards(newState, 5);
+    const result = this.drawCards(stateWithDiscardedHand, 5);
+
+    let newState: GameState;
+
     if (!result.success) {
       // Game over - cannot draw enough cards
-      newState.phase = GAME_PHASE_GAME_OVER;
-      newState.endState = GAME_END_STATE_LOST_NO_CARDS;
-      newState.stats.endTime = Date.now();
+      newState = {
+        ...stateWithDiscardedHand,
+        phase: GAME_PHASE_GAME_OVER,
+        endState: GAME_END_STATE_LOST_NO_CARDS,
+        stats: {
+          ...stateWithDiscardedHand.stats,
+          endTime: Date.now(),
+        },
+      };
     } else {
-      newState = result.newState!;
-
-      // Start new round
-      newState.stats.currentRound++;
-
-      // Replenish PP (20 - TD)
-      newState.resources.productivityPoints = Math.max(
-        0,
-        20 - newState.resources.technicalDebt
-      );
+      // Start new round and replenish PP (20 - TD)
+      const drawnState = result.newState!;
+      newState = {
+        ...drawnState,
+        stats: {
+          ...drawnState.stats,
+          currentRound: drawnState.stats.currentRound + 1,
+        },
+        resources: {
+          ...drawnState.resources,
+          productivityPoints: Math.max(
+            0,
+            20 - drawnState.resources.technicalDebt
+          ),
+        },
+      };
 
       // Add round start to history
       this.addHistoryEntry(
