@@ -149,6 +149,66 @@ export class GameEngine {
   }
 
   /**
+   * Processes a player action with predetermined coin flip results
+   */
+  processActionWithPredeterminedCoinFlips(
+    action: PlayerAction,
+    coinFlipResults: Array<{
+      effect: any;
+      result: 'heads' | 'tails';
+      resolvedValue: number;
+    }>
+  ): ActionResult {
+    if (!this.gameState) {
+      return {
+        success: false,
+        error: 'No game in progress',
+      };
+    }
+
+    try {
+      switch (action.type) {
+        case 'PLAY_CARD':
+          return this.handlePlayCardWithPredeterminedCoinFlips(
+            action.cardInstanceId,
+            coinFlipResults
+          );
+
+        case 'DISCARD_ALL_FOR_TD_REDUCTION':
+          return this.handleTechnicalDebtReduction();
+
+        case 'END_TURN':
+          return this.handleEndTurn();
+
+        case 'START_NEW_GAME':
+          const newGame = this.createNewGame(action.config);
+          return {
+            success: true,
+            newState: newGame,
+          };
+
+        case 'LOAD_GAME':
+          this.gameState = action.saveState.gameState;
+          return {
+            success: true,
+            newState: this.gameState,
+          };
+
+        default:
+          return {
+            success: false,
+            error: `Unknown action type: ${(action as any).type}`,
+          };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
    * Prepares end turn action and returns cards to be drawn for animation
    */
   public prepareEndTurn(): {
@@ -350,6 +410,111 @@ export class GameEngine {
     const effectResult = resolveAndApplyEffects(
       cardInstance.card.effects,
       newState
+    );
+    newState = effectResult.newGameState;
+
+    // Update stats
+    newState.stats.cardsPlayed++;
+
+    // Add to history
+    this.addHistoryEntry(
+      'card_played',
+      `Played ${cardInstance.card.title}`,
+      this.gameState.resources,
+      newState.resources,
+      cardInstance.card.id,
+      effectResult.resolutions
+    );
+
+    // Check win/lose conditions
+    if (checkWinCondition(newState)) {
+      newState.phase = GAME_PHASE_GAME_OVER;
+      newState.endState = GAME_END_STATE_WON;
+      newState.stats.endTime = Date.now();
+      newState.stats.finalScore = this.calculateScore(newState);
+    } else if (checkLoseCondition(newState)) {
+      newState.phase = GAME_PHASE_GAME_OVER;
+      newState.endState = GAME_END_STATE_LOST_NO_CARDS;
+      newState.stats.endTime = Date.now();
+    }
+
+    this.gameState = newState;
+
+    return {
+      success: true,
+      newState: this.gameState,
+      data: {
+        appliedEffects: effectResult.resolutions,
+      },
+    };
+  }
+
+  /**
+   * Handles playing a card with predetermined coin flip results
+   */
+  private handlePlayCardWithPredeterminedCoinFlips(
+    cardInstanceId: string,
+    coinFlipResults: Array<{
+      effect: any;
+      result: 'heads' | 'tails';
+      resolvedValue: number;
+    }>
+  ): ActionResult {
+    if (!this.gameState) {
+      return { success: false, error: 'No game state' };
+    }
+
+    if (this.gameState.phase !== GAME_PHASE_PLANNING) {
+      return { success: false, error: 'Cannot play cards in current phase' };
+    }
+
+    // Find the card in hand
+    const cardIndex = this.gameState.piles.hand.findIndex(
+      (c) => c.instanceId === cardInstanceId
+    );
+
+    if (cardIndex === -1) {
+      return { success: false, error: 'Card not found in hand' };
+    }
+
+    const cardInstance = this.gameState.piles.hand[cardIndex];
+
+    // Validate card can be played
+    const validation = validateCardPlay(cardInstance, this.gameState);
+    if (!validation.canPlay) {
+      return {
+        success: false,
+        error: `Cannot play card: ${validation.reasons.join(', ')}`,
+      };
+    }
+
+    // Create new state
+    let newState = { ...this.gameState };
+
+    // Pay requirements
+    newState = this.payRequirements(cardInstance, newState);
+
+    // Remove card from hand and put in graveyard
+    newState.piles.hand.splice(cardIndex, 1);
+    newState.piles.graveyard.push(cardInstance);
+
+    // Create predetermined outcomes map
+    const predeterminedOutcomes: { [effectIndex: number]: 'heads' | 'tails' } =
+      {};
+    let coinFlipIndex = 0;
+
+    cardInstance.card.effects.forEach((effect, index) => {
+      if (effect.randomType === RANDOM_EFFECT_TYPE_COIN_FLIP) {
+        predeterminedOutcomes[index] = coinFlipResults[coinFlipIndex].result;
+        coinFlipIndex++;
+      }
+    });
+
+    // Apply card effects with predetermined coin flip results
+    const effectResult = resolveAndApplyEffects(
+      cardInstance.card.effects,
+      newState,
+      predeterminedOutcomes
     );
     newState = effectResult.newGameState;
 
