@@ -17,7 +17,6 @@ import {
   GAME_END_STATE_LOST_NO_CARDS,
   REQUIREMENT_TYPE_SPEND_PP,
   REQUIREMENT_TYPE_DISCARD_CARDS,
-  REQUIREMENT_TYPE_SEND_TO_GRAVEYARD,
 } from '../types';
 import { DEFAULT_DECK, createCardInstance, shuffleDeck } from '../cards';
 import {
@@ -152,7 +151,6 @@ export class GameEngine {
     success: boolean;
     error?: string;
     cardsToDiscard?: CardInstance[];
-    cardsToGraveyard?: CardInstance[];
   } {
     if (!this.gameState) {
       return { success: false, error: 'No game state' };
@@ -177,7 +175,6 @@ export class GameEngine {
 
     // Identify cards that need to be discarded for requirements
     const cardsToDiscard: CardInstance[] = [];
-    const cardsToGraveyard: CardInstance[] = [];
     const availableCards = this.gameState.piles.hand.filter(
       (card) => card.instanceId !== cardInstanceId
     );
@@ -193,23 +190,12 @@ export class GameEngine {
           const cardToDiscard = availableCards.splice(randomIndex, 1)[0];
           cardsToDiscard.push(cardToDiscard);
         }
-      } else if (requirement.type === REQUIREMENT_TYPE_SEND_TO_GRAVEYARD) {
-        for (
-          let i = 0;
-          i < requirement.value && availableCards.length > 0;
-          i++
-        ) {
-          const randomIndex = Math.floor(Math.random() * availableCards.length);
-          const cardToGrave = availableCards.splice(randomIndex, 1)[0];
-          cardsToGraveyard.push(cardToGrave);
-        }
       }
     }
 
     return {
       success: true,
       cardsToDiscard,
-      cardsToGraveyard,
     };
   }
 
@@ -469,22 +455,6 @@ export class GameEngine {
                 1
               )[0];
               newState.piles.discard.push(discardedCard);
-            }
-          }
-          break;
-
-        case REQUIREMENT_TYPE_SEND_TO_GRAVEYARD:
-          // Remove random cards from hand to graveyard
-          for (let i = 0; i < requirement.value; i++) {
-            if (newState.piles.hand.length > 0) {
-              const randomIndex = Math.floor(
-                Math.random() * newState.piles.hand.length
-              );
-              const graveyardCard = newState.piles.hand.splice(
-                randomIndex,
-                1
-              )[0];
-              newState.piles.graveyard.push(graveyardCard);
             }
           }
           break;

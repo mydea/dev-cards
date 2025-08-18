@@ -148,8 +148,6 @@ function Card({
             return `${req.value} PP`;
           case 'DISCARD_CARDS':
             return `discard ${req.value}`;
-          case 'SEND_TO_GRAVEYARD':
-            return `bury ${req.value}`;
           default:
             return 'Unknown';
         }

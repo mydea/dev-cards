@@ -7,7 +7,6 @@ import type {
 import {
   REQUIREMENT_TYPE_SPEND_PP,
   REQUIREMENT_TYPE_DISCARD_CARDS,
-  REQUIREMENT_TYPE_SEND_TO_GRAVEYARD,
 } from '../types';
 
 /**
@@ -37,16 +36,6 @@ export function validateCardPlay(
         if (availableCardsToDiscard < requirement.value) {
           reasons.push(
             `Not enough cards to discard: need ${requirement.value}, have ${availableCardsToDiscard} available`
-          );
-          missingRequirements.push(requirement);
-        }
-        break;
-
-      case REQUIREMENT_TYPE_SEND_TO_GRAVEYARD:
-        const availableCardsToGraveyard = gameState.piles.hand.length - 1; // -1 because we're playing this card
-        if (availableCardsToGraveyard < requirement.value) {
-          reasons.push(
-            `Not enough cards to send to graveyard: need ${requirement.value}, have ${availableCardsToGraveyard} available`
           );
           missingRequirements.push(requirement);
         }

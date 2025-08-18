@@ -4,7 +4,6 @@ import {
   RANDOM_EFFECT_TYPE_COIN_FLIP,
   REQUIREMENT_TYPE_SPEND_PP,
   REQUIREMENT_TYPE_DISCARD_CARDS,
-  REQUIREMENT_TYPE_SEND_TO_GRAVEYARD,
 } from './enums';
 
 /**
@@ -59,19 +58,9 @@ export interface DiscardCardsRequirement extends BaseRequirement {
 }
 
 /**
- * Requirement to send cards from hand to graveyard
- */
-export interface SendToGraveyardRequirement extends BaseRequirement {
-  type: typeof REQUIREMENT_TYPE_SEND_TO_GRAVEYARD;
-}
-
-/**
  * Union type for all possible requirements
  */
-export type CardRequirement =
-  | SpendPPRequirement
-  | DiscardCardsRequirement
-  | SendToGraveyardRequirement;
+export type CardRequirement = SpendPPRequirement | DiscardCardsRequirement;
 
 /**
  * Result of resolving an effect (includes random outcome if applicable)

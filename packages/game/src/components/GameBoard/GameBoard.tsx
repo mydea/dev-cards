@@ -136,16 +136,14 @@ function GameBoard({
 
     // Check if there are cards to discard as requirements
     const hasDiscardRequirements =
-      (preparation.cardsToDiscard && preparation.cardsToDiscard.length > 0) ||
-      (preparation.cardsToGraveyard && preparation.cardsToGraveyard.length > 0);
+      preparation.cardsToDiscard && preparation.cardsToDiscard.length > 0;
 
     if (hasDiscardRequirements) {
       // Handle card with discard requirements
       handleCardWithDiscardRequirements(
         cardInstanceId,
         cardElement,
-        preparation.cardsToDiscard || [],
-        preparation.cardsToGraveyard || []
+        preparation.cardsToDiscard || []
       );
     } else {
       // Handle normal card without discard requirements
@@ -191,8 +189,7 @@ function GameBoard({
   const handleCardWithDiscardRequirements = (
     cardInstanceId: string,
     cardElement: HTMLElement,
-    cardsToDiscard: CardInstance[],
-    cardsToGraveyard: CardInstance[]
+    cardsToDiscard: CardInstance[]
   ) => {
     const cardInstance = gameState.piles.hand.find(
       (card) => card.instanceId === cardInstanceId
@@ -207,12 +204,11 @@ function GameBoard({
     const allAnimatingCards = [
       cardInstanceId,
       ...cardsToDiscard.map((c) => c.instanceId),
-      ...cardsToGraveyard.map((c) => c.instanceId),
     ];
     setAnimatingCardIds(new Set(allAnimatingCards));
 
     let completedAnimations = 0;
-    const totalAnimations = 1 + cardsToDiscard.length + cardsToGraveyard.length;
+    const totalAnimations = 1 + cardsToDiscard.length;
 
     const completeAnimation = () => {
       completedAnimations++;
@@ -240,21 +236,6 @@ function GameBoard({
           discardCard,
           discardElement,
           discardRef.current,
-          completeAnimation
-        );
-      } else {
-        completeAnimation();
-      }
-    });
-
-    // Animate requirement graveyards to graveyard pile
-    cardsToGraveyard.forEach((graveCard) => {
-      const graveElement = cardElements[graveCard.instanceId];
-      if (graveElement && graveyardRef.current) {
-        animationLayerRef.current!.animateCardToGraveyard(
-          graveCard,
-          graveElement,
-          graveyardRef.current,
           completeAnimation
         );
       } else {

@@ -24,12 +24,10 @@ export type EffectType =
  */
 export const REQUIREMENT_TYPE_SPEND_PP = 'SPEND_PP';
 export const REQUIREMENT_TYPE_DISCARD_CARDS = 'DISCARD_CARDS';
-export const REQUIREMENT_TYPE_SEND_TO_GRAVEYARD = 'SEND_TO_GRAVEYARD';
 
 export type RequirementType =
   | typeof REQUIREMENT_TYPE_SPEND_PP
-  | typeof REQUIREMENT_TYPE_DISCARD_CARDS
-  | typeof REQUIREMENT_TYPE_SEND_TO_GRAVEYARD;
+  | typeof REQUIREMENT_TYPE_DISCARD_CARDS;
 
 /**
  * Types of random effects that can be applied
