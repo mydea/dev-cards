@@ -35,6 +35,7 @@ function GameBoard({
   });
 
   const [showParticles, setShowParticles] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Animation refs
   const animationLayerRef = useRef<AnimationLayerRef>(null);
@@ -117,6 +118,9 @@ function GameBoard({
       return;
     }
 
+    // Start animation state
+    setIsAnimating(true);
+
     // Trigger the animation first
     animationLayerRef.current.animateCardToGraveyard(
       cardInstance,
@@ -124,6 +128,7 @@ function GameBoard({
       graveyardRef.current,
       () => {
         // After animation completes, process the actual card action
+        setIsAnimating(false);
         handlePlayCard(cardInstanceId);
       }
     );
@@ -168,6 +173,9 @@ function GameBoard({
       return;
     }
 
+    // Start animation state
+    setIsAnimating(true);
+
     // Trigger animation for end turn
     handleDiscardAllCardsWithAnimationForEndTurn(handCardElements);
   };
@@ -183,6 +191,7 @@ function GameBoard({
       !animationLayerRef.current ||
       !discardRef.current
     ) {
+      setIsAnimating(false);
       handleEndTurn();
       return;
     }
@@ -197,6 +206,7 @@ function GameBoard({
       if (!cardElement) {
         completedAnimations++;
         if (completedAnimations === totalCards) {
+          setIsAnimating(false);
           handleEndTurn();
         }
         return;
@@ -212,6 +222,7 @@ function GameBoard({
             completedAnimations++;
             // When all animations are done, process the end turn action
             if (completedAnimations === totalCards) {
+              setIsAnimating(false);
               handleEndTurn();
             }
           }
@@ -253,6 +264,9 @@ function GameBoard({
       return;
     }
 
+    // Start animation state
+    setIsAnimating(true);
+
     // Trigger animation directly
     handleDiscardAllCardsWithAnimation(handCardElements);
   };
@@ -268,7 +282,7 @@ function GameBoard({
       !animationLayerRef.current ||
       !discardRef.current
     ) {
-      // Fallback to immediate action if no cards or animation isn't available
+      setIsAnimating(false);
       handleTechnicalDebtReduction();
       return;
     }
@@ -283,6 +297,7 @@ function GameBoard({
       if (!cardElement) {
         completedAnimations++;
         if (completedAnimations === totalCards) {
+          setIsAnimating(false);
           handleTechnicalDebtReduction();
         }
         return;
@@ -298,6 +313,7 @@ function GameBoard({
             completedAnimations++;
             // When all animations are done, process the game action
             if (completedAnimations === totalCards) {
+              setIsAnimating(false);
               handleTechnicalDebtReduction();
             }
           }
@@ -310,6 +326,7 @@ function GameBoard({
     const newGameState = gameEngine.createNewGame();
     setGameState(newGameState);
     setShowParticles(false);
+    setIsAnimating(false);
     setGameOver({
       isGameOver: false,
       won: false,
@@ -487,7 +504,7 @@ function GameBoard({
               onCardMount={handleCardMount}
               onCardUnmount={handleCardUnmount}
               gameState={gameState}
-              disabled={gameOver.isGameOver}
+              disabled={gameOver.isGameOver || isAnimating}
             />
           </motion.div>
 
@@ -496,7 +513,7 @@ function GameBoard({
               onEndTurn={handleEndTurnAnimated}
               onTechnicalDebtReduction={handleTechnicalDebtReductionAnimated}
               gameState={gameState}
-              disabled={gameOver.isGameOver}
+              disabled={gameOver.isGameOver || isAnimating}
             />
           </motion.div>
         </motion.div>
