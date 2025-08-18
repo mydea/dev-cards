@@ -93,6 +93,9 @@ p, h1, h2, h3, h4, h5, h6 {
   --text-muted: var(--color-gray-500);
   --text-inverse: var(--color-gray-50);
 
+  /* Color Aliases */
+  --color-success-500: var(--color-secondary-500);
+
   --surface-primary: var(--color-gray-50);
   --surface-secondary: var(--color-gray-100);
   --surface-card: #ffffff;

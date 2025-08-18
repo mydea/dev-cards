@@ -97,17 +97,30 @@ function ResourceDisplay({ gameState }: ResourceDisplayProps) {
   };
 
   // Component for change indicators
-  const ChangeIndicator = ({ change }: { change: number | null }) => {
+  const ChangeIndicator = ({
+    change,
+    resourceType,
+  }: {
+    change: number | null;
+    resourceType: 'progress' | 'bugs' | 'technicalDebt' | 'productivityPoints';
+  }) => {
     if (change === null) return null;
 
-    const isPositive = change > 0;
+    // For bugs and technical debt, invert the positivity logic
+    // Increasing bugs/TD is bad (should show as negative), decreasing is good (should show as positive)
+    const isGoodChange =
+      resourceType === 'bugs' || resourceType === 'technicalDebt'
+        ? change < 0 // Decreasing bugs/TD is good
+        : change > 0; // Increasing progress/PP is good
+
     const displayValue = Math.abs(change);
+    const displaySign = change > 0 ? '+' : '-';
 
     return (
       <AnimatePresence>
         <motion.div
           key={`change-${change}`}
-          className={`${styles.changeIndicator} ${isPositive ? styles.positive : styles.negative}`}
+          className={`${styles.changeIndicator} ${isGoodChange ? styles.positive : styles.negative}`}
           initial={{ opacity: 0, y: 0, scale: 0.8 }}
           animate={{ opacity: 1, y: -20, scale: 1 }}
           exit={{ opacity: 0, y: -40, scale: 0.8 }}
@@ -116,7 +129,7 @@ function ResourceDisplay({ gameState }: ResourceDisplayProps) {
             ease: 'easeOut',
           }}
         >
-          {isPositive ? '+' : '-'}
+          {displaySign}
           {displayValue}
         </motion.div>
       </AnimatePresence>
@@ -150,7 +163,10 @@ function ResourceDisplay({ gameState }: ResourceDisplayProps) {
             >
               {progress}%
             </motion.div>
-            <ChangeIndicator change={changes.progress} />
+            <ChangeIndicator
+              change={changes.progress}
+              resourceType="progress"
+            />
           </div>
         </div>
         <div className={styles.progressBar}>
@@ -183,7 +199,7 @@ function ResourceDisplay({ gameState }: ResourceDisplayProps) {
             >
               {bugs}
             </motion.div>
-            <ChangeIndicator change={changes.bugs} />
+            <ChangeIndicator change={changes.bugs} resourceType="bugs" />
           </div>
         </div>
       </motion.div>
@@ -208,7 +224,10 @@ function ResourceDisplay({ gameState }: ResourceDisplayProps) {
             >
               {technicalDebt}/20
             </motion.div>
-            <ChangeIndicator change={changes.technicalDebt} />
+            <ChangeIndicator
+              change={changes.technicalDebt}
+              resourceType="technicalDebt"
+            />
           </div>
         </div>
         <div className={styles.progressBar}>
@@ -246,7 +265,10 @@ function ResourceDisplay({ gameState }: ResourceDisplayProps) {
             >
               {productivityPoints}
             </motion.div>
-            <ChangeIndicator change={changes.productivityPoints} />
+            <ChangeIndicator
+              change={changes.productivityPoints}
+              resourceType="productivityPoints"
+            />
           </div>
         </div>
       </motion.div>

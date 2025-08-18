@@ -69,7 +69,7 @@
 }
 
 .changeIndicator.positive {
-  background: var(--color-secondary-500);
+  background: var(--color-success-500);
   color: white;
   box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
 }
