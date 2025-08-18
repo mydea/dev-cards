@@ -1,4 +1,5 @@
 import type { GameState } from '@dev-cards/data';
+import { validateTechnicalDebtReduction } from '@dev-cards/data';
 import styles from './GameActions.module.css';
 
 interface GameActionsProps {
@@ -14,7 +15,7 @@ function GameActions({
   gameState,
   disabled = false,
 }: GameActionsProps) {
-  const canReduceDebt = gameState.piles.hand.length > 0 && !disabled;
+  const canReduceDebt = validateTechnicalDebtReduction(gameState) && !disabled;
   const hasCards = gameState.piles.hand.length > 0;
 
   return (
@@ -24,7 +25,11 @@ function GameActions({
         onClick={onTechnicalDebtReduction}
         disabled={!canReduceDebt}
         type="button"
-        title="Discard all cards to reduce Technical Debt by 2"
+        title={
+          canReduceDebt
+            ? 'Discard all cards to reduce Technical Debt by 2'
+            : 'Cannot reduce TD: You must not have played any cards this round'
+        }
       >
         <span className={styles.buttonIcon}>⚡</span>
         <span className={styles.buttonText}>

@@ -251,7 +251,7 @@ export const CARD_ALL_NIGHTER = {
       value: 5,
     },
     {
-      type: REQUIREMENT_TYPE_SEND_TO_GRAVEYARD,
+      type: REQUIREMENT_TYPE_DISCARD_CARDS,
       value: 2,
     },
   ],

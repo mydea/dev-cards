@@ -239,7 +239,11 @@ export class GameEngine {
     }
 
     if (!validateTechnicalDebtReduction(this.gameState)) {
-      return { success: false, error: 'Cannot reduce technical debt' };
+      return {
+        success: false,
+        error:
+          'Cannot reduce technical debt: You must not have played any cards this round',
+      };
     }
 
     const newState = { ...this.gameState };

@@ -67,11 +67,46 @@ export function validateCardPlay(
 }
 
 /**
+ * Check if any cards have been played since the start of the current round
+ */
+function hasPlayedCardThisRound(gameState: GameState): boolean {
+  // Find the most recent round_start entry
+  let roundStartIndex = -1;
+  for (let i = gameState.history.length - 1; i >= 0; i--) {
+    if (gameState.history[i].action === 'round_start') {
+      roundStartIndex = i;
+      break;
+    }
+  }
+
+  // If no round_start found, check from the beginning
+  const searchStartIndex = roundStartIndex === -1 ? 0 : roundStartIndex + 1;
+
+  // Look for any card_played entries since the round started
+  for (let i = searchStartIndex; i < gameState.history.length; i++) {
+    if (gameState.history[i].action === 'card_played') {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
  * Validates whether the player can discard all cards to reduce technical debt
  */
 export function validateTechnicalDebtReduction(gameState: GameState): boolean {
-  // Can always discard cards for TD reduction if you have cards in hand
-  return gameState.piles.hand.length > 0;
+  // Must have cards in hand to discard
+  if (gameState.piles.hand.length === 0) {
+    return false;
+  }
+
+  // Cannot reduce technical debt if a card has already been played this round
+  if (hasPlayedCardThisRound(gameState)) {
+    return false;
+  }
+
+  return true;
 }
 
 /**
