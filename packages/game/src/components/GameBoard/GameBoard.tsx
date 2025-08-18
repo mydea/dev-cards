@@ -227,7 +227,7 @@ function GameBoard({
             }
           }
         );
-      }, index * 100); // 100ms stagger between each card
+      }, index * 50); // 50ms stagger between each card
     });
   };
 
@@ -318,7 +318,7 @@ function GameBoard({
             }
           }
         );
-      }, index * 100); // 100ms stagger between each card
+      }, index * 50); // 50ms stagger between each card
     });
   };
 

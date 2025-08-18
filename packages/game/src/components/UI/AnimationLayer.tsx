@@ -150,7 +150,7 @@ const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
                   opacity: 0,
                 }}
                 transition={{
-                  duration: 0.8,
+                  duration: 0.4,
                   ease: [0.25, 0.46, 0.45, 0.94], // Custom easing for natural arc
                 }}
                 onAnimationComplete={flyingCard.onComplete}
