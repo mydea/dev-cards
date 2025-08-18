@@ -54,6 +54,13 @@ function GameBoard({
     }>;
     currentIndex: number;
     cardInstanceId?: string;
+    playResult?: {
+      success: boolean;
+      error?: string;
+      drawnCards?: any[];
+      newState?: any;
+    };
+    cardsToDiscard?: any[];
   }>({
     isVisible: false,
     effects: [],
@@ -181,14 +188,27 @@ function GameBoard({
       preparation.coinFlipEffects &&
       preparation.coinFlipEffects.length > 0
     ) {
-      // Start coin flip animations before processing card
-      setCoinFlipState({
-        isVisible: true,
-        effects: preparation.coinFlipEffects,
-        currentIndex: 0,
-        cardInstanceId,
-      });
-      return; // Wait for coin flip animations to complete
+      // Process the card immediately to get results, but don't update UI yet
+      const playResult = handlePlayCard(cardInstanceId);
+
+      if (playResult.success) {
+        // Start coin flip animations, storing the results for later
+        setCoinFlipState({
+          isVisible: true,
+          effects: preparation.coinFlipEffects,
+          currentIndex: 0,
+          cardInstanceId,
+          playResult,
+          cardsToDiscard: preparation.cardsToDiscard,
+        });
+        return; // Wait for coin flip animations to complete
+      } else {
+        console.error(
+          'Card play failed during coin flip preparation:',
+          playResult.error
+        );
+        return;
+      }
     }
 
     // No coin flips, process the card play immediately (game logic)
@@ -341,31 +361,25 @@ function GameBoard({
         isVisible: false,
         effects: [],
         currentIndex: 0,
+        playResult: undefined,
+        cardsToDiscard: undefined,
       });
 
       if (cardInstanceId) {
-        // Process the card play now that animations are complete
-        const playResult = handlePlayCard(cardInstanceId);
+        const { playResult, cardsToDiscard } = coinFlipState;
 
-        if (playResult.success) {
-          // Start visual-only animation
+        if (playResult && playResult.success) {
+          // Start visual-only animation using stored results
           setIsAnimating(true);
           setAnimatingCardIds((prev) => new Set(prev).add(cardInstanceId));
 
           const cardElement = cardElements[cardInstanceId];
           if (cardElement) {
-            // Get the preparation again for visual animation
-            const preparation = gameEngine.prepareCardPlay(cardInstanceId);
-
-            if (
-              preparation.success &&
-              preparation.cardsToDiscard &&
-              preparation.cardsToDiscard.length > 0
-            ) {
+            if (cardsToDiscard && cardsToDiscard.length > 0) {
               // Animate discard requirements (visual only)
               handleVisualDiscardAnimation(
                 cardElement,
-                preparation.cardsToDiscard,
+                cardsToDiscard,
                 cardInstanceId
               );
             } else {
@@ -387,6 +401,8 @@ function GameBoard({
               });
             }
           }
+        } else {
+          console.error('No valid play result stored for coin flip completion');
         }
       }
     }
@@ -736,6 +752,8 @@ function GameBoard({
       isVisible: false,
       effects: [],
       currentIndex: 0,
+      playResult: undefined,
+      cardsToDiscard: undefined,
     });
   };
 
