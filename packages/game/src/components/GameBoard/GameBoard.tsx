@@ -359,9 +359,8 @@ function GameBoard({
     let completedAnimations = 0;
     const totalCards = cardsToDraw.length;
 
-    // Add all cards to animating state (they won't appear in hand until animation completes)
-    const newAnimatingIds = new Set(cardsToDraw.map((card) => card.instanceId));
-    setAnimatingCardIds((prev) => new Set([...prev, ...newAnimatingIds]));
+    // NOTE: Cards should already be in animating state when this function is called
+    // We don't set animating state here anymore, just manage the individual card completions
 
     const completeDrawAnimation = (cardInstanceId: string) => {
       completedAnimations++;
@@ -411,10 +410,23 @@ function GameBoard({
     if (gameState.piles.hand.length === 0) {
       // No cards to discard, just draw new cards
       setIsAnimating(true);
-      handleDrawCardsAnimated(preparation.cardsToDraw || [], () => {
+      
+      if (preparation.cardsToDraw && preparation.cardsToDraw.length > 0) {
+        // Add new cards to animating state BEFORE processing end turn
+        const newAnimatingIds = new Set(preparation.cardsToDraw.map((card) => card.instanceId));
+        setAnimatingCardIds(newAnimatingIds);
+        
+        // Process end turn (this adds cards to game state)
+        handleEndTurn();
+        
+        // Then start draw animations (cards are hidden by animatingCardIds)
+        handleDrawCardsAnimated(preparation.cardsToDraw, () => {
+          setIsAnimating(false);
+        });
+      } else {
         handleEndTurn();
         setIsAnimating(false);
-      });
+      }
       return;
     }
 
@@ -454,10 +466,16 @@ function GameBoard({
     ) {
       if (cardsToDraw && cardsToDraw.length > 0) {
         // Skip discard, go straight to draw animation
+        // Add new cards to animating state BEFORE processing end turn
+        const newAnimatingIds = new Set(cardsToDraw.map((card) => card.instanceId));
+        setAnimatingCardIds(newAnimatingIds);
+        
+        // Process end turn (this adds cards to game state)
+        handleEndTurn();
+        
+        // Then start draw animations (cards are hidden by animatingCardIds)
         handleDrawCardsAnimated(cardsToDraw, () => {
-          handleEndTurn();
           setIsAnimating(false);
-          setAnimatingCardIds(new Set());
         });
       } else {
         setIsAnimating(false);
@@ -477,11 +495,19 @@ function GameBoard({
       if (!cardElement) {
         completedAnimations++;
         if (completedAnimations === totalCards) {
-          // After discarding, animate drawing new cards
+          // After discarding, clear animating IDs and process end turn first
           setAnimatingCardIds(new Set()); // Clear animating card IDs
+          
           if (cardsToDraw && cardsToDraw.length > 0) {
+            // Add new cards to animating state BEFORE processing end turn
+            const newAnimatingIds = new Set(cardsToDraw.map((card) => card.instanceId));
+            setAnimatingCardIds(newAnimatingIds);
+            
+            // Process end turn (this adds cards to game state)
+            handleEndTurn();
+            
+            // Then start draw animations (cards are hidden by animatingCardIds)
             handleDrawCardsAnimated(cardsToDraw, () => {
-              handleEndTurn();
               setIsAnimating(false);
             });
           } else {
@@ -499,12 +525,20 @@ function GameBoard({
         discardRef.current!,
         () => {
           completedAnimations++;
-          // When all discard animations are done, animate drawing new cards
+          // When all discard animations are done, process end turn then animate drawing
           if (completedAnimations === totalCards) {
             setAnimatingCardIds(new Set()); // Clear animating card IDs
+            
             if (cardsToDraw && cardsToDraw.length > 0) {
+              // Add new cards to animating state BEFORE processing end turn
+              const newAnimatingIds = new Set(cardsToDraw.map((card) => card.instanceId));
+              setAnimatingCardIds(newAnimatingIds);
+              
+              // Process end turn (this adds cards to game state)
+              handleEndTurn();
+              
+              // Then start draw animations (cards are hidden by animatingCardIds)
               handleDrawCardsAnimated(cardsToDraw, () => {
-                handleEndTurn();
                 setIsAnimating(false);
               });
             } else {
