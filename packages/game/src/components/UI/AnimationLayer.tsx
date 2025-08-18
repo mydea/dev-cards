@@ -1,10 +1,4 @@
-import {
-  useState,
-  useCallback,
-  useRef,
-  forwardRef,
-  useImperativeHandle,
-} from 'react';
+import { useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { CardInstance } from '@dev-cards/data';
 import Card from '../Card/Card';

@@ -12,6 +12,7 @@ import ResourceDisplay from '../UI/ResourceDisplay';
 import GameActions from '../UI/GameActions';
 import ParticleEffect from '../UI/ParticleEffect';
 import AnimationLayer, { type AnimationLayerRef } from '../UI/AnimationLayer';
+import Pile from '../UI/Pile';
 import Hand from '../Hand/Hand';
 import styles from './GameBoard.module.css';
 
@@ -658,26 +659,6 @@ function GameBoard({
     },
   };
 
-  const pileVariants = {
-    initial: { opacity: 0, scale: 0.9, y: 20 },
-    animate: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 25,
-      },
-    },
-    tap: { scale: 0.95 },
-    hover: {
-      scale: 1.05,
-      y: -4,
-      transition: { duration: 0.2 },
-    },
-  };
-
   return (
     <AnimationLayer ref={animationLayerRef}>
       <motion.div
@@ -705,95 +686,23 @@ function GameBoard({
               },
             }}
           >
-            <motion.div
-              className={styles.pile}
-              variants={pileVariants}
-              whileHover="hover"
-              whileTap="tap"
-            >
-              <motion.div
-                ref={deckRef}
-                className={styles.pileCard}
-                data-type="deck"
-                animate={{
-                  boxShadow:
-                    gameState.piles.deck.length > 0
-                      ? '0 4px 8px rgba(0, 0, 0, 0.1), 0 0 20px rgba(59, 130, 246, 0.3)'
-                      : '0 2px 4px rgba(0, 0, 0, 0.05)',
-                }}
-              >
-                <div className={styles.pileLabel}>Draw Pile</div>
-                <motion.div
-                  className={styles.pileCount}
-                  key={`deck-${gameState.piles.deck.length}`}
-                  initial={{ scale: 1.2, color: '#3b82f6' }}
-                  animate={{ scale: 1, color: 'inherit' }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {gameState.piles.deck.length}
-                </motion.div>
-              </motion.div>
-            </motion.div>
+            <Pile
+              ref={deckRef}
+              type="deck"
+              cardCount={gameState.piles.deck.length}
+            />
 
-            <motion.div
-              className={styles.pile}
-              variants={pileVariants}
-              whileHover="hover"
-              whileTap="tap"
-            >
-              <motion.div
-                ref={discardRef}
-                className={styles.pileCard}
-                data-type="discard"
-                animate={{
-                  boxShadow:
-                    gameState.piles.discard.length > 0
-                      ? '0 4px 8px rgba(0, 0, 0, 0.1), 0 0 20px rgba(168, 85, 247, 0.3)'
-                      : '0 2px 4px rgba(0, 0, 0, 0.05)',
-                }}
-              >
-                <div className={styles.pileLabel}>Discard</div>
-                <motion.div
-                  className={styles.pileCount}
-                  key={`discard-${gameState.piles.discard.length}`}
-                  initial={{ scale: 1.2, color: '#a855f7' }}
-                  animate={{ scale: 1, color: 'inherit' }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {gameState.piles.discard.length}
-                </motion.div>
-              </motion.div>
-            </motion.div>
+            <Pile
+              ref={discardRef}
+              type="discard"
+              cardCount={gameState.piles.discard.length}
+            />
 
-            <motion.div
-              className={styles.pile}
-              variants={pileVariants}
-              whileHover="hover"
-              whileTap="tap"
-            >
-              <motion.div
-                ref={graveyardRef}
-                className={styles.pileCard}
-                data-type="graveyard"
-                animate={{
-                  boxShadow:
-                    gameState.piles.graveyard.length > 0
-                      ? '0 4px 8px rgba(0, 0, 0, 0.1), 0 0 20px rgba(239, 68, 68, 0.3)'
-                      : '0 2px 4px rgba(0, 0, 0, 0.05)',
-                }}
-              >
-                <div className={styles.pileLabel}>Graveyard</div>
-                <motion.div
-                  className={styles.pileCount}
-                  key={`graveyard-${gameState.piles.graveyard.length}`}
-                  initial={{ scale: 1.2, color: '#ef4444' }}
-                  animate={{ scale: 1, color: 'inherit' }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {gameState.piles.graveyard.length}
-                </motion.div>
-              </motion.div>
-            </motion.div>
+            <Pile
+              ref={graveyardRef}
+              type="graveyard"
+              cardCount={gameState.piles.graveyard.length}
+            />
           </motion.div>
 
           <motion.div className={styles.handArea} variants={sectionVariants}>
