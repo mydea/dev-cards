@@ -1,0 +1,11 @@
+{
+  "name": "@dev-cards",
+  "version": "1.0.0",
+  "description": "A game about fixing bugs",
+  "author": "Francesco Gringl-Novy",
+  "license": "MIT",
+  "volta": {
+    "node": "24.6.0",
+    "pnpm": "10.14.0"
+  }
+}
