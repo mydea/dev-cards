@@ -65,7 +65,7 @@ function ResourceDisplay({ gameState }: ResourceDisplayProps) {
 
       return () => clearTimeout(timer);
     }
-  }, [progress, bugs, technicalDebt, productivityPoints, prevValues]);
+  }, [progress, bugs, technicalDebt, productivityPoints]);
 
   const getProgressColor = (value: number) => {
     if (value >= 75) return 'high';
