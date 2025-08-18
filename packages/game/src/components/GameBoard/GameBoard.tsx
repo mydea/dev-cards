@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { GameState, GameEngine, CardInstance } from '@dev-cards/data';
+import type { GameState, GameEngine, CardInstance, EffectResolution } from '@dev-cards/data';
 import { checkWinCondition, checkLoseCondition } from '@dev-cards/data';
 import GameInfo from '../UI/GameInfo';
 import ResourceDisplay from '../UI/ResourceDisplay';
@@ -182,8 +182,8 @@ function GameBoard({
 
           if (result.success && result.newState) {
             // Check if any cards were drawn from effects
-            const drawnCards = result.data?.appliedEffects
-              ?.flatMap((effect: any) => effect.drawnCards || [])
+            const drawnCards: CardInstance[] = result.data?.appliedEffects
+              ?.flatMap((effect: EffectResolution) => effect.drawnCards || [])
               .filter(Boolean);
 
             if (drawnCards && drawnCards.length > 0) {
@@ -276,8 +276,8 @@ function GameBoard({
 
           if (result.success && result.newState) {
             // Check if any cards were drawn from effects
-            const drawnCards = result.data?.appliedEffects
-              ?.flatMap((effect: any) => effect.drawnCards || [])
+            const drawnCards: CardInstance[] = result.data?.appliedEffects
+              ?.flatMap((effect: EffectResolution) => effect.drawnCards || [])
               .filter(Boolean);
 
             if (drawnCards && drawnCards.length > 0) {
