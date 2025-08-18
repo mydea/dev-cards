@@ -56,6 +56,10 @@ function GameBoard({
     [cardId: string]: HTMLElement;
   }>({});
 
+  // Prevent double-processing of cards
+  const processedCardsRef = useRef<Set<string>>(new Set());
+  const animationCompletionRef = useRef<Set<string>>(new Set());
+
   const handleCardMount = (cardId: string, element: HTMLElement) => {
     setCardElements((prev) => {
       // Only update if the element is different to prevent unnecessary re-renders
@@ -95,7 +99,14 @@ function GameBoard({
     }
   }, [gameState]);
 
-  const handlePlayCard = (cardInstanceId: string) => {
+  const handlePlayCard = (
+    cardInstanceId: string
+  ): {
+    success: boolean;
+    newState?: GameState;
+    drawnCards?: CardInstance[];
+    error?: string;
+  } => {
     try {
       const result = gameEngine.processAction({
         type: 'PLAY_CARD',
@@ -103,12 +114,26 @@ function GameBoard({
       });
 
       if (result.success && result.newState) {
+        // Update game state immediately
         setGameState(result.newState);
+
+        // Check if any cards were drawn from effects
+        const drawnCards: CardInstance[] = result.data?.appliedEffects
+          ?.flatMap((effect: EffectResolution) => effect.drawnCards || [])
+          .filter(Boolean);
+
+        return {
+          success: true,
+          newState: result.newState,
+          drawnCards: drawnCards.length > 0 ? drawnCards : undefined,
+        };
       } else {
         console.error('Error playing card:', result.error);
+        return { success: false, error: result.error };
       }
     } catch (error) {
       console.error('Error playing card:', error);
+      return { success: false, error: String(error) };
     }
   };
 
@@ -122,6 +147,12 @@ function GameBoard({
       return;
     }
 
+    // Check if this card has already been processed - set guard IMMEDIATELY
+    if (processedCardsRef.current.has(cardInstanceId)) {
+      return;
+    }
+    processedCardsRef.current.add(cardInstanceId);
+
     const cardInstance = gameState.piles.hand.find(
       (card) => card.instanceId === cardInstanceId
     );
@@ -132,204 +163,128 @@ function GameBoard({
       return;
     }
 
-    // Prepare the card play to see if it has discard requirements
+    // Prepare the card play to see if it has discard requirements (before processing)
     const preparation = gameEngine.prepareCardPlay(cardInstanceId);
 
-    if (!preparation.success) {
-      console.error('Card preparation failed:', preparation.error);
-      return;
+    // Process the card play immediately (game logic)
+    const playResult = handlePlayCard(cardInstanceId);
+
+    if (!playResult.success) {
+      return; // Stop if card play failed
     }
 
-    // Check if there are cards to discard as requirements
-    const hasDiscardRequirements =
-      preparation.cardsToDiscard && preparation.cardsToDiscard.length > 0;
-
-    if (hasDiscardRequirements) {
-      // Handle card with discard requirements
-      handleCardWithDiscardRequirements(
-        cardInstanceId,
-        cardElement,
-        preparation.cardsToDiscard || []
-      );
-    } else {
-      // Handle normal card without discard requirements
-      handleNormalCardAnimation(cardInstanceId, cardElement);
-    }
-  };
-
-  // Handle normal card animation (no discard requirements)
-  const handleNormalCardAnimation = (
-    cardInstanceId: string,
-    cardElement: HTMLElement
-  ) => {
-    const cardInstance = gameState.piles.hand.find(
-      (card) => card.instanceId === cardInstanceId
-    );
-
-    if (!cardInstance) return;
-
-    // Start animation state
+    // Start visual-only animation
     setIsAnimating(true);
     setAnimatingCardIds((prev) => new Set(prev).add(cardInstanceId));
 
-    // Trigger the animation first
+    if (
+      preparation.success &&
+      preparation.cardsToDiscard &&
+      preparation.cardsToDiscard.length > 0
+    ) {
+      // Animate discard requirements (visual only)
+      handleVisualDiscardAnimation(
+        cardElement,
+        preparation.cardsToDiscard,
+        cardInstanceId
+      );
+    } else {
+      // Simple card to graveyard animation (visual only)
+      handleVisualCardToGraveyardAnimation(cardElement, cardInstanceId);
+    }
+
+    // Handle draw animations if any cards were drawn
+    if (playResult.drawnCards && playResult.drawnCards.length > 0) {
+      const drawnCardIds: string[] = playResult.drawnCards.map(
+        (card: any) => card.instanceId as string
+      );
+      setAnimatingCardIds(
+        (prev) => new Set<string>([...prev, ...drawnCardIds])
+      );
+
+      handleDrawCardsAnimated(playResult.drawnCards, () => {
+        // Draw animations complete - don't need to do anything here
+        // The individual card animations will handle their own cleanup
+      });
+    }
+  };
+
+  // Visual-only animation for simple card to graveyard
+  const handleVisualCardToGraveyardAnimation = (
+    cardElement: HTMLElement,
+    cardInstanceId: string
+  ) => {
+    // Find the card instance in the updated game state (it should be in graveyard now)
+    const cardInstance = gameState.piles.graveyard.find(
+      (card) => card.instanceId === cardInstanceId
+    );
+
+    if (!cardInstance) {
+      // Card not found, just clean up animation state
+      setIsAnimating(false);
+      setAnimatingCardIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(cardInstanceId);
+        return newSet;
+      });
+      return;
+    }
+
+    // Pure visual animation - no game logic
     animationLayerRef.current!.animateCardToGraveyard(
       cardInstance,
       cardElement,
       graveyardRef.current!,
       () => {
-        // After animation completes, process the actual card action
-        try {
-          const result = gameEngine.processAction({
-            type: 'PLAY_CARD',
-            cardInstanceId,
-          });
-
-          if (result.success && result.newState) {
-            // Check if any cards were drawn from effects
-            const drawnCards: CardInstance[] = result.data?.appliedEffects
-              ?.flatMap((effect: EffectResolution) => effect.drawnCards || [])
-              .filter(Boolean);
-
-            if (drawnCards && drawnCards.length > 0) {
-              // Add drawn cards to animating state BEFORE updating game state
-              const drawnCardIds = new Set(
-                drawnCards.map((card) => card.instanceId)
-              );
-              setAnimatingCardIds(
-                (prev) => new Set([...prev, ...drawnCardIds])
-              );
-
-              // Update game state (cards are now in hand but hidden by animating state)
-              setGameState(result.newState);
-
-              // Animate the drawn cards
-              handleDrawCardsAnimated(drawnCards, () => {
-                setIsAnimating(false);
-                setAnimatingCardIds((prev) => {
-                  const newSet = new Set(prev);
-                  newSet.delete(cardInstanceId);
-                  return newSet;
-                });
-              });
-            } else {
-              // No cards drawn, just update state and finish
-              setGameState(result.newState);
-              setIsAnimating(false);
-              setAnimatingCardIds((prev) => {
-                const newSet = new Set(prev);
-                newSet.delete(cardInstanceId);
-                return newSet;
-              });
-            }
-          } else {
-            console.error('Error playing card:', result.error);
-            setIsAnimating(false);
-            setAnimatingCardIds((prev) => {
-              const newSet = new Set(prev);
-              newSet.delete(cardInstanceId);
-              return newSet;
-            });
-          }
-        } catch (error) {
-          console.error('Error playing card:', error);
-          setIsAnimating(false);
-          setAnimatingCardIds((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete(cardInstanceId);
-            return newSet;
-          });
-        }
+        // Animation complete - just clean up UI state
+        setIsAnimating(false);
+        setAnimatingCardIds((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(cardInstanceId);
+          return newSet;
+        });
       }
     );
   };
 
-  // Handle card with discard requirements
-  const handleCardWithDiscardRequirements = (
-    cardInstanceId: string,
+  // Visual-only animation for cards with discard requirements
+  const handleVisualDiscardAnimation = (
     cardElement: HTMLElement,
-    cardsToDiscard: CardInstance[]
+    cardsToDiscard: CardInstance[],
+    mainCardInstanceId: string
   ) => {
-    const cardInstance = gameState.piles.hand.find(
-      (card) => card.instanceId === cardInstanceId
+    // Find the main card in graveyard (game state already updated)
+    const mainCard = gameState.piles.graveyard.find(
+      (card) => card.instanceId === mainCardInstanceId
     );
 
-    if (!cardInstance) return;
-
-    // Start animation state
-    setIsAnimating(true);
-
-    // Mark all cards that will be animated
-    const allAnimatingCards = [
-      cardInstanceId,
-      ...cardsToDiscard.map((c) => c.instanceId),
-    ];
-    setAnimatingCardIds(new Set(allAnimatingCards));
+    if (!mainCard) {
+      setIsAnimating(false);
+      setAnimatingCardIds(new Set());
+      return;
+    }
 
     let completedAnimations = 0;
     const totalAnimations = 1 + cardsToDiscard.length;
 
-    const completeAnimation = () => {
+    const completeVisualAnimation = () => {
       completedAnimations++;
       if (completedAnimations === totalAnimations) {
-        // All animations complete, now process the card
-        try {
-          const result = gameEngine.processAction({
-            type: 'PLAY_CARD',
-            cardInstanceId,
-          });
-
-          if (result.success && result.newState) {
-            // Check if any cards were drawn from effects
-            const drawnCards: CardInstance[] = result.data?.appliedEffects
-              ?.flatMap((effect: EffectResolution) => effect.drawnCards || [])
-              .filter(Boolean);
-
-            if (drawnCards && drawnCards.length > 0) {
-              // Add drawn cards to animating state BEFORE updating game state
-              const drawnCardIds = new Set(
-                drawnCards.map((card) => card.instanceId)
-              );
-              setAnimatingCardIds(
-                (prev) => new Set([...prev, ...drawnCardIds])
-              );
-
-              // Update game state (cards are now in hand but hidden by animating state)
-              setGameState(result.newState);
-
-              // Animate the drawn cards
-              handleDrawCardsAnimated(drawnCards, () => {
-                setIsAnimating(false);
-                setAnimatingCardIds(new Set());
-              });
-            } else {
-              // No cards drawn, just update state and finish
-              setGameState(result.newState);
-              setIsAnimating(false);
-              setAnimatingCardIds(new Set());
-            }
-          } else {
-            console.error('Error playing card:', result.error);
-            setIsAnimating(false);
-            setAnimatingCardIds(new Set());
-          }
-        } catch (error) {
-          console.error('Error playing card:', error);
-          setIsAnimating(false);
-          setAnimatingCardIds(new Set());
-        }
+        // All visual animations complete
+        setIsAnimating(false);
+        setAnimatingCardIds(new Set());
       }
     };
 
-    // Animate the main card to graveyard
+    // Animate main card to graveyard (visual only)
     animationLayerRef.current!.animateCardToGraveyard(
-      cardInstance,
+      mainCard,
       cardElement,
       graveyardRef.current!,
-      completeAnimation
+      completeVisualAnimation
     );
 
-    // Animate requirement discards to discard pile
+    // Animate discarded cards to discard pile (visual only)
     cardsToDiscard.forEach((discardCard) => {
       const discardElement = cardElements[discardCard.instanceId];
       if (discardElement && discardRef.current) {
@@ -337,16 +292,20 @@ function GameBoard({
           discardCard,
           discardElement,
           discardRef.current,
-          completeAnimation
+          completeVisualAnimation
         );
       } else {
-        completeAnimation();
+        completeVisualAnimation();
       }
     });
   };
 
   const handleEndTurn = () => {
     try {
+      // Clear processing guards for new turn
+      processedCardsRef.current = new Set();
+      animationCompletionRef.current = new Set();
+
       const result = gameEngine.processAction({ type: 'END_TURN' });
 
       if (result.success && result.newState) {
@@ -413,12 +372,16 @@ function GameBoard({
           targetElement,
           () => completeDrawAnimation(cardInstance.instanceId)
         );
-      }, index * 50); // 50ms stagger between cards - faster than before
+      }, index * 100); // 100ms stagger between cards
     });
   };
 
   // Animated end turn handler
   const handleEndTurnAnimated = () => {
+    // Clear processing guards for new turn
+    processedCardsRef.current = new Set();
+    animationCompletionRef.current = new Set();
+
     // Prepare the end turn to get cards to draw
     const preparation = gameEngine.prepareEndTurn();
     if (!preparation.success) {
@@ -685,6 +648,10 @@ function GameBoard({
       won: false,
       message: '',
     });
+
+    // Clear processing guards
+    processedCardsRef.current = new Set();
+    animationCompletionRef.current = new Set();
   };
 
   // Animation variants
