@@ -346,19 +346,19 @@ export const CARD_COFFEE_BREAK = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 5,
+      value: 3,
     },
   ],
   effects: [
     {
       type: EFFECT_TYPE_SHUFFLE_DISCARD_TO_DECK,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 3,
+      value: 5,
     },
     {
       type: EFFECT_TYPE_DRAW_CARDS,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 1,
+      value: 2,
     },
   ],
 } as const satisfies Card;
