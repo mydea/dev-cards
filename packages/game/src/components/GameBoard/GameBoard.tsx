@@ -51,7 +51,7 @@ function GameBoard({
       resolvedValue: number;
     }>;
     cardInstanceId?: string;
-    cardsToDiscard?: any[];
+    cardsToDiscard?: CardInstance[];
   }>({
     effects: [],
   });
@@ -332,8 +332,6 @@ function GameBoard({
       console.error('No card instance ID in coin flip queue');
       return;
     }
-
-    console.log('All coin flips complete, processing card:', cardInstanceId);
 
     // Clear the queue
     setCoinFlipQueue({

@@ -65,11 +65,7 @@ interface CoinFlipOverlayProps {
 const COIN_FLIP_DURATION = 3000;
 const RESULT_DISPLAY_DURATION = 3000;
 
-function CoinFlipOverlay({
-  queue,
-  onAllComplete,
-  cardInstanceId,
-}: CoinFlipOverlayProps) {
+function CoinFlipOverlay({ queue, onAllComplete }: CoinFlipOverlayProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
   const [completedResults, setCompletedResults] = useState<CoinFlipQueueItem[]>(
@@ -80,7 +76,7 @@ function CoinFlipOverlay({
   const currentEffect = queue[currentIndex];
 
   // Handle individual coin flip completion
-  const handleSingleCoinFlipComplete = (result: 'heads' | 'tails') => {
+  const handleSingleCoinFlipComplete = () => {
     const updatedResults = [...completedResults, currentEffect];
     setCompletedResults(updatedResults);
 
@@ -90,7 +86,6 @@ function CoinFlipOverlay({
       setIsFlipping(false); // Reset for next flip
     } else {
       // All coin flips complete
-      console.log('All coin flips complete for card:', cardInstanceId);
       onAllComplete(updatedResults);
 
       // Reset state
@@ -113,27 +108,33 @@ function CoinFlipOverlay({
     }
 
     // Else, complete the flip
-    handleSingleCoinFlipComplete(currentEffect.result);
+    handleSingleCoinFlipComplete();
   };
 
   // Start animation when a new effect is active
   useEffect(() => {
     if (isVisible && currentEffect && !isFlipping) {
-      console.log(
-        `Starting coin flip ${currentIndex + 1}/${queue.length} for effect:`,
-        currentEffect.effect.type
-      );
       setIsFlipping(true);
 
-      // Complete the animation after flip duration
-      setTimeout(() => {
-        setIsFlipping(false);
+      let timers: ReturnType<typeof setTimeout>[] = [];
 
-        // Show result for designated time, then complete
+      // Complete the animation after flip duration
+      timers.push(
         setTimeout(() => {
-          handleSingleCoinFlipComplete(currentEffect.result);
-        }, RESULT_DISPLAY_DURATION);
-      }, COIN_FLIP_DURATION);
+          setIsFlipping(false);
+
+          // Show result for designated time, then complete
+          timers.push(
+            setTimeout(() => {
+              handleSingleCoinFlipComplete();
+            }, RESULT_DISPLAY_DURATION)
+          );
+        }, COIN_FLIP_DURATION)
+      );
+
+      return () => {
+        timers.forEach((timer) => clearTimeout(timer));
+      };
     }
   }, [currentIndex, isVisible, currentEffect]);
 
