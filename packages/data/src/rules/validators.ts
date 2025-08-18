@@ -3,7 +3,10 @@ import type { GameState, CardInstance, CardValidation } from '../types';
 /**
  * Validates whether a card can be played in the current game state
  */
-export function validateCardPlay(_card: CardInstance, _gameState: GameState): CardValidation {
+export function validateCardPlay(
+  _card: CardInstance,
+  _gameState: GameState
+): CardValidation {
   // TODO: Implement card validation logic
   return {
     canPlay: false,

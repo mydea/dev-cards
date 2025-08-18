@@ -1,5 +1,12 @@
 import type { EffectType, RequirementType } from './enums';
-import { RANDOM_EFFECT_TYPE, REQUIREMENT_TYPE } from './enums';
+import {
+  RANDOM_EFFECT_TYPE_STATIC,
+  RANDOM_EFFECT_TYPE_COIN_FLIP,
+  RANDOM_EFFECT_TYPE_DICE_ROLL,
+  REQUIREMENT_TYPE_SPEND_PP,
+  REQUIREMENT_TYPE_DISCARD_CARDS,
+  REQUIREMENT_TYPE_SEND_TO_GRAVEYARD,
+} from './enums';
 
 /**
  * Base interface for all card effects
@@ -13,7 +20,7 @@ export interface BaseEffect {
  * Effect with a static value
  */
 export interface StaticEffect extends BaseEffect {
-  randomType: typeof RANDOM_EFFECT_TYPE.STATIC;
+  randomType: typeof RANDOM_EFFECT_TYPE_STATIC;
   value: number;
 }
 
@@ -21,7 +28,7 @@ export interface StaticEffect extends BaseEffect {
  * Effect determined by a coin flip
  */
 export interface CoinFlipEffect extends BaseEffect {
-  randomType: typeof RANDOM_EFFECT_TYPE.COIN_FLIP;
+  randomType: typeof RANDOM_EFFECT_TYPE_COIN_FLIP;
   headsValue: number;
   tailsValue: number;
 }
@@ -30,7 +37,7 @@ export interface CoinFlipEffect extends BaseEffect {
  * Effect determined by a dice roll (1-6)
  */
 export interface DiceRollEffect extends BaseEffect {
-  randomType: typeof RANDOM_EFFECT_TYPE.DICE_ROLL;
+  randomType: typeof RANDOM_EFFECT_TYPE_DICE_ROLL;
   diceValues: [number, number, number, number, number, number]; // Values for 1,2,3,4,5,6
 }
 
@@ -52,27 +59,30 @@ export interface BaseRequirement {
  * Requirement to spend Productivity Points
  */
 export interface SpendPPRequirement extends BaseRequirement {
-  type: typeof REQUIREMENT_TYPE.SPEND_PP;
+  type: typeof REQUIREMENT_TYPE_SPEND_PP;
 }
 
 /**
  * Requirement to discard cards from hand
  */
 export interface DiscardCardsRequirement extends BaseRequirement {
-  type: typeof REQUIREMENT_TYPE.DISCARD_CARDS;
+  type: typeof REQUIREMENT_TYPE_DISCARD_CARDS;
 }
 
 /**
  * Requirement to send cards from hand to graveyard
  */
 export interface SendToGraveyardRequirement extends BaseRequirement {
-  type: typeof REQUIREMENT_TYPE.SEND_TO_GRAVEYARD;
+  type: typeof REQUIREMENT_TYPE_SEND_TO_GRAVEYARD;
 }
 
 /**
  * Union type for all possible requirements
  */
-export type CardRequirement = SpendPPRequirement | DiscardCardsRequirement | SendToGraveyardRequirement;
+export type CardRequirement =
+  | SpendPPRequirement
+  | DiscardCardsRequirement
+  | SendToGraveyardRequirement;
 
 /**
  * Result of resolving an effect (includes random outcome if applicable)

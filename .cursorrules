@@ -6,7 +6,7 @@
 - Never use npm or yarn in this project
 
 ## TypeScript Guidelines
-- Avoid TypeScript enums - use const assertions and union types instead
+- Avoid TypeScript enums - use string constants and unions of them instead.
 - Use erasable syntax only in TypeScript configurations (no runtime transforms)
 - Write ESM code only - no CommonJS output needed
 - Prefer `type` over `interface` for simple type definitions

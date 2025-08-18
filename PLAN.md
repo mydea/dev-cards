@@ -7,6 +7,7 @@ Dev-cards is a single-player browser-based card game where players manage develo
 ## Architecture
 
 ### Workspace Structure
+
 ```
 dev-cards/
 ├── packages/
@@ -23,6 +24,7 @@ dev-cards/
 ### Technology Stack
 
 **Frontend (@dev-cards/game):**
+
 - React 18 with TypeScript
 - Vite for build tooling
 - CSS Modules for styling
@@ -31,18 +33,21 @@ dev-cards/
 - React Spring for physics-based animations
 
 **Data Layer (@dev-cards/data):**
+
 - TypeScript definitions for game entities
 - Card definitions and effects
 - Game logic and rules engine
 - Asset management (images, icons)
 
 **API (@dev-cards/api):**
+
 - Cloudflare Workers
 - Cloudflare D1 database
 - Hono.js for routing
 - TypeScript
 
 **Deployment:**
+
 - Cloudflare Pages for frontend
 - Cloudflare Workers for API
 - Cloudflare D1 for database
@@ -52,11 +57,13 @@ dev-cards/
 ### Phase 1: Project Setup & Data Layer
 
 **Objectives:**
+
 - Set up pnpm workspace
 - Create shared data package
 - Define type system and game entities
 
 **Tasks:**
+
 1. Initialize pnpm workspace with proper configuration
 2. Create `@dev-cards/data` package
 3. Define TypeScript interfaces for:
@@ -73,6 +80,7 @@ dev-cards/
 6. Add unit tests for core game logic
 
 **Deliverables:**
+
 - Working `@dev-cards/data` package
 - Complete type definitions
 - Game rules engine with tests
@@ -81,11 +89,13 @@ dev-cards/
 ### Phase 2: Core Game Engine
 
 **Objectives:**
+
 - Implement game state management
 - Create game loop and turn mechanics
 - Build card effect system
 
 **Tasks:**
+
 1. Create game state manager using Zustand
 2. Implement core game mechanics:
    - Deck shuffling and card drawing
@@ -98,6 +108,7 @@ dev-cards/
 6. Create comprehensive test suite
 
 **Deliverables:**
+
 - Functional game engine
 - State management system
 - Complete card effect implementation
@@ -106,11 +117,13 @@ dev-cards/
 ### Phase 3: UI Foundation & Card Components
 
 **Objectives:**
+
 - Create React app structure
 - Build basic UI components
 - Implement card rendering system
 
 **Tasks:**
+
 1. Set up `@dev-cards/game` React application
 2. Create UI component library:
    - Card component with all visual elements
@@ -122,6 +135,7 @@ dev-cards/
 5. Add accessibility features
 
 **Deliverables:**
+
 - React application structure
 - Complete card component
 - Basic game UI layout
@@ -130,11 +144,13 @@ dev-cards/
 ### Phase 4: Card Animations & Interactions
 
 **Objectives:**
+
 - Implement realistic card animations
 - Create engaging user interactions
 - Polish visual feedback
 
 **Tasks:**
+
 1. Implement card animations using Framer Motion:
    - Card drawing from deck
    - Card flip animations
@@ -150,6 +166,7 @@ dev-cards/
 5. Add particle effects for special moments (winning, etc.)
 
 **Deliverables:**
+
 - Fully animated card system
 - Polished user interactions
 - Visual feedback system
@@ -157,11 +174,13 @@ dev-cards/
 ### Phase 5: Game Flow & Polish
 
 **Objectives:**
+
 - Complete game experience
 - Add menus and game flow
 - Implement scoring system
 
 **Tasks:**
+
 1. Create game flow components:
    - Main menu
    - Game setup screen
@@ -174,6 +193,7 @@ dev-cards/
 6. Cross-browser testing
 
 **Deliverables:**
+
 - Complete game experience
 - Scoring system
 - Performance optimizations
@@ -181,11 +201,13 @@ dev-cards/
 ### Phase 6: API & Leaderboard
 
 **Objectives:**
+
 - Build Cloudflare Worker API
 - Implement score submission and leaderboard
 - Deploy complete system
 
 **Tasks:**
+
 1. Set up `@dev-cards/api` Cloudflare Worker
 2. Create D1 database schema:
    - Players table
@@ -202,6 +224,7 @@ dev-cards/
 8. Deploy frontend to Cloudflare Pages
 
 **Deliverables:**
+
 - Working API with database
 - Leaderboard functionality
 - Fully deployed application
@@ -209,22 +232,26 @@ dev-cards/
 ## Technical Considerations
 
 ### Card System Architecture
+
 - **Card Effects**: Use a command pattern for effect execution
 - **Requirements**: Implement as validator functions
 - **Animation Queue**: Ensure smooth visual feedback for rapid actions
 - **State Immutability**: Use immutable updates for reliable state management
 
 ### Performance Optimization
+
 - **Bundle Splitting**: Lazy load card images and animations
 - **Memory Management**: Clean up animation resources
 - **Caching**: Cache card data and images effectively
 
 ### Security & Anti-Cheat
+
 - **Score Validation**: Server-side validation of submitted scores
 - **Rate Limiting**: Prevent score spam
 - **Game State Verification**: Basic checks for impossible scores
 
 ### Accessibility
+
 - **Keyboard Navigation**: Full game playable with keyboard
 - **Screen Reader Support**: Proper ARIA labels and descriptions
 - **Color Accessibility**: High contrast and colorblind-friendly design
@@ -233,6 +260,7 @@ dev-cards/
 ## File Structure Details
 
 ### @dev-cards/data
+
 ```
 packages/data/
 ├── src/
@@ -254,6 +282,7 @@ packages/data/
 ```
 
 ### @dev-cards/game
+
 ```
 packages/game/
 ├── src/
@@ -273,6 +302,7 @@ packages/game/
 ```
 
 ### @dev-cards/api
+
 ```
 packages/api/
 ├── src/
