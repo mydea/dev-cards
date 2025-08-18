@@ -146,4 +146,3 @@ You can start with placeholder images using services like:
 
 - `https://via.placeholder.com/800x640/0066cc/ffffff?text=Card+Name`
 - `https://picsum.photos/800/640` (random images)
-
