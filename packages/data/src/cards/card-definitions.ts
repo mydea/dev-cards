@@ -39,6 +39,11 @@ export const CARD_QUICK_BUG_FIX = {
       randomType: RANDOM_EFFECT_TYPE_STATIC,
       value: 1,
     },
+    {
+      type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 1,
+    },
   ],
 } as const satisfies Card;
 
@@ -95,6 +100,11 @@ export const CARD_IMPLEMENT_FEATURE = {
       randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
       headsValue: 0,
       tailsValue: 1,
+    },
+    {
+      type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 2,
     },
   ],
 } as const satisfies Card;
@@ -218,6 +228,12 @@ export const CARD_STACK_OVERFLOW = {
       headsValue: 4,
       tailsValue: 1,
     },
+    {
+      type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
+      randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
+      headsValue: 0,
+      tailsValue: 2,
+    },
   ],
 } as const satisfies Card;
 
@@ -253,7 +269,7 @@ export const CARD_ALL_NIGHTER = {
     {
       type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 3,
+      value: 4,
     },
   ],
 } as const satisfies Card;
@@ -314,7 +330,7 @@ export const CARD_EMERGENCY_HOTFIX = {
     {
       type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 2,
+      value: 3,
     },
   ],
 } as const satisfies Card;
@@ -374,6 +390,12 @@ export const CARD_DATABASE_MIGRATION = {
       headsValue: 0,
       tailsValue: 2,
     },
+    {
+      type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
+      randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
+      headsValue: 1,
+      tailsValue: 3,
+    },
   ],
 } as const satisfies Card;
 
@@ -402,6 +424,12 @@ export const CARD_RUBBER_DUCK = {
       type: EFFECT_TYPE_ADD_PROGRESS,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
       value: 1,
+    },
+    {
+      type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
+      randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
+      headsValue: 0,
+      tailsValue: 1,
     },
   ],
 } as const satisfies Card;
@@ -489,7 +517,7 @@ export const CARD_RUSH_IMPLEMENTATION = {
     {
       type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 2,
+      value: 3,
     },
   ],
 } as const satisfies Card;
@@ -517,7 +545,7 @@ export const CARD_COPY_PASTE_SOLUTION = {
     {
       type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 1,
+      value: 2,
     },
   ],
 } as const satisfies Card;
