@@ -153,6 +153,112 @@ function GameBoard({
     }
   };
 
+  // Animated end turn handler
+  const handleEndTurnAnimated = () => {
+    console.log('handleEndTurnAnimated called');
+    console.log('Cards in hand:', gameState.piles.hand.length);
+    console.log('Tracked card elements:', Object.keys(cardElements));
+
+    if (gameState.piles.hand.length === 0) {
+      console.log('No cards in hand - immediate end turn');
+      handleEndTurn();
+      return;
+    }
+
+    // Get card elements for cards in hand
+    const handCardElements = gameState.piles.hand
+      .map((card) => cardElements[card.instanceId])
+      .filter(Boolean);
+
+    console.log(
+      'Found',
+      handCardElements.length,
+      'card elements for end turn animation'
+    );
+
+    if (handCardElements.length === 0) {
+      console.log('No card elements found - immediate end turn');
+      handleEndTurn();
+      return;
+    }
+
+    // Trigger animation for end turn (same as discard but for end turn)
+    handleDiscardAllCardsWithAnimationForEndTurn(handCardElements);
+  };
+
+  // Animated discard handler for end turn (same logic as tech debt reduction)
+  const handleDiscardAllCardsWithAnimationForEndTurn = (
+    elementsToAnimate: HTMLElement[]
+  ) => {
+    const cardsToDiscard = [...gameState.piles.hand];
+
+    console.log(
+      'Starting end turn discard animation for',
+      cardsToDiscard.length,
+      'cards'
+    );
+    console.log(
+      'Card elements received for end turn:',
+      elementsToAnimate.length
+    );
+
+    if (
+      cardsToDiscard.length === 0 ||
+      !animationLayerRef.current ||
+      !discardRef.current
+    ) {
+      console.log('Fallback to immediate end turn action');
+      // Fallback to immediate action if no cards or animation isn't available
+      handleEndTurn();
+      return;
+    }
+
+    // Animate all cards to discard pile with staggered timing
+    let completedAnimations = 0;
+    const totalCards = cardsToDiscard.length;
+
+    cardsToDiscard.forEach((cardInstance, index) => {
+      const cardElement = elementsToAnimate[index];
+      console.log(`End Turn - Card ${index}: element exists:`, !!cardElement);
+
+      if (!cardElement) {
+        completedAnimations++;
+        if (completedAnimations === totalCards) {
+          console.log(
+            'All end turn animations complete (no elements) - processing game logic'
+          );
+          handleEndTurn();
+        }
+        return;
+      }
+
+      // Stagger the animation start times
+      setTimeout(() => {
+        console.log(
+          `Starting end turn animation ${index} for card ${cardInstance.instanceId}`
+        );
+        animationLayerRef.current?.animateCardToDiscard(
+          cardInstance,
+          cardElement,
+          discardRef.current!,
+          () => {
+            completedAnimations++;
+            console.log(
+              `End turn animation ${index} complete - ${completedAnimations}/${totalCards}`
+            );
+            // When all animations are done, process the end turn action
+            if (completedAnimations === totalCards) {
+              console.log(
+                'All end turn animations complete - processing game logic'
+              );
+              handleEndTurn();
+            }
+          }
+        );
+      }, index * 100); // 100ms stagger between each card
+    });
+  };
+
   const handleTechnicalDebtReduction = () => {
     try {
       const result = gameEngine.processAction({
@@ -467,7 +573,7 @@ function GameBoard({
 
           <motion.div className={styles.actions} variants={sectionVariants}>
             <GameActions
-              onEndTurn={handleEndTurn}
+              onEndTurn={handleEndTurnAnimated}
               onTechnicalDebtReduction={handleTechnicalDebtReductionAnimated}
               gameState={gameState}
               disabled={gameOver.isGameOver}
