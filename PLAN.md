@@ -104,8 +104,7 @@ dev-cards/
    - Round progression
 3. Build card effect resolution system
 4. Implement game event system for animations/UI updates
-5. Add game persistence (localStorage for now)
-6. Create comprehensive test suite
+5. Create comprehensive test suite
 
 **Deliverables:**
 
