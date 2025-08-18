@@ -111,6 +111,11 @@ function GameBoard({
     cardInstanceId: string,
     cardElement: HTMLElement
   ) => {
+    // Check if this card is already being animated to prevent double-processing
+    if (animatingCardIds.has(cardInstanceId)) {
+      return;
+    }
+
     const cardInstance = gameState.piles.hand.find(
       (card) => card.instanceId === cardInstanceId
     );
@@ -125,6 +130,9 @@ function GameBoard({
     setIsAnimating(true);
     setAnimatingCardIds((prev) => new Set(prev).add(cardInstanceId));
 
+    // Store the game state at animation start to avoid stale closure issues
+    const gameStateAtAnimationStart = gameState;
+
     // Trigger the animation first
     animationLayerRef.current.animateCardToGraveyard(
       cardInstance,
@@ -132,13 +140,21 @@ function GameBoard({
       graveyardRef.current,
       () => {
         // After animation completes, process the actual card action
+        // Check if the card still exists in the original state we captured
+        const cardStillExists = gameStateAtAnimationStart.piles.hand.find(
+          (card) => card.instanceId === cardInstanceId
+        );
+
         setIsAnimating(false);
         setAnimatingCardIds((prev) => {
           const newSet = new Set(prev);
           newSet.delete(cardInstanceId);
           return newSet;
         });
-        handlePlayCard(cardInstanceId);
+
+        if (cardStillExists) {
+          handlePlayCard(cardInstanceId);
+        }
       }
     );
   };
