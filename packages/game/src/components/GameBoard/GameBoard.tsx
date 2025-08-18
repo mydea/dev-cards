@@ -6,6 +6,7 @@ import type {
   CardInstance,
   EffectResolution,
   CardEffect,
+  CoinFlipEffect,
 } from '@dev-cards/data';
 import { checkWinCondition, checkLoseCondition } from '@dev-cards/data';
 import GameInfo from '../UI/GameInfo';
@@ -48,7 +49,7 @@ function GameBoard({
   const [coinFlipState, setCoinFlipState] = useState<{
     isVisible: boolean;
     effects: Array<{
-      effect: CardEffect;
+      effect: CoinFlipEffect;
       result: 'heads' | 'tails';
       resolvedValue: number;
     }>;
