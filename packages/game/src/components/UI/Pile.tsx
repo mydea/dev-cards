@@ -103,39 +103,34 @@ const Pile = forwardRef<HTMLDivElement, PileProps>(
             } as React.CSSProperties
           }
         >
-          {/* Render one div per card - actual representation of pile size */}
-          {Array.from({ length: cardCount }, (_, index) => {
-            const isTopCard = index === cardCount - 1;
+          {/* Always render the top card with content - fixed position */}
+          <div className={styles.topCard}>
+            <div className={styles.pileLabel}>{getLabel(type)}</div>
+            <motion.div
+              className={styles.pileCount}
+              key={`${type}-${cardCount}`}
+              initial={{ scale: 1.2 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              {cardCount}
+            </motion.div>
+          </div>
 
-            return (
+          {/* Render stack cards below the top card - one per card in pile */}
+          {cardCount > 0 &&
+            Array.from({ length: cardCount }, (_, index) => (
               <div
                 key={index}
-                className={isTopCard ? styles.topCard : styles.stackCard}
+                className={styles.stackCard}
                 style={
                   {
                     '--card-index': index,
-                    zIndex: index,
+                    zIndex: -(index + 1), // Stack cards go behind the top card
                   } as React.CSSProperties
                 }
-              >
-                {/* Only show content on the top card */}
-                {isTopCard && (
-                  <>
-                    <div className={styles.pileLabel}>{getLabel(type)}</div>
-                    <motion.div
-                      className={styles.pileCount}
-                      key={`${type}-${cardCount}`}
-                      initial={{ scale: 1.2 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      {cardCount}
-                    </motion.div>
-                  </>
-                )}
-              </div>
-            );
-          })}
+              />
+            ))}
         </motion.div>
       </motion.div>
     );
