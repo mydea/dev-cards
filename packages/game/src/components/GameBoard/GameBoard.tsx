@@ -36,6 +36,9 @@ function GameBoard({
 
   const [showParticles, setShowParticles] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [animatingCardIds, setAnimatingCardIds] = useState<Set<string>>(
+    new Set()
+  );
 
   // Animation refs
   const animationLayerRef = useRef<AnimationLayerRef>(null);
@@ -120,6 +123,7 @@ function GameBoard({
 
     // Start animation state
     setIsAnimating(true);
+    setAnimatingCardIds((prev) => new Set(prev).add(cardInstanceId));
 
     // Trigger the animation first
     animationLayerRef.current.animateCardToGraveyard(
@@ -129,6 +133,11 @@ function GameBoard({
       () => {
         // After animation completes, process the actual card action
         setIsAnimating(false);
+        setAnimatingCardIds((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(cardInstanceId);
+          return newSet;
+        });
         handlePlayCard(cardInstanceId);
       }
     );
@@ -175,6 +184,8 @@ function GameBoard({
 
     // Start animation state
     setIsAnimating(true);
+    const cardIds = gameState.piles.hand.map((card) => card.instanceId);
+    setAnimatingCardIds(new Set(cardIds));
 
     // Trigger animation for end turn
     handleDiscardAllCardsWithAnimationForEndTurn(handCardElements);
@@ -192,6 +203,7 @@ function GameBoard({
       !discardRef.current
     ) {
       setIsAnimating(false);
+      setAnimatingCardIds(new Set());
       handleEndTurn();
       return;
     }
@@ -207,6 +219,7 @@ function GameBoard({
         completedAnimations++;
         if (completedAnimations === totalCards) {
           setIsAnimating(false);
+          setAnimatingCardIds(new Set());
           handleEndTurn();
         }
         return;
@@ -223,6 +236,7 @@ function GameBoard({
             // When all animations are done, process the end turn action
             if (completedAnimations === totalCards) {
               setIsAnimating(false);
+              setAnimatingCardIds(new Set());
               handleEndTurn();
             }
           }
@@ -266,6 +280,8 @@ function GameBoard({
 
     // Start animation state
     setIsAnimating(true);
+    const cardIds = gameState.piles.hand.map((card) => card.instanceId);
+    setAnimatingCardIds(new Set(cardIds));
 
     // Trigger animation directly
     handleDiscardAllCardsWithAnimation(handCardElements);
@@ -283,6 +299,7 @@ function GameBoard({
       !discardRef.current
     ) {
       setIsAnimating(false);
+      setAnimatingCardIds(new Set());
       handleTechnicalDebtReduction();
       return;
     }
@@ -298,6 +315,7 @@ function GameBoard({
         completedAnimations++;
         if (completedAnimations === totalCards) {
           setIsAnimating(false);
+          setAnimatingCardIds(new Set());
           handleTechnicalDebtReduction();
         }
         return;
@@ -314,6 +332,7 @@ function GameBoard({
             // When all animations are done, process the game action
             if (completedAnimations === totalCards) {
               setIsAnimating(false);
+              setAnimatingCardIds(new Set());
               handleTechnicalDebtReduction();
             }
           }
@@ -327,6 +346,7 @@ function GameBoard({
     setGameState(newGameState);
     setShowParticles(false);
     setIsAnimating(false);
+    setAnimatingCardIds(new Set());
     setGameOver({
       isGameOver: false,
       won: false,
@@ -503,6 +523,7 @@ function GameBoard({
               onPlayCard={handlePlayCardWithAnimation}
               onCardMount={handleCardMount}
               onCardUnmount={handleCardUnmount}
+              animatingCardIds={animatingCardIds}
               gameState={gameState}
               disabled={gameOver.isGameOver || isAnimating}
             />

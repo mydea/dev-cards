@@ -9,6 +9,7 @@ interface HandProps {
   onPlayCard: (cardInstanceId: string, cardElement: HTMLElement) => void;
   onCardMount?: (cardId: string, element: HTMLElement) => void;
   onCardUnmount?: (cardId: string) => void;
+  animatingCardIds?: Set<string>;
   gameState: GameState;
   disabled?: boolean;
 }
@@ -18,6 +19,7 @@ function Hand({
   onPlayCard,
   onCardMount,
   onCardUnmount,
+  animatingCardIds = new Set(),
   gameState,
   disabled = false,
 }: HandProps) {
@@ -111,6 +113,7 @@ function Hand({
         {cards.map((cardInstance, index) => {
           const validation = validateCardPlay(cardInstance, gameState);
           const isPlayable = validation.canPlay && !disabled;
+          const isAnimating = animatingCardIds.has(cardInstance.instanceId);
 
           return (
             <div
@@ -130,6 +133,7 @@ function Hand({
                 onClick={(event) => handleCardClick(cardInstance, event)}
                 isPlayable={isPlayable}
                 disabled={disabled}
+                isAnimating={isAnimating}
                 validationError={
                   !validation.canPlay
                     ? validation.reasons.join(', ')

@@ -8,6 +8,7 @@ interface CardProps {
   onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
   isPlayable?: boolean;
   disabled?: boolean;
+  isAnimating?: boolean;
   validationError?: string;
   style?: React.CSSProperties;
 }
@@ -17,6 +18,7 @@ function Card({
   onClick,
   isPlayable = false,
   disabled = false,
+  isAnimating = false,
   validationError,
   style,
 }: CardProps) {
@@ -194,6 +196,15 @@ function Card({
       filter: 'grayscale(0.3) brightness(0.8)',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     },
+    animating: {
+      opacity: 0.3,
+      scale: 0.95,
+      filter: 'grayscale(0.5)',
+      transition: {
+        duration: 0.2,
+        ease: 'easeOut',
+      },
+    },
   };
 
   const wrapperVariants = {
@@ -235,7 +246,15 @@ function Card({
         initial="initial"
         whileHover={!disabled && onClick ? 'hover' : undefined}
         whileTap={!disabled && onClick ? 'tap' : undefined}
-        animate={disabled ? 'notPlayable' : isPlayable ? 'playable' : 'initial'}
+        animate={
+          isAnimating
+            ? 'animating'
+            : disabled
+              ? 'notPlayable'
+              : isPlayable
+                ? 'playable'
+                : 'initial'
+        }
         onClick={handleClick}
         data-playable={isPlayable && !disabled}
         data-disabled={disabled}
