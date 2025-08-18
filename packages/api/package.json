@@ -8,7 +8,7 @@
     "build": "wrangler build",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "test": "vitest",
+    "test": "vitest --run",
     "test:watch": "vitest --watch",
     "type-check": "tsc --noEmit",
     "db:migrate": "wrangler d1 migrations apply dev-cards-db",
