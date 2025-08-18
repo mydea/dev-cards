@@ -26,10 +26,10 @@ function CoinFlip({ onComplete, result, isVisible }: CoinFlipProps) {
         // Show result for 1 second, then complete
         setTimeout(() => {
           onComplete(result);
-        }, 10000); // Show result for 1000ms
+        }, 3000); // Show result for 3000ms
       }, 1500); // Flip for 1.5 seconds
     }
-  }, [isVisible, result, onComplete, isFlipping]);
+  }, [isVisible, result, onComplete]);
 
   if (!isVisible) return null;
 
@@ -64,19 +64,25 @@ function CoinFlip({ onComplete, result, isVisible }: CoinFlipProps) {
                     // Calculate rotation to end on correct face
                     // Heads = even number of 180° rotations (0°, 360°, 720°)
                     // Tails = odd number of 180° rotations (180°, 540°, 900°)
-                    rotateY: result === 'heads' ? [0, 360, 720] : [0, 360, 900],
+                    rotateY: result === 'heads' ? [0, 360 * 3, 720 * 3] : [0, 360 * 3, 900 * 3],
                     scale: [1, 1.2, 1],
                   }
                 : {
-                    // When not flipping, show the final result
+                    // When not flipping, immediately snap to final result
                     rotateY: result === 'heads' ? 720 : 900,
                     scale: 1,
                   }
             }
-            transition={{
-              duration: isFlipping ? 1.5 : 0,
-              ease: 'easeOut',
-            }}
+            transition={
+              isFlipping
+                ? {
+                    duration: 1.5,
+                    ease: 'linear',
+                  }
+                : {
+                    duration: 0, // Instant snap when not flipping
+                  }
+            }
           >
             <div className={`${styles.coinSide} ${styles.heads}`}>
               <span className={styles.coinText}>H</span>
