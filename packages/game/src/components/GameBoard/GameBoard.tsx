@@ -174,14 +174,59 @@ function GameBoard({
       graveyardRef.current!,
       () => {
         // After animation completes, process the actual card action
-        handlePlayCard(cardInstanceId);
+        try {
+          const result = gameEngine.processAction({
+            type: 'PLAY_CARD',
+            cardInstanceId,
+          });
 
-        setIsAnimating(false);
-        setAnimatingCardIds((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(cardInstanceId);
-          return newSet;
-        });
+          if (result.success && result.newState) {
+            // Check if any cards were drawn from effects
+            const drawnCards = result.data?.appliedEffects
+              ?.flatMap((effect: any) => effect.drawnCards || [])
+              .filter(Boolean);
+
+            if (drawnCards && drawnCards.length > 0) {
+              // Update game state first, then animate drawn cards
+              setGameState(result.newState);
+
+              // Animate the drawn cards
+              handleDrawCardsAnimated(drawnCards, () => {
+                setIsAnimating(false);
+                setAnimatingCardIds((prev) => {
+                  const newSet = new Set(prev);
+                  newSet.delete(cardInstanceId);
+                  return newSet;
+                });
+              });
+            } else {
+              // No cards drawn, just update state and finish
+              setGameState(result.newState);
+              setIsAnimating(false);
+              setAnimatingCardIds((prev) => {
+                const newSet = new Set(prev);
+                newSet.delete(cardInstanceId);
+                return newSet;
+              });
+            }
+          } else {
+            console.error('Error playing card:', result.error);
+            setIsAnimating(false);
+            setAnimatingCardIds((prev) => {
+              const newSet = new Set(prev);
+              newSet.delete(cardInstanceId);
+              return newSet;
+            });
+          }
+        } catch (error) {
+          console.error('Error playing card:', error);
+          setIsAnimating(false);
+          setAnimatingCardIds((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(cardInstanceId);
+            return newSet;
+          });
+        }
       }
     );
   };
@@ -215,9 +260,43 @@ function GameBoard({
       completedAnimations++;
       if (completedAnimations === totalAnimations) {
         // All animations complete, now process the card
-        setIsAnimating(false);
-        setAnimatingCardIds(new Set());
-        handlePlayCard(cardInstanceId);
+        try {
+          const result = gameEngine.processAction({
+            type: 'PLAY_CARD',
+            cardInstanceId,
+          });
+
+          if (result.success && result.newState) {
+            // Check if any cards were drawn from effects
+            const drawnCards = result.data?.appliedEffects
+              ?.flatMap((effect: any) => effect.drawnCards || [])
+              .filter(Boolean);
+
+            if (drawnCards && drawnCards.length > 0) {
+              // Update game state first, then animate drawn cards
+              setGameState(result.newState);
+
+              // Animate the drawn cards
+              handleDrawCardsAnimated(drawnCards, () => {
+                setIsAnimating(false);
+                setAnimatingCardIds(new Set());
+              });
+            } else {
+              // No cards drawn, just update state and finish
+              setGameState(result.newState);
+              setIsAnimating(false);
+              setAnimatingCardIds(new Set());
+            }
+          } else {
+            console.error('Error playing card:', result.error);
+            setIsAnimating(false);
+            setAnimatingCardIds(new Set());
+          }
+        } catch (error) {
+          console.error('Error playing card:', error);
+          setIsAnimating(false);
+          setAnimatingCardIds(new Set());
+        }
       }
     };
 
@@ -280,14 +359,26 @@ function GameBoard({
     let completedAnimations = 0;
     const totalCards = cardsToDraw.length;
 
-    const completeDrawAnimation = () => {
+    // Add all cards to animating state (they won't appear in hand until animation completes)
+    const newAnimatingIds = new Set(cardsToDraw.map((card) => card.instanceId));
+    setAnimatingCardIds((prev) => new Set([...prev, ...newAnimatingIds]));
+
+    const completeDrawAnimation = (cardInstanceId: string) => {
       completedAnimations++;
+
+      // Remove this specific card from animating state so it appears in hand
+      setAnimatingCardIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(cardInstanceId);
+        return newSet;
+      });
+
       if (completedAnimations === totalCards) {
         onComplete();
       }
     };
 
-    // Animate all cards from deck to hand with slight stagger
+    // Animate all cards from deck to hand with short stagger
     cardsToDraw.forEach((cardInstance, index) => {
       setTimeout(() => {
         // Find hand area element - approximate position
@@ -300,9 +391,9 @@ function GameBoard({
           cardInstance,
           deckRef.current!,
           targetElement,
-          completeDrawAnimation
+          () => completeDrawAnimation(cardInstance.instanceId)
         );
-      }, index * 100); // 100ms stagger between cards
+      }, index * 50); // 50ms stagger between cards - faster than before
     });
   };
 
@@ -699,7 +790,9 @@ function GameBoard({
 
           <motion.div className={styles.handArea} variants={sectionVariants}>
             <Hand
-              cards={gameState.piles.hand}
+              cards={gameState.piles.hand.filter(
+                (card) => !animatingCardIds.has(card.instanceId)
+              )}
               onPlayCard={handlePlayCardWithAnimation}
               onCardMount={handleCardMount}
               onCardUnmount={handleCardUnmount}

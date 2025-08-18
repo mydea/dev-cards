@@ -106,6 +106,8 @@ export function applyEffectToGameState(
       );
       const drawnCards = newPiles.deck.splice(0, cardsToDraw);
       newPiles.hand.push(...drawnCards);
+      // Store the drawn cards in the resolution for animation
+      resolution.drawnCards = drawnCards;
       break;
 
     default:
