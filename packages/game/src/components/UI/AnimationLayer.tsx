@@ -29,6 +29,12 @@ interface AnimationLayerRef {
     graveyardElement: HTMLElement,
     onComplete: () => void
   ) => void;
+  animateCardToDiscard: (
+    cardInstance: CardInstance,
+    startElement: HTMLElement,
+    discardElement: HTMLElement,
+    onComplete: () => void
+  ) => void;
 }
 
 const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
@@ -71,12 +77,49 @@ const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
       []
     );
 
+    const animateCardToDiscard = useCallback(
+      (
+        cardInstance: CardInstance,
+        startElement: HTMLElement,
+        discardElement: HTMLElement,
+        onComplete: () => void
+      ) => {
+        const startRect = startElement.getBoundingClientRect();
+        const endRect = discardElement.getBoundingClientRect();
+
+        const flyingCard: FlyingCard = {
+          id: `flying-discard-${cardInstance.instanceId}-${Date.now()}`,
+          cardInstance,
+          startPosition: {
+            x: startRect.left,
+            y: startRect.top,
+          },
+          endPosition: {
+            x: endRect.left + endRect.width / 2 - startRect.width / 2,
+            y: endRect.top + endRect.height / 2 - startRect.height / 2,
+          },
+          onComplete: () => {
+            // Remove this flying card from the list
+            setFlyingCards((prev) =>
+              prev.filter((fc) => fc.id !== flyingCard.id)
+            );
+            // Call the completion callback
+            onComplete();
+          },
+        };
+
+        setFlyingCards((prev) => [...prev, flyingCard]);
+      },
+      []
+    );
+
     useImperativeHandle(
       ref,
       () => ({
         animateCardToGraveyard,
+        animateCardToDiscard,
       }),
-      [animateCardToGraveyard]
+      [animateCardToGraveyard, animateCardToDiscard]
     );
 
     return (

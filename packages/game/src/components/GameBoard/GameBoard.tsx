@@ -7,7 +7,7 @@ import ResourceDisplay from '../UI/ResourceDisplay';
 import GameActions from '../UI/GameActions';
 import ParticleEffect from '../UI/ParticleEffect';
 import AnimationLayer, { type AnimationLayerRef } from '../UI/AnimationLayer';
-import Hand from '../Hand/Hand';
+import Hand, { type HandRef } from '../Hand/Hand';
 import styles from './GameBoard.module.css';
 
 interface GameBoardProps {
@@ -39,6 +39,8 @@ function GameBoard({
   // Animation refs
   const animationLayerRef = useRef<AnimationLayerRef>(null);
   const graveyardRef = useRef<HTMLDivElement>(null);
+  const discardRef = useRef<HTMLDivElement>(null);
+  const handRef = useRef<HandRef>(null);
 
   // Check for game over conditions whenever game state changes
   useEffect(() => {
@@ -141,6 +143,67 @@ function GameBoard({
     } catch (error) {
       console.error('Error reducing technical debt:', error);
     }
+  };
+
+  // Animated discard handler using Hand ref
+  const handleTechnicalDebtReductionAnimated = () => {
+    if (!handRef.current) {
+      // Fallback to immediate action if hand ref isn't available
+      handleTechnicalDebtReduction();
+      return;
+    }
+
+    // Trigger the animated discard through the Hand component
+    handRef.current.discardAllCardsAnimated(() => {
+      // This callback is called when the animation setup is complete
+      // The actual game action will be processed after all animations finish
+    });
+  };
+
+  // Animated discard handler for multiple cards (called by Hand component)
+  const handleDiscardAllCardsWithAnimation = (cardElements: HTMLElement[]) => {
+    const cardsToDiscard = [...gameState.piles.hand];
+
+    if (
+      cardsToDiscard.length === 0 ||
+      !animationLayerRef.current ||
+      !discardRef.current
+    ) {
+      // Fallback to immediate action if no cards or animation isn't available
+      handleTechnicalDebtReduction();
+      return;
+    }
+
+    // Animate all cards to discard pile with staggered timing
+    let completedAnimations = 0;
+    const totalCards = cardsToDiscard.length;
+
+    cardsToDiscard.forEach((cardInstance, index) => {
+      const cardElement = cardElements[index];
+      if (!cardElement) {
+        completedAnimations++;
+        if (completedAnimations === totalCards) {
+          handleTechnicalDebtReduction();
+        }
+        return;
+      }
+
+      // Stagger the animation start times
+      setTimeout(() => {
+        animationLayerRef.current?.animateCardToDiscard(
+          cardInstance,
+          cardElement,
+          discardRef.current!,
+          () => {
+            completedAnimations++;
+            // When all animations are done, process the game action
+            if (completedAnimations === totalCards) {
+              handleTechnicalDebtReduction();
+            }
+          }
+        );
+      }, index * 100); // 100ms stagger between each card
+    });
   };
 
   const handleNewGame = () => {
@@ -263,6 +326,7 @@ function GameBoard({
               whileTap="tap"
             >
               <motion.div
+                ref={discardRef}
                 className={styles.pileCard}
                 data-type="discard"
                 animate={{
@@ -318,8 +382,10 @@ function GameBoard({
 
           <motion.div className={styles.handArea} variants={sectionVariants}>
             <Hand
+              ref={handRef}
               cards={gameState.piles.hand}
               onPlayCard={handlePlayCardWithAnimation}
+              onDiscardAll={handleDiscardAllCardsWithAnimation}
               gameState={gameState}
               disabled={gameOver.isGameOver}
             />
@@ -328,7 +394,7 @@ function GameBoard({
           <motion.div className={styles.actions} variants={sectionVariants}>
             <GameActions
               onEndTurn={handleEndTurn}
-              onTechnicalDebtReduction={handleTechnicalDebtReduction}
+              onTechnicalDebtReduction={handleTechnicalDebtReductionAnimated}
               gameState={gameState}
               disabled={gameOver.isGameOver}
             />
