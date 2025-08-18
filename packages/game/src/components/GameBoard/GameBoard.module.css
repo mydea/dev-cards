@@ -118,7 +118,7 @@
 
 .pileCard {
   width: var(--card-width);
-  height: var(--card-height);
+  height: calc(var(--card-height) * 0.4);
   border: 2px solid var(--border-color);
   border-radius: var(--card-border-radius);
   display: flex;
@@ -207,7 +207,7 @@
 
   .pileCard {
     width: calc(var(--card-width) * 0.8);
-    height: calc(var(--card-height) * 0.8);
+    height: calc(var(--card-height) * 0.35);
   }
 
   .actions {
