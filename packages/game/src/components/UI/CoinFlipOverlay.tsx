@@ -236,16 +236,36 @@ function CoinFlipOverlay({ queue, onAllComplete }: CoinFlipOverlayProps) {
               </>
             ) : (
               <>
-                <div className={styles.resultText}>
-                  {currentEffect.result === 'heads' ? '🎯 HEADS!' : '🎲 TAILS!'}
+                <div className={styles.effectType}>
+                  {getEffectDisplayName(currentEffect.effect.type)}
                 </div>
-                <div className={styles.finalValue}>
-                  {formatEffectValue(
-                    currentEffect.effect.type,
-                    currentEffect.result === 'heads'
-                      ? currentEffect.effect.headsValue
-                      : currentEffect.effect.tailsValue
-                  )}
+                <div className={styles.finalOutcomes}>
+                  <div
+                    className={
+                      currentEffect.result === 'heads'
+                        ? styles.outcomeWinner
+                        : styles.outcomeLoser
+                    }
+                  >
+                    🎯 Heads:{' '}
+                    {formatEffectValue(
+                      currentEffect.effect.type,
+                      currentEffect.effect.headsValue
+                    )}
+                  </div>
+                  <div
+                    className={
+                      currentEffect.result === 'tails'
+                        ? styles.outcomeWinner
+                        : styles.outcomeLoser
+                    }
+                  >
+                    🎲 Tails:{' '}
+                    {formatEffectValue(
+                      currentEffect.effect.type,
+                      currentEffect.effect.tailsValue
+                    )}
+                  </div>
                 </div>
               </>
             )}
