@@ -167,7 +167,7 @@ p, h1, h2, h3, h4, h5, h6 {
 
   /* Card dimensions */
   --card-width: 15rem;
-  --card-height: 12rem;
+  --card-height: 17rem;
   --card-border-radius: var(--radius-xl);
 }
 
