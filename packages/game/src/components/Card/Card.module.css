@@ -129,12 +129,20 @@
   margin: var(--spacing-xs) 0;
   flex: 1 1 auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
   min-height: 2.5rem;
+  gap: var(--spacing-xs);
+}
+
+.effectItem {
+  line-height: 1.2;
+  width: 100%;
+  text-align: center;
 }
 
 .cardQuote {
