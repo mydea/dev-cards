@@ -4,6 +4,7 @@
   "description": "A game about fixing bugs",
   "author": "Francesco Gringl-Novy",
   "license": "MIT",
+  "type": "module",
   "private": true,
   "workspaces": [
     "packages/*",

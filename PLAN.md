@@ -277,6 +277,8 @@ packages/data/
 │   │   └── effects.ts
 │   └── assets/
 │       └── images/
+│           ├── icons/     # General reusable icons (SVG format)
+│           └── cards/     # Card images (.jpg, 800x640px, 5:4 aspect ratio)
 ├── package.json
 └── README.md
 ```

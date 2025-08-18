@@ -1,0 +1,14 @@
+# Card Images Directory
+
+This directory contains card images with the following specifications:
+
+- **Format**: .jpg
+- **Dimensions**: 800x640 pixels
+- **Aspect Ratio**: 5:4 (width:height)
+- **Naming Convention**: Use card ID as filename (e.g., `quick-bug-fix.jpg`)
+
+## Image Guidelines:
+- High quality, professional-looking images
+- Consistent lighting and color palette
+- Developer/programming themed imagery
+- Clear visual representation of the card's purpose
