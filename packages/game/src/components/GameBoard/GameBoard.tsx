@@ -241,23 +241,21 @@ function GameBoard({
         return;
       }
 
-      // Stagger the animation start times
-      setTimeout(() => {
-        animationLayerRef.current?.animateCardToDiscard(
-          cardInstance,
-          cardElement,
-          discardRef.current!,
-          () => {
-            completedAnimations++;
-            // When all animations are done, process the end turn action
-            if (completedAnimations === totalCards) {
-              setIsAnimating(false);
-              setAnimatingCardIds(new Set());
-              handleEndTurn();
-            }
+      // Start all animations immediately (no stagger)
+      animationLayerRef.current?.animateCardToDiscard(
+        cardInstance,
+        cardElement,
+        discardRef.current!,
+        () => {
+          completedAnimations++;
+          // When all animations are done, process the end turn action
+          if (completedAnimations === totalCards) {
+            setIsAnimating(false);
+            setAnimatingCardIds(new Set());
+            handleEndTurn();
           }
-        );
-      }, index * 50); // 50ms stagger between each card
+        }
+      );
     });
   };
 
@@ -337,23 +335,21 @@ function GameBoard({
         return;
       }
 
-      // Stagger the animation start times
-      setTimeout(() => {
-        animationLayerRef.current?.animateCardToDiscard(
-          cardInstance,
-          cardElement,
-          discardRef.current!,
-          () => {
-            completedAnimations++;
-            // When all animations are done, process the game action
-            if (completedAnimations === totalCards) {
-              setIsAnimating(false);
-              setAnimatingCardIds(new Set());
-              handleTechnicalDebtReduction();
-            }
+      // Start all animations immediately (no stagger)
+      animationLayerRef.current?.animateCardToDiscard(
+        cardInstance,
+        cardElement,
+        discardRef.current!,
+        () => {
+          completedAnimations++;
+          // When all animations are done, process the game action
+          if (completedAnimations === totalCards) {
+            setIsAnimating(false);
+            setAnimatingCardIds(new Set());
+            handleTechnicalDebtReduction();
           }
-        );
-      }, index * 50); // 50ms stagger between each card
+        }
+      );
     });
   };
 
