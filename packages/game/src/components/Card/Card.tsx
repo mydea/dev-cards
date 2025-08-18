@@ -107,9 +107,9 @@ function Card({
           case 'SPEND_PP':
             return `${req.value} PP`;
           case 'DISCARD_CARDS':
-            return `+${req.value} discard`;
+            return `discard ${req.value}`;
           case 'SEND_TO_GRAVEYARD':
-            return `+${req.value} bury`;
+            return `bury ${req.value}`;
           default:
             return 'Unknown';
         }
