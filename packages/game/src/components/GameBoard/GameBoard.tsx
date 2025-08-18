@@ -56,10 +56,6 @@ function GameBoard({
     [cardId: string]: HTMLElement;
   }>({});
 
-  // Prevent double-processing of cards
-  const processedCardsRef = useRef<Set<string>>(new Set());
-  const animationCompletionRef = useRef<Set<string>>(new Set());
-
   const handleCardMount = (cardId: string, element: HTMLElement) => {
     setCardElements((prev) => {
       // Only update if the element is different to prevent unnecessary re-renders
@@ -146,12 +142,6 @@ function GameBoard({
     if (animatingCardIds.has(cardInstanceId)) {
       return;
     }
-
-    // Check if this card has already been processed - set guard IMMEDIATELY
-    if (processedCardsRef.current.has(cardInstanceId)) {
-      return;
-    }
-    processedCardsRef.current.add(cardInstanceId);
 
     const cardInstance = gameState.piles.hand.find(
       (card) => card.instanceId === cardInstanceId
@@ -302,10 +292,6 @@ function GameBoard({
 
   const handleEndTurn = () => {
     try {
-      // Clear processing guards for new turn
-      processedCardsRef.current = new Set();
-      animationCompletionRef.current = new Set();
-
       const result = gameEngine.processAction({ type: 'END_TURN' });
 
       if (result.success && result.newState) {
@@ -378,10 +364,6 @@ function GameBoard({
 
   // Animated end turn handler
   const handleEndTurnAnimated = () => {
-    // Clear processing guards for new turn
-    processedCardsRef.current = new Set();
-    animationCompletionRef.current = new Set();
-
     // Prepare the end turn to get cards to draw
     const preparation = gameEngine.prepareEndTurn();
     if (!preparation.success) {
@@ -648,10 +630,6 @@ function GameBoard({
       won: false,
       message: '',
     });
-
-    // Clear processing guards
-    processedCardsRef.current = new Set();
-    animationCompletionRef.current = new Set();
   };
 
   // Animation variants
