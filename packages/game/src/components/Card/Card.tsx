@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { CardInstance } from '@dev-cards/data';
 import styles from './Card.module.css';
 
@@ -158,15 +159,83 @@ function Card({
       .join(' • ');
   };
 
+  // Animation variants
+  const cardVariants = {
+    initial: {
+      scale: 1,
+      rotateY: 0,
+      y: 0,
+      z: 0,
+    },
+    hover: {
+      scale: 1.05,
+      y: -8,
+      z: 50,
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 20,
+      },
+    },
+    tap: {
+      scale: 0.95,
+      transition: {
+        type: 'spring',
+        stiffness: 400,
+        damping: 25,
+      },
+    },
+    playable: {
+      boxShadow:
+        '0 0 20px rgba(34, 197, 94, 0.6), 0 8px 25px rgba(0, 0, 0, 0.2)',
+      borderColor: 'rgba(34, 197, 94, 0.8)',
+    },
+    notPlayable: {
+      filter: 'grayscale(0.3) brightness(0.8)',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    },
+  };
+
+  const wrapperVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 25,
+      },
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.8,
+      y: -20,
+      transition: {
+        duration: 0.2,
+      },
+    },
+  };
+
   return (
-    <div
+    <motion.div
       className={styles.cardWrapper}
       style={style}
+      variants={wrapperVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      layout
     >
-      <div
+      <motion.div
         className={styles.card}
+        variants={cardVariants}
+        initial="initial"
+        whileHover={!disabled && onClick ? 'hover' : undefined}
+        whileTap={!disabled && onClick ? 'tap' : undefined}
+        animate={disabled ? 'notPlayable' : isPlayable ? 'playable' : 'initial'}
         onClick={handleClick}
         data-playable={isPlayable && !disabled}
         data-disabled={disabled}
@@ -177,6 +246,9 @@ function Card({
             e.preventDefault();
             onClick();
           }
+        }}
+        style={{
+          transformStyle: 'preserve-3d',
         }}
       >
         <div className={styles.cardHeader}>
@@ -211,17 +283,35 @@ function Card({
 
         <div className={styles.cardQuote}>"{card.quote}"</div>
 
-        {!isPlayable && !disabled && (
-          <div className={styles.cardOverlay}>
-            <span className={styles.overlayIcon}>🚫</span>
-          </div>
-        )}
-      </div>
+        <AnimatePresence>
+          {!isPlayable && !disabled && (
+            <motion.div
+              className={styles.cardOverlay}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <span className={styles.overlayIcon}>🚫</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
-      {showTooltip && validationError && (
-        <div className={styles.tooltip}>{validationError}</div>
-      )}
-    </div>
+      <AnimatePresence>
+        {showTooltip && validationError && (
+          <motion.div
+            className={styles.tooltip}
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.9 }}
+            transition={{ duration: 0.2 }}
+          >
+            {validationError}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 

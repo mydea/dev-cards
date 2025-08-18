@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { GameState, GameEngine } from '@dev-cards/data';
 import { checkWinCondition, checkLoseCondition } from '@dev-cards/data';
 import GameInfo from '../UI/GameInfo';
 import ResourceDisplay from '../UI/ResourceDisplay';
 import GameActions from '../UI/GameActions';
+import ParticleEffect from '../UI/ParticleEffect';
 import Hand from '../Hand/Hand';
 import styles from './GameBoard.module.css';
 
@@ -31,12 +33,15 @@ function GameBoard({
     message: '',
   });
 
+  const [showParticles, setShowParticles] = useState(false);
+
   // Check for game over conditions whenever game state changes
   useEffect(() => {
     const hasWon = checkWinCondition(gameState);
     const hasLost = checkLoseCondition(gameState);
 
     if (hasWon) {
+      setShowParticles(true);
       setGameOver({
         isGameOver: true,
         won: true,
@@ -109,6 +114,7 @@ function GameBoard({
   const handleNewGame = () => {
     const newGameState = gameEngine.createNewGame();
     setGameState(newGameState);
+    setShowParticles(false);
     setGameOver({
       isGameOver: false,
       won: false,
@@ -116,92 +122,279 @@ function GameBoard({
     });
   };
 
+  // Animation variants
+  const boardVariants = {
+    initial: { opacity: 0 },
+    animate: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+    exit: { opacity: 0 },
+  };
+
+  const sectionVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 25,
+      },
+    },
+  };
+
+  const pileVariants = {
+    initial: { opacity: 0, scale: 0.9, y: 20 },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 25,
+      },
+    },
+    tap: { scale: 0.95 },
+    hover: {
+      scale: 1.05,
+      y: -4,
+      transition: { duration: 0.2 },
+    },
+  };
+
   return (
-    <div className={styles.gameBoard}>
-      <div className={styles.header}>
+    <motion.div
+      className={styles.gameBoard}
+      variants={boardVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
+      <motion.div className={styles.header} variants={sectionVariants}>
         <GameInfo gameState={gameState} onReturnToMenu={onReturnToMenu} />
         <ResourceDisplay gameState={gameState} />
-      </div>
+      </motion.div>
 
-      <div className={styles.gameArea}>
-        <div className={styles.piles}>
-          <div className={styles.pile}>
-            <div className={styles.pileCard} data-type="deck">
+      <motion.div className={styles.gameArea} variants={sectionVariants}>
+        <motion.div
+          className={styles.piles}
+          initial="initial"
+          animate="animate"
+          variants={{
+            initial: { opacity: 0 },
+            animate: {
+              opacity: 1,
+              transition: { staggerChildren: 0.1 },
+            },
+          }}
+        >
+          <motion.div
+            className={styles.pile}
+            variants={pileVariants}
+            whileHover="hover"
+            whileTap="tap"
+          >
+            <motion.div
+              className={styles.pileCard}
+              data-type="deck"
+              animate={{
+                boxShadow:
+                  gameState.piles.deck.length > 0
+                    ? '0 4px 8px rgba(0, 0, 0, 0.1), 0 0 20px rgba(59, 130, 246, 0.3)'
+                    : '0 2px 4px rgba(0, 0, 0, 0.05)',
+              }}
+            >
               <div className={styles.pileLabel}>Draw Pile</div>
-              <div className={styles.pileCount}>
+              <motion.div
+                className={styles.pileCount}
+                key={`deck-${gameState.piles.deck.length}`}
+                initial={{ scale: 1.2, color: '#3b82f6' }}
+                animate={{ scale: 1, color: 'inherit' }}
+                transition={{ duration: 0.3 }}
+              >
                 {gameState.piles.deck.length}
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
 
-          <div className={styles.pile}>
-            <div className={styles.pileCard} data-type="discard">
+          <motion.div
+            className={styles.pile}
+            variants={pileVariants}
+            whileHover="hover"
+            whileTap="tap"
+          >
+            <motion.div
+              className={styles.pileCard}
+              data-type="discard"
+              animate={{
+                boxShadow:
+                  gameState.piles.discard.length > 0
+                    ? '0 4px 8px rgba(0, 0, 0, 0.1), 0 0 20px rgba(168, 85, 247, 0.3)'
+                    : '0 2px 4px rgba(0, 0, 0, 0.05)',
+              }}
+            >
               <div className={styles.pileLabel}>Discard</div>
-              <div className={styles.pileCount}>
+              <motion.div
+                className={styles.pileCount}
+                key={`discard-${gameState.piles.discard.length}`}
+                initial={{ scale: 1.2, color: '#a855f7' }}
+                animate={{ scale: 1, color: 'inherit' }}
+                transition={{ duration: 0.3 }}
+              >
                 {gameState.piles.discard.length}
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
 
-          <div className={styles.pile}>
-            <div className={styles.pileCard} data-type="graveyard">
+          <motion.div
+            className={styles.pile}
+            variants={pileVariants}
+            whileHover="hover"
+            whileTap="tap"
+          >
+            <motion.div
+              className={styles.pileCard}
+              data-type="graveyard"
+              animate={{
+                boxShadow:
+                  gameState.piles.graveyard.length > 0
+                    ? '0 4px 8px rgba(0, 0, 0, 0.1), 0 0 20px rgba(239, 68, 68, 0.3)'
+                    : '0 2px 4px rgba(0, 0, 0, 0.05)',
+              }}
+            >
               <div className={styles.pileLabel}>Graveyard</div>
-              <div className={styles.pileCount}>
+              <motion.div
+                className={styles.pileCount}
+                key={`graveyard-${gameState.piles.graveyard.length}`}
+                initial={{ scale: 1.2, color: '#ef4444' }}
+                animate={{ scale: 1, color: 'inherit' }}
+                transition={{ duration: 0.3 }}
+              >
                 {gameState.piles.graveyard.length}
-              </div>
-            </div>
-          </div>
-        </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
 
-        <div className={styles.handArea}>
+        <motion.div className={styles.handArea} variants={sectionVariants}>
           <Hand
             cards={gameState.piles.hand}
             onPlayCard={handlePlayCard}
             gameState={gameState}
             disabled={gameOver.isGameOver}
           />
-        </div>
+        </motion.div>
 
-        <div className={styles.actions}>
+        <motion.div className={styles.actions} variants={sectionVariants}>
           <GameActions
             onEndTurn={handleEndTurn}
             onTechnicalDebtReduction={handleTechnicalDebtReduction}
             gameState={gameState}
             disabled={gameOver.isGameOver}
           />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      {gameOver.isGameOver && (
-        <div className={styles.gameOverlay}>
-          <div className={styles.gameOverContent}>
-            <h2>{gameOver.won ? '🎉 Victory!' : '💥 Game Over'}</h2>
-            <p>{gameOver.message}</p>
-            {gameOver.won && (
-              <p className={styles.finalScore}>
-                Final Score: {gameState.stats.currentRound} rounds
-              </p>
-            )}
-            <div>
-              <button
-                className={styles.newGameButton}
-                onClick={handleNewGame}
-                type="button"
+      <AnimatePresence>
+        {gameOver.isGameOver && (
+          <motion.div
+            className={styles.gameOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className={styles.gameOverContent}
+              initial={{ opacity: 0, scale: 0.8, y: 50 }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                transition: {
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 25,
+                  delay: 0.1,
+                },
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.8,
+                y: 50,
+                transition: { duration: 0.2 },
+              }}
+            >
+              <motion.h2
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
               >
-                New Game
-              </button>
-              <button
-                className={styles.menuButton}
-                onClick={onReturnToMenu}
-                type="button"
+                {gameOver.won ? '🎉 Victory!' : '💥 Game Over'}
+              </motion.h2>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
               >
-                Main Menu
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+                {gameOver.message}
+              </motion.p>
+
+              {gameOver.won && (
+                <motion.p
+                  className={styles.finalScore}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5, type: 'spring' }}
+                >
+                  Final Score: {gameState.stats.currentRound} rounds
+                </motion.p>
+              )}
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                <motion.button
+                  className={styles.newGameButton}
+                  onClick={handleNewGame}
+                  type="button"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                >
+                  New Game
+                </motion.button>
+                <motion.button
+                  className={styles.menuButton}
+                  onClick={onReturnToMenu}
+                  type="button"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                >
+                  Main Menu
+                </motion.button>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <ParticleEffect
+        isActive={showParticles}
+        type="celebration"
+        onComplete={() => setShowParticles(false)}
+      />
+    </motion.div>
   );
 }
 
