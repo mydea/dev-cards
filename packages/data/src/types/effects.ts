@@ -12,7 +12,6 @@ import {
  */
 export interface BaseEffect {
   type: EffectType;
-  description: string; // Human-readable description for UI
 }
 
 /**
@@ -43,7 +42,6 @@ export type CardEffect = StaticEffect | CoinFlipEffect;
 export interface BaseRequirement {
   type: RequirementType;
   value: number;
-  description: string; // Human-readable description for UI
 }
 
 /**

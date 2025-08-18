@@ -88,9 +88,6 @@ export interface GameHistoryEntry {
   /** State after the action */
   stateAfter: Partial<GameResources>;
 
-  /** Human-readable description */
-  description: string;
-
   /** Timestamp */
   timestamp: number;
 }
