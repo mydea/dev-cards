@@ -39,60 +39,103 @@ function Card({
   };
 
   const formatEffects = () => {
-    return card.effects.map((effect) => {
-      let description = '';
-
+    return card.effects.map((effect, index) => {
       switch (effect.type) {
         case 'ADD_PROGRESS':
           if (effect.randomType === 'STATIC') {
-            description = `+${effect.value}% progress`;
+            return `+${effect.value}% progress`;
           } else if (effect.randomType === 'COIN_FLIP') {
-            description = `🪙 ${effect.headsValue}% or ${effect.tailsValue}% progress`;
+            return (
+              <span key={index} className={styles.coinFlipEffect}>
+                <img
+                  src="/assets/icons/coin-flip.png"
+                  alt="coin flip"
+                  className={styles.coinFlipIcon}
+                />
+                {effect.headsValue}% or {effect.tailsValue}% progress
+              </span>
+            );
           }
           break;
         case 'REMOVE_BUGS':
           if (effect.randomType === 'STATIC') {
-            description = `-${effect.value} 🐛`;
+            return `-${effect.value} 🐛`;
           } else if (effect.randomType === 'COIN_FLIP') {
-            description = `🪙 -${effect.headsValue} or -${effect.tailsValue} 🐛`;
+            return (
+              <span key={index} className={styles.coinFlipEffect}>
+                <img
+                  src="/assets/icons/coin-flip.png"
+                  alt="coin flip"
+                  className={styles.coinFlipIcon}
+                />
+                -{effect.headsValue} or -{effect.tailsValue} 🐛
+              </span>
+            );
           }
           break;
         case 'ADD_BUGS':
           if (effect.randomType === 'STATIC') {
-            description = `+${effect.value} 🐛`;
+            return `+${effect.value} 🐛`;
           } else if (effect.randomType === 'COIN_FLIP') {
-            description = `🪙 +${effect.headsValue} or +${effect.tailsValue} 🐛`;
+            return (
+              <span key={index} className={styles.coinFlipEffect}>
+                <img
+                  src="/assets/icons/coin-flip.png"
+                  alt="coin flip"
+                  className={styles.coinFlipIcon}
+                />
+                +{effect.headsValue} or +{effect.tailsValue} 🐛
+              </span>
+            );
           }
           break;
         case 'REMOVE_TECHNICAL_DEBT':
           if (effect.randomType === 'STATIC') {
-            description = `-${effect.value} TD`;
+            return `-${effect.value} TD`;
           } else if (effect.randomType === 'COIN_FLIP') {
-            description = `🪙 -${effect.headsValue} or -${effect.tailsValue} TD`;
+            return (
+              <span key={index} className={styles.coinFlipEffect}>
+                <img
+                  src="/assets/icons/coin-flip.png"
+                  alt="coin flip"
+                  className={styles.coinFlipIcon}
+                />
+                -{effect.headsValue} or -{effect.tailsValue} TD
+              </span>
+            );
           }
           break;
         case 'ADD_TECHNICAL_DEBT':
           if (effect.randomType === 'STATIC') {
-            description = `+${effect.value} TD`;
+            return `+${effect.value} TD`;
           } else if (effect.randomType === 'COIN_FLIP') {
-            description = `🪙 +${effect.headsValue} or +${effect.tailsValue} TD`;
+            return (
+              <span key={index} className={styles.coinFlipEffect}>
+                <img
+                  src="/assets/icons/coin-flip.png"
+                  alt="coin flip"
+                  className={styles.coinFlipIcon}
+                />
+                +{effect.headsValue} or +{effect.tailsValue} TD
+              </span>
+            );
           }
           break;
         case 'DRAW_CARDS':
           if (effect.randomType === 'STATIC') {
-            description = `Draw ${effect.value} cards`;
+            return `Draw ${effect.value} cards`;
           }
           break;
         case 'SHUFFLE_DISCARD_TO_DECK':
           if (effect.randomType === 'STATIC') {
-            description = `Shuffle ${effect.value} from discard`;
+            return `Shuffle ${effect.value} from discard`;
           }
           break;
         default:
-          description = 'Unknown effect';
+          return 'Unknown effect';
       }
 
-      return description;
+      return 'Unknown effect';
     });
   };
 

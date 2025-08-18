@@ -145,6 +145,19 @@
   text-align: center;
 }
 
+.coinFlipEffect {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.coinFlipIcon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .cardQuote {
   font-size: var(--font-size-sm);
   color: var(--text-muted);
