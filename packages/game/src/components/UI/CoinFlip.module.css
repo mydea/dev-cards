@@ -13,6 +13,8 @@
 
 .coinFlipContainer {
   display: flex;
+  min-width: 400px;
+  min-height: 400px;
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-lg);
@@ -73,12 +75,6 @@
 
 .result {
   margin-top: var(--spacing-md);
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--color-success-500);
-  color: white;
-  border-radius: var(--border-radius-md);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  min-height: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;

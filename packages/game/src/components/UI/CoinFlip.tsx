@@ -60,26 +60,32 @@ interface CoinFlipProps {
   };
 }
 
+const COIN_FLIP_DURATION = 3000;
+const RESULT_DISPLAY_DURATION = 3000;
+
 function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
   const [isFlipping, setIsFlipping] = useState(false);
-  const [showResult, setShowResult] = useState(false);
+
+  let isCompleted = false;
 
   useEffect(() => {
     if (isVisible && !isFlipping) {
       // Start the flip animation
       setIsFlipping(true);
-      setShowResult(false);
 
       // Complete the animation after flip duration
       setTimeout(() => {
         setIsFlipping(false);
-        setShowResult(true);
 
         // Show result for 1 second, then complete
         setTimeout(() => {
+          if (isCompleted) {
+            return;
+          }
+          isCompleted = true;
           onComplete(result);
-        }, 3000); // Show result for 3000ms
-      }, 1500); // Flip for 1.5 seconds
+        }, RESULT_DISPLAY_DURATION); // Show result for 4 seconds
+      }, COIN_FLIP_DURATION); // Flip for 3 seconds
     }
   }, [isVisible, result, onComplete]);
 
@@ -131,7 +137,7 @@ function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
             transition={
               isFlipping
                 ? {
-                    duration: 1.5,
+                    duration: COIN_FLIP_DURATION / 1000,
                     ease: 'linear',
                   }
                 : {
