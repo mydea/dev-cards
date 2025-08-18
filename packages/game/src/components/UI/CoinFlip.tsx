@@ -2,13 +2,65 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './CoinFlip.module.css';
 
+// Helper functions for displaying effect information
+function getEffectDisplayName(effectType: string): string {
+  switch (effectType) {
+    case 'ADD_PROGRESS':
+      return 'Add Progress';
+    case 'ADD_BUGS':
+      return 'Add Bugs';
+    case 'REMOVE_BUGS':
+      return 'Remove Bugs';
+    case 'ADD_TECHNICAL_DEBT':
+      return 'Add Technical Debt';
+    case 'REMOVE_TECHNICAL_DEBT':
+      return 'Remove Technical Debt';
+    case 'DRAW_CARDS':
+      return 'Draw Cards';
+    default:
+      return effectType
+        .replace(/_/g, ' ')
+        .toLowerCase()
+        .replace(/\b\w/g, (l) => l.toUpperCase());
+  }
+}
+
+function formatEffectValue(effectType: string, value: number): string {
+  if (value === 0) return 'No change';
+
+  const isPositive = value > 0;
+  const prefix = isPositive ? '+' : '';
+
+  switch (effectType) {
+    case 'ADD_PROGRESS':
+      return `${prefix}${value} Progress`;
+    case 'ADD_BUGS':
+      return `${prefix}${value} Bug${Math.abs(value) !== 1 ? 's' : ''}`;
+    case 'REMOVE_BUGS':
+      return `${Math.abs(value)} Bug${Math.abs(value) !== 1 ? 's' : ''} removed`;
+    case 'ADD_TECHNICAL_DEBT':
+      return `${prefix}${value} Technical Debt`;
+    case 'REMOVE_TECHNICAL_DEBT':
+      return `${Math.abs(value)} Technical Debt removed`;
+    case 'DRAW_CARDS':
+      return `Draw ${value} card${value !== 1 ? 's' : ''}`;
+    default:
+      return `${prefix}${value}`;
+  }
+}
+
 interface CoinFlipProps {
   onComplete: (result: 'heads' | 'tails') => void;
   result: 'heads' | 'tails';
   isVisible: boolean;
+  effect: {
+    type: string;
+    headsValue: number;
+    tailsValue: number;
+  };
 }
 
-function CoinFlip({ onComplete, result, isVisible }: CoinFlipProps) {
+function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
   const [isFlipping, setIsFlipping] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
@@ -97,13 +149,36 @@ function CoinFlip({ onComplete, result, isVisible }: CoinFlipProps) {
 
           {/* Always show result area to prevent layout shift */}
           <div className={styles.result}>
-            <div className={styles.resultText}>
-              {isFlipping
-                ? 'Wait for it...'
-                : result === 'heads'
-                  ? '🎯 HEADS!'
-                  : '🎲 TAILS!'}
-            </div>
+            {isFlipping ? (
+              <>
+                <div className={styles.effectType}>
+                  {getEffectDisplayName(effect.type)}
+                </div>
+                <div className={styles.possibleOutcomes}>
+                  <div className={styles.outcome}>
+                    🎯 Heads:{' '}
+                    {formatEffectValue(effect.type, effect.headsValue)}
+                  </div>
+                  <div className={styles.outcome}>
+                    🎲 Tails:{' '}
+                    {formatEffectValue(effect.type, effect.tailsValue)}
+                  </div>
+                </div>
+                <div className={styles.waitText}>Wait for it...</div>
+              </>
+            ) : (
+              <>
+                <div className={styles.resultText}>
+                  {result === 'heads' ? '🎯 HEADS!' : '🎲 TAILS!'}
+                </div>
+                <div className={styles.finalValue}>
+                  {formatEffectValue(
+                    effect.type,
+                    result === 'heads' ? effect.headsValue : effect.tailsValue
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </motion.div>
       </motion.div>

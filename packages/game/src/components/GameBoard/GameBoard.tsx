@@ -939,6 +939,13 @@ function GameBoard({
           result={
             coinFlipState.effects[coinFlipState.currentIndex]?.result || 'heads'
           }
+          effect={
+            coinFlipState.effects[coinFlipState.currentIndex]?.effect || {
+              type: 'ADD_PROGRESS',
+              headsValue: 0,
+              tailsValue: 0,
+            }
+          }
           onComplete={handleCoinFlipComplete}
         />
       </motion.div>
