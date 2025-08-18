@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { GameState, GameEngine, CardInstance, EffectResolution } from '@dev-cards/data';
+import type {
+  GameState,
+  GameEngine,
+  CardInstance,
+  EffectResolution,
+} from '@dev-cards/data';
 import { checkWinCondition, checkLoseCondition } from '@dev-cards/data';
 import GameInfo from '../UI/GameInfo';
 import ResourceDisplay from '../UI/ResourceDisplay';

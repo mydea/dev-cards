@@ -36,7 +36,8 @@ function Hand({
     }
   };
 
-  if (cards.length === 0) {
+  // Only show empty hand UI if there are no cards AND no animations in progress
+  if (cards.length === 0 && animatingCardIds.size === 0) {
     return (
       <motion.div
         className={styles.emptyHand}
@@ -106,7 +107,9 @@ function Hand({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        Your Hand ({cards.length} cards)
+        {animatingCardIds.size > 0 && cards.length === 0
+          ? 'Your Hand (drawing cards...)'
+          : `Your Hand (${cards.length} cards)`}
       </motion.div>
 
       <div className={styles.cards}>
