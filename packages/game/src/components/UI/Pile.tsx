@@ -13,14 +13,7 @@ interface PileProps {
 
 const Pile = forwardRef<HTMLDivElement, PileProps>(
   ({ type, cardCount, onClick, disabled = false }, ref) => {
-    const getStackLayers = (count: number): number => {
-      if (count === 0) return 0;
-      if (count <= 3) return count;
-      if (count <= 10) return Math.min(5, Math.ceil(count / 2));
-      return Math.min(8, Math.ceil(count / 4));
-    };
-
-    const stackLayers = getStackLayers(cardCount);
+    // No grouping - render one div per card for accurate representation
 
     const getLabel = (type: PileType): string => {
       switch (type) {
@@ -103,46 +96,46 @@ const Pile = forwardRef<HTMLDivElement, PileProps>(
           data-type={type}
           style={
             {
-              '--card-count': cardCount,
-              '--stack-layers': stackLayers,
               '--bg-color': colors.bg,
               '--border-color': colors.border,
               '--text-color': colors.text,
-              boxShadow:
-                cardCount > 0
-                  ? `0 4px 8px rgba(0, 0, 0, 0.1), 0 0 20px ${colors.glow}`
-                  : '0 2px 4px rgba(0, 0, 0, 0.05)',
+              '--card-count': cardCount,
             } as React.CSSProperties
           }
         >
-          {/* Render background stack layers (behind top card) */}
-          {stackLayers > 1 &&
-            Array.from({ length: stackLayers - 1 }, (_, index) => (
+          {/* Render one div per card - actual representation of pile size */}
+          {Array.from({ length: cardCount }, (_, index) => {
+            const isTopCard = index === cardCount - 1;
+
+            return (
               <div
                 key={index}
-                className={styles.stackLayer}
+                className={isTopCard ? styles.topCard : styles.stackCard}
                 style={
                   {
-                    '--layer-index': index + 1, // Start from 1 (behind top card)
-                    zIndex: stackLayers - index - 1,
+                    '--card-index': index,
+                    zIndex: index,
                   } as React.CSSProperties
                 }
-              />
-            ))}
-
-          {/* Top card - always looks the same */}
-          <div className={styles.topCard}>
-            <div className={styles.pileLabel}>{getLabel(type)}</div>
-            <motion.div
-              className={styles.pileCount}
-              key={`${type}-${cardCount}`}
-              initial={{ scale: 1.2 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              {cardCount}
-            </motion.div>
-          </div>
+              >
+                {/* Only show content on the top card */}
+                {isTopCard && (
+                  <>
+                    <div className={styles.pileLabel}>{getLabel(type)}</div>
+                    <motion.div
+                      className={styles.pileCount}
+                      key={`${type}-${cardCount}`}
+                      initial={{ scale: 1.2 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {cardCount}
+                    </motion.div>
+                  </>
+                )}
+              </div>
+            );
+          })}
         </motion.div>
       </motion.div>
     );
