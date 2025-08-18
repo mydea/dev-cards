@@ -25,12 +25,17 @@ export const CARD_QUICK_BUG_FIX = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 5,
+      value: 3,
     },
   ],
   effects: [
     {
       type: EFFECT_TYPE_REMOVE_BUGS,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 1,
+    },
+    {
+      type: EFFECT_TYPE_ADD_PROGRESS,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
       value: 1,
     },
@@ -116,7 +121,7 @@ export const CARD_CODE_REVIEW = {
     {
       type: EFFECT_TYPE_ADD_PROGRESS,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 2,
+      value: 3,
     },
     {
       type: EFFECT_TYPE_REMOVE_BUGS,
@@ -126,7 +131,7 @@ export const CARD_CODE_REVIEW = {
     {
       type: EFFECT_TYPE_DRAW_CARDS,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 2,
+      value: 1,
     },
   ],
 } as const satisfies Card;
@@ -170,7 +175,7 @@ export const CARD_PAIR_PROGRAMMING = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 10,
+      value: 8,
     },
   ],
   effects: [
@@ -182,7 +187,7 @@ export const CARD_PAIR_PROGRAMMING = {
     {
       type: EFFECT_TYPE_REMOVE_BUGS,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 1,
+      value: 2,
     },
     {
       type: EFFECT_TYPE_REMOVE_TECHNICAL_DEBT,
@@ -353,21 +358,21 @@ export const CARD_DATABASE_MIGRATION = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 9,
+      value: 7,
     },
   ],
   effects: [
     {
       type: EFFECT_TYPE_ADD_PROGRESS,
       randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
-      headsValue: 12,
-      tailsValue: 3,
+      headsValue: 10,
+      tailsValue: 4,
     },
     {
       type: EFFECT_TYPE_ADD_BUGS,
       randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
       headsValue: 0,
-      tailsValue: 3,
+      tailsValue: 2,
     },
   ],
 } as const satisfies Card;
@@ -412,18 +417,18 @@ export const CARD_TECH_DEBT_CLEANUP = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 8,
+      value: 6,
     },
     {
       type: REQUIREMENT_TYPE_DISCARD_CARDS,
-      value: 2,
+      value: 1,
     },
   ],
   effects: [
     {
       type: EFFECT_TYPE_REMOVE_TECHNICAL_DEBT,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 5,
+      value: 4,
     },
   ],
 } as const satisfies Card;
@@ -472,7 +477,7 @@ export const CARD_RUSH_IMPLEMENTATION = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 6,
+      value: 7,
     },
   ],
   effects: [
@@ -500,7 +505,7 @@ export const CARD_COPY_PASTE_SOLUTION = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 5,
+      value: 6,
     },
   ],
   effects: [
@@ -528,7 +533,7 @@ export const CARD_SKIP_CODE_REVIEW = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 4,
+      value: 5,
     },
   ],
   effects: [
