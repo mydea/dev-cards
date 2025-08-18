@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CoinFlipEffect } from '@dev-cards/data';
 import styles from './CoinFlip.module.css';
 
 // Helper functions for displaying effect information
@@ -49,49 +50,59 @@ function formatEffectValue(effectType: string, value: number): string {
   }
 }
 
-interface CoinFlipProps {
-  onComplete: (result: 'heads' | 'tails') => void;
+interface CoinFlipQueueItem {
+  effect: CoinFlipEffect;
   result: 'heads' | 'tails';
-  isVisible: boolean;
-  effect: {
-    type: string;
-    headsValue: number;
-    tailsValue: number;
-  };
+  resolvedValue: number;
+}
+
+interface CoinFlipOverlayProps {
+  queue: CoinFlipQueueItem[];
+  onAllComplete: (results: CoinFlipQueueItem[]) => void;
+  cardInstanceId: string;
 }
 
 const COIN_FLIP_DURATION = 3000;
 const RESULT_DISPLAY_DURATION = 3000;
 
-function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
+function CoinFlipOverlay({
+  queue,
+  onAllComplete,
+  cardInstanceId,
+}: CoinFlipOverlayProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
+  const [completedResults, setCompletedResults] = useState<CoinFlipQueueItem[]>(
+    []
+  );
 
-  let isCompleted = false;
+  const isVisible = queue.length > 0 && currentIndex < queue.length;
+  const currentEffect = queue[currentIndex];
 
-  useEffect(() => {
-    if (isVisible && !isFlipping) {
-      // Start the flip animation
-      setIsFlipping(true);
+  // Handle individual coin flip completion
+  const handleSingleCoinFlipComplete = (result: 'heads' | 'tails') => {
+    const updatedResults = [...completedResults, currentEffect];
+    setCompletedResults(updatedResults);
 
-      // Complete the animation after flip duration
-      setTimeout(() => {
-        setIsFlipping(false);
+    if (currentIndex < queue.length - 1) {
+      // More coin flips to process
+      setCurrentIndex(currentIndex + 1);
+      setIsFlipping(false); // Reset for next flip
+    } else {
+      // All coin flips complete
+      console.log('All coin flips complete for card:', cardInstanceId);
+      onAllComplete(updatedResults);
 
-        // Show result for 1 second, then complete
-        setTimeout(() => {
-          if (isCompleted) {
-            return;
-          }
-          isCompleted = true;
-          onComplete(result);
-        }, RESULT_DISPLAY_DURATION); // Show result for 3 seconds
-      }, COIN_FLIP_DURATION); // Flip for 3 seconds
+      // Reset state
+      setCurrentIndex(0);
+      setCompletedResults([]);
+      setIsFlipping(false);
     }
-  }, [isVisible, result, onComplete]);
+  };
 
-  // Handle click to complete early (only when showing result)
+  // Handle click to skip current coin flip
   const handleClick = () => {
-    if (!isVisible || isCompleted) {
+    if (!isVisible || !currentEffect) {
       return;
     }
 
@@ -102,11 +113,31 @@ function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
     }
 
     // Else, complete the flip
-    isCompleted = true;
-    onComplete(result);
+    handleSingleCoinFlipComplete(currentEffect.result);
   };
 
-  if (!isVisible) return null;
+  // Start animation when a new effect is active
+  useEffect(() => {
+    if (isVisible && currentEffect && !isFlipping) {
+      console.log(
+        `Starting coin flip ${currentIndex + 1}/${queue.length} for effect:`,
+        currentEffect.effect.type
+      );
+      setIsFlipping(true);
+
+      // Complete the animation after flip duration
+      setTimeout(() => {
+        setIsFlipping(false);
+
+        // Show result for designated time, then complete
+        setTimeout(() => {
+          handleSingleCoinFlipComplete(currentEffect.result);
+        }, RESULT_DISPLAY_DURATION);
+      }, COIN_FLIP_DURATION);
+    }
+  }, [currentIndex, isVisible, currentEffect]);
+
+  if (!isVisible || !currentEffect) return null;
 
   return (
     <AnimatePresence>
@@ -118,7 +149,7 @@ function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
         transition={{ duration: 0.3 }}
         onClick={handleClick}
         style={{
-          cursor: !isFlipping && !isCompleted ? 'pointer' : 'default',
+          cursor: !isFlipping ? 'pointer' : 'default',
         }}
       >
         <motion.div
@@ -133,7 +164,9 @@ function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
             delay: 0.1,
           }}
         >
-          <div className={styles.coinFlipLabel}>Coin Flip!</div>
+          <div className={styles.coinFlipLabel}>
+            Coin Flip {currentIndex + 1}/{queue.length}!
+          </div>
 
           <motion.div
             className={styles.coin}
@@ -144,14 +177,15 @@ function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
                     // Heads = even number of 180° rotations (0°, 360°, 720°)
                     // Tails = odd number of 180° rotations (180°, 540°, 900°)
                     rotateY:
-                      result === 'heads'
+                      currentEffect.result === 'heads'
                         ? [0, 360 * 3, 720 * 3]
                         : [0, 360 * 3, 900 * 3],
                     scale: [1, 1.2, 1],
                   }
                 : {
                     // When not flipping, immediately snap to final result
-                    rotateY: result === 'heads' ? 720 : 900,
+                    rotateY:
+                      currentEffect.result === 'heads' ? 720 * 3 : 900 * 3,
                     scale: 1,
                   }
             }
@@ -179,16 +213,22 @@ function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
             {isFlipping ? (
               <>
                 <div className={styles.effectType}>
-                  {getEffectDisplayName(effect.type)}
+                  {getEffectDisplayName(currentEffect.effect.type)}
                 </div>
                 <div className={styles.possibleOutcomes}>
                   <div className={styles.outcome}>
                     🎯 Heads:{' '}
-                    {formatEffectValue(effect.type, effect.headsValue)}
+                    {formatEffectValue(
+                      currentEffect.effect.type,
+                      currentEffect.effect.headsValue
+                    )}
                   </div>
                   <div className={styles.outcome}>
                     🎲 Tails:{' '}
-                    {formatEffectValue(effect.type, effect.tailsValue)}
+                    {formatEffectValue(
+                      currentEffect.effect.type,
+                      currentEffect.effect.tailsValue
+                    )}
                   </div>
                 </div>
                 <div className={styles.waitText}>Wait for it...</div>
@@ -196,12 +236,14 @@ function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
             ) : (
               <>
                 <div className={styles.resultText}>
-                  {result === 'heads' ? '🎯 HEADS!' : '🎲 TAILS!'}
+                  {currentEffect.result === 'heads' ? '🎯 HEADS!' : '🎲 TAILS!'}
                 </div>
                 <div className={styles.finalValue}>
                   {formatEffectValue(
-                    effect.type,
-                    result === 'heads' ? effect.headsValue : effect.tailsValue
+                    currentEffect.effect.type,
+                    currentEffect.result === 'heads'
+                      ? currentEffect.effect.headsValue
+                      : currentEffect.effect.tailsValue
                   )}
                 </div>
               </>
@@ -213,4 +255,4 @@ function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
   );
 }
 
-export default CoinFlip;
+export default CoinFlipOverlay;

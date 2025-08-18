@@ -4,8 +4,6 @@ import type {
   GameState,
   GameEngine,
   CardInstance,
-  EffectResolution,
-  CardEffect,
   CoinFlipEffect,
 } from '@dev-cards/data';
 import { checkWinCondition, checkLoseCondition } from '@dev-cards/data';
@@ -15,7 +13,7 @@ import GameActions from '../UI/GameActions';
 import ParticleEffect from '../UI/ParticleEffect';
 import AnimationLayer, { type AnimationLayerRef } from '../UI/AnimationLayer';
 import Pile from '../UI/Pile';
-import CoinFlip from '../UI/CoinFlip';
+import CoinFlipOverlay from '../UI/CoinFlipOverlay';
 import Hand from '../Hand/Hand';
 import styles from './GameBoard.module.css';
 
@@ -45,21 +43,17 @@ function GameBoard({
 
   const [showParticles, setShowParticles] = useState(false);
 
-  // Coin flip animation state
-  const [coinFlipState, setCoinFlipState] = useState<{
-    isVisible: boolean;
+  // Coin flip queue state
+  const [coinFlipQueue, setCoinFlipQueue] = useState<{
     effects: Array<{
       effect: CoinFlipEffect;
       result: 'heads' | 'tails';
       resolvedValue: number;
     }>;
-    currentIndex: number;
     cardInstanceId?: string;
     cardsToDiscard?: any[];
   }>({
-    isVisible: false,
     effects: [],
-    currentIndex: 0,
   });
   const [isAnimating, setIsAnimating] = useState(false);
   const [animatingCardIds, setAnimatingCardIds] = useState<Set<string>>(
@@ -135,9 +129,7 @@ function GameBoard({
         setGameState(result.newState);
 
         // Check if any cards were drawn from effects
-        const drawnCards: CardInstance[] = result.data?.appliedEffects
-          ?.flatMap((effect: EffectResolution) => effect.drawnCards || [])
-          .filter(Boolean);
+        const drawnCards: CardInstance[] = [];
 
         return {
           success: true,
@@ -183,11 +175,9 @@ function GameBoard({
       preparation.coinFlipEffects &&
       preparation.coinFlipEffects.length > 0
     ) {
-      // Store the coin flip results but don't process the card yet
-      setCoinFlipState({
-        isVisible: true,
+      // Set up the coin flip queue - no processing yet
+      setCoinFlipQueue({
         effects: preparation.coinFlipEffects,
-        currentIndex: 0,
         cardInstanceId,
         cardsToDiscard: preparation.cardsToDiscard,
       });
@@ -328,128 +318,118 @@ function GameBoard({
     });
   };
 
-  // Handle coin flip animation completion
-  const handleCoinFlipComplete = (_result: 'heads' | 'tails') => {
-    const { effects, currentIndex, cardInstanceId } = coinFlipState;
+  // Handle all coin flip effects completion
+  const handleAllCoinFlipsComplete = (
+    results: Array<{
+      effect: CoinFlipEffect;
+      result: 'heads' | 'tails';
+      resolvedValue: number;
+    }>
+  ) => {
+    const { cardInstanceId, cardsToDiscard } = coinFlipQueue;
 
-    if (currentIndex < effects.length - 1) {
-      // More coin flips to show
-      setCoinFlipState((prev) => ({
-        ...prev,
-        currentIndex: prev.currentIndex + 1,
-      }));
-    } else {
-      // All coin flips complete, hide overlay and process card
-      setCoinFlipState({
-        isVisible: false,
-        effects: [],
-        currentIndex: 0,
-        cardsToDiscard: undefined,
-      });
+    if (!cardInstanceId) {
+      console.error('No card instance ID in coin flip queue');
+      return;
+    }
 
-      if (cardInstanceId) {
-        // Now process the card with predetermined coin flip results
-        try {
-          const result = gameEngine.processActionWithPredeterminedCoinFlips(
-            {
-              type: 'PLAY_CARD',
-              cardInstanceId,
-            },
-            coinFlipState.effects
-          );
+    console.log('All coin flips complete, processing card:', cardInstanceId);
 
-          if (result.success && result.newState) {
-            setGameState(result.newState);
+    // Clear the queue
+    setCoinFlipQueue({
+      effects: [],
+    });
 
-            // Check for game over conditions
-            const winCondition = checkWinCondition(result.newState);
-            const loseCondition = checkLoseCondition(result.newState);
+    // Now process the card with predetermined coin flip results
+    try {
+      const result = gameEngine.processActionWithPredeterminedCoinFlips(
+        {
+          type: 'PLAY_CARD',
+          cardInstanceId,
+        },
+        results
+      );
 
-            if (winCondition.hasWon) {
-              setGameOver({
-                isGameOver: true,
-                won: true,
-                message: winCondition.message,
-              });
-              setShowParticles(true);
-            } else if (loseCondition.hasLost) {
-              setGameOver({
-                isGameOver: true,
-                won: false,
-                message: loseCondition.message,
-              });
-            }
+      if (result.success && result.newState) {
+        setGameState(result.newState);
 
-            const playResult = {
-              success: true,
-              drawnCards: result.data?.appliedEffects
-                ?.filter(
-                  (resolution: EffectResolution) => resolution.drawnCards
-                )
-                .flatMap(
-                  (resolution: EffectResolution) => resolution.drawnCards || []
-                ),
-            };
+        // Check for game over conditions
+        const winCondition = checkWinCondition(result.newState);
+        const loseCondition = checkLoseCondition(result.newState);
 
-            if (playResult.success) {
-              // Start visual-only animation
-              setIsAnimating(true);
-              setAnimatingCardIds((prev) => new Set(prev).add(cardInstanceId));
-
-              const cardElement = cardElements[cardInstanceId];
-              if (cardElement) {
-                const { cardsToDiscard } = coinFlipState;
-                if (cardsToDiscard && cardsToDiscard.length > 0) {
-                  // Animate discard requirements (visual only)
-                  handleVisualDiscardAnimation(
-                    cardElement,
-                    cardsToDiscard,
-                    cardInstanceId
-                  );
-                } else {
-                  // Simple card to graveyard animation (visual only)
-                  handleVisualCardToGraveyardAnimation(
-                    cardElement,
-                    cardInstanceId
-                  );
-                }
-
-                // Handle draw animations if any cards were drawn
-                if (playResult.drawnCards && playResult.drawnCards.length > 0) {
-                  const drawnCardIds: string[] = playResult.drawnCards.map(
-                    (card) => card.instanceId as string
-                  );
-                  setAnimatingCardIds(
-                    (prev) => new Set<string>([...prev, ...drawnCardIds])
-                  );
-
-                  handleDrawCardsAnimated(playResult.drawnCards, () => {
-                    // Draw animations complete
-                  });
-                }
-              }
-            }
-          } else {
-            console.error('Card play failed after coin flip:', result.error);
-            // Reset animation states
-            setIsAnimating(false);
-            setAnimatingCardIds((prev) => {
-              const newSet = new Set(prev);
-              newSet.delete(cardInstanceId);
-              return newSet;
-            });
-          }
-        } catch (error) {
-          console.error('Error processing card after coin flip:', error);
-          // Reset animation states
-          setIsAnimating(false);
-          setAnimatingCardIds((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete(cardInstanceId);
-            return newSet;
+        if (winCondition) {
+          setGameOver({
+            isGameOver: true,
+            won: true,
+            message: 'Congratulations! You won!',
+          });
+          setShowParticles(true);
+        } else if (loseCondition) {
+          setGameOver({
+            isGameOver: true,
+            won: false,
+            message: 'Game Over! Try again.',
           });
         }
+
+        const playResult = {
+          success: true,
+          drawnCards: [],
+        };
+
+        if (playResult.success) {
+          // Start visual-only animation
+          setIsAnimating(true);
+          setAnimatingCardIds((prev) => new Set(prev).add(cardInstanceId));
+
+          const cardElement = cardElements[cardInstanceId];
+          if (cardElement) {
+            if (cardsToDiscard && cardsToDiscard.length > 0) {
+              // Animate discard requirements (visual only)
+              handleVisualDiscardAnimation(
+                cardElement,
+                cardsToDiscard,
+                cardInstanceId
+              );
+            } else {
+              // Simple card to graveyard animation (visual only)
+              handleVisualCardToGraveyardAnimation(cardElement, cardInstanceId);
+            }
+
+            // Handle draw animations if any cards were drawn
+            if (playResult.drawnCards && playResult.drawnCards.length > 0) {
+              const drawnCardIds: string[] = playResult.drawnCards.map(
+                (card: CardInstance) => card.instanceId
+              );
+              setAnimatingCardIds(
+                (prev) => new Set<string>([...prev, ...drawnCardIds])
+              );
+
+              handleDrawCardsAnimated(playResult.drawnCards, () => {
+                // Draw animations complete
+              });
+            }
+          }
+        }
+      } else {
+        console.error('Card play failed after coin flip:', result.error);
+        // Reset animation states
+        setIsAnimating(false);
+        setAnimatingCardIds((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(cardInstanceId);
+          return newSet;
+        });
       }
+    } catch (error) {
+      console.error('Error processing card after coin flip:', error);
+      // Reset animation states
+      setIsAnimating(false);
+      setAnimatingCardIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(cardInstanceId);
+        return newSet;
+      });
     }
   };
 
@@ -793,11 +773,8 @@ function GameBoard({
       won: false,
       message: '',
     });
-    setCoinFlipState({
-      isVisible: false,
+    setCoinFlipQueue({
       effects: [],
-      currentIndex: 0,
-      cardsToDiscard: undefined,
     });
   };
 
@@ -884,7 +861,9 @@ function GameBoard({
               animatingCardIds={animatingCardIds}
               gameState={gameState}
               disabled={
-                gameOver.isGameOver || isAnimating || coinFlipState.isVisible
+                gameOver.isGameOver ||
+                isAnimating ||
+                coinFlipQueue.effects.length > 0
               }
             />
           </motion.div>
@@ -895,7 +874,9 @@ function GameBoard({
               onTechnicalDebtReduction={handleTechnicalDebtReductionAnimated}
               gameState={gameState}
               disabled={
-                gameOver.isGameOver || isAnimating || coinFlipState.isVisible
+                gameOver.isGameOver ||
+                isAnimating ||
+                coinFlipQueue.effects.length > 0
               }
             />
           </motion.div>
@@ -995,20 +976,11 @@ function GameBoard({
           onComplete={() => setShowParticles(false)}
         />
 
-        {/* Coin flip animation overlay */}
-        <CoinFlip
-          isVisible={coinFlipState.isVisible}
-          result={
-            coinFlipState.effects[coinFlipState.currentIndex]?.result || 'heads'
-          }
-          effect={
-            coinFlipState.effects[coinFlipState.currentIndex]?.effect || {
-              type: 'ADD_PROGRESS',
-              headsValue: 0,
-              tailsValue: 0,
-            }
-          }
-          onComplete={handleCoinFlipComplete}
+        {/* Coin flip overlay */}
+        <CoinFlipOverlay
+          queue={coinFlipQueue.effects}
+          onAllComplete={handleAllCoinFlipsComplete}
+          cardInstanceId={coinFlipQueue.cardInstanceId || ''}
         />
       </motion.div>
     </AnimationLayer>
