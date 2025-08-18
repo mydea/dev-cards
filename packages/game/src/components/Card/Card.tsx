@@ -5,7 +5,7 @@ import styles from './Card.module.css';
 
 interface CardProps {
   cardInstance: CardInstance;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
   isPlayable?: boolean;
   disabled?: boolean;
   validationError?: string;
@@ -23,9 +23,9 @@ function Card({
   const [showTooltip, setShowTooltip] = useState(false);
   const { card } = cardInstance;
 
-  const handleClick = () => {
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!disabled && onClick) {
-      onClick();
+      onClick(event);
     }
   };
 
@@ -244,7 +244,13 @@ function Card({
         onKeyDown={(e) => {
           if ((e.key === 'Enter' || e.key === ' ') && onClick && !disabled) {
             e.preventDefault();
-            onClick();
+            // Create a synthetic mouse event for keyboard activation
+            const syntheticEvent = {
+              currentTarget: e.currentTarget,
+              preventDefault: () => {},
+              stopPropagation: () => {},
+            } as React.MouseEvent<HTMLDivElement>;
+            onClick(syntheticEvent);
           }
         }}
         style={{

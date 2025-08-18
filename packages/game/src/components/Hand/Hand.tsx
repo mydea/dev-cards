@@ -6,18 +6,22 @@ import styles from './Hand.module.css';
 
 interface HandProps {
   cards: CardInstance[];
-  onPlayCard: (cardInstanceId: string) => void;
+  onPlayCard: (cardInstanceId: string, cardElement: HTMLElement) => void;
   gameState: GameState;
   disabled?: boolean;
 }
 
 function Hand({ cards, onPlayCard, gameState, disabled = false }: HandProps) {
-  const handleCardClick = (cardInstance: CardInstance) => {
+  const handleCardClick = (
+    cardInstance: CardInstance,
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
     if (disabled) return;
 
     const validation = validateCardPlay(cardInstance, gameState);
     if (validation.canPlay) {
-      onPlayCard(cardInstance.instanceId);
+      const cardElement = event.currentTarget;
+      onPlayCard(cardInstance.instanceId, cardElement);
     }
   };
 
@@ -124,7 +128,7 @@ function Hand({ cards, onPlayCard, gameState, disabled = false }: HandProps) {
               >
                 <Card
                   cardInstance={cardInstance}
-                  onClick={() => handleCardClick(cardInstance)}
+                  onClick={(event) => handleCardClick(cardInstance, event)}
                   isPlayable={isPlayable}
                   disabled={disabled}
                   validationError={

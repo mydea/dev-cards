@@ -1,0 +1,29 @@
+.animationLayer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.flyingCardsContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.flyingCard {
+  position: fixed;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform-origin: center center;
+}
+
+/* Ensure flying cards appear above everything else */
+.flyingCard > * {
+  pointer-events: none;
+  user-select: none;
+}
