@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { GameState } from '@dev-cards/data';
 import styles from './ResourceDisplay.module.css';
@@ -276,4 +276,16 @@ function ResourceDisplay({ gameState }: ResourceDisplayProps) {
   );
 }
 
-export default ResourceDisplay;
+// Memoize the component to prevent unnecessary re-renders
+export default memo(ResourceDisplay, (prevProps, nextProps) => {
+  // Only re-render if the actual resource values change
+  const prevResources = prevProps.gameState.resources;
+  const nextResources = nextProps.gameState.resources;
+
+  return (
+    prevResources.progress === nextResources.progress &&
+    prevResources.bugs === nextResources.bugs &&
+    prevResources.technicalDebt === nextResources.technicalDebt &&
+    prevResources.productivityPoints === nextResources.productivityPoints
+  );
+});
