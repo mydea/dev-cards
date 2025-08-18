@@ -1,0 +1,120 @@
+.gameActions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  align-items: center;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: var(--surface-card);
+  border: 2px solid var(--border-color);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  color: var(--text-primary);
+  font-family: inherit;
+  min-width: 160px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.actionButton:hover:not(:disabled) {
+  border-color: var(--color-primary-300);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transform: translateY(-1px);
+}
+
+.actionButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: 0 2px 4px var(--shadow-color) !important;
+}
+
+.actionButton[data-primary="true"]:not(:disabled) {
+  background: var(--gradient-primary);
+  color: var(--text-inverse);
+  border-color: var(--color-primary-600);
+}
+
+.actionButton[data-primary="true"]:hover:not(:disabled) {
+  border-color: var(--color-primary-700);
+  box-shadow: 0 4px 16px var(--color-primary-200);
+}
+
+.buttonIcon {
+  font-size: 1.5rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+.buttonText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.buttonLabel {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+}
+
+.buttonSubtext {
+  font-size: var(--font-size-xs);
+  opacity: 0.8;
+  font-weight: var(--font-weight-normal);
+  line-height: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .gameActions {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .actionButton {
+    width: 100%;
+    justify-content: center;
+    min-width: auto;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .buttonText {
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .actionButton {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    text-align: center;
+  }
+
+  .buttonIcon {
+    font-size: 1.25rem;
+  }
+
+  .buttonLabel {
+    font-size: var(--font-size-sm);
+  }
+
+  .buttonSubtext {
+    font-size: 0.7rem;
+  }
+}
+

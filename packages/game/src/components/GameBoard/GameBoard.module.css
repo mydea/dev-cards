@@ -1,0 +1,226 @@
+.gameBoard {
+  width: 100%;
+  max-width: 1400px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--surface-card);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px var(--shadow-color);
+  z-index: 10;
+}
+
+.gameOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.gameOverContent {
+  background: var(--surface-card);
+  padding: var(--spacing-3xl);
+  border-radius: var(--radius-2xl);
+  text-align: center;
+  box-shadow: 0 20px 40px var(--shadow-color-strong);
+  max-width: 400px;
+  width: 90%;
+}
+
+.gameOverContent h2 {
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-primary);
+}
+
+.gameOverContent p {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.6;
+}
+
+.finalScore {
+  font-size: var(--font-size-xl) !important;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-600) !important;
+  margin-bottom: var(--spacing-xl) !important;
+}
+
+.newGameButton, .menuButton {
+  background: var(--gradient-primary);
+  color: var(--text-inverse);
+  border: none;
+  padding: var(--spacing-md) var(--spacing-xl);
+  margin: var(--spacing-sm);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  min-width: 120px;
+}
+
+.menuButton {
+  background: var(--color-gray-500);
+}
+
+.newGameButton:hover, .menuButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow-color-strong);
+}
+
+.gameArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-lg);
+  gap: var(--spacing-xl);
+  min-height: 0; /* Allow flex child to shrink */
+}
+
+.piles {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
+}
+
+.pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pileCard {
+  width: var(--card-width);
+  height: var(--card-height);
+  border: 2px solid var(--border-color);
+  border-radius: var(--card-border-radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  background: var(--surface-secondary);
+  transition: all var(--transition-base);
+}
+
+.pileCard[data-type="deck"] {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-200);
+  color: var(--color-primary-700);
+}
+
+.pileCard[data-type="discard"] {
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-200);
+  color: var(--color-gray-700);
+}
+
+.pileCard[data-type="graveyard"] {
+  background: var(--color-gray-800);
+  border-color: var(--color-gray-600);
+  color: var(--color-gray-300);
+}
+
+.pileLabel {
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pileCount {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.handArea {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .gameBoard {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+
+  .gameArea {
+    padding: var(--spacing-md);
+    gap: var(--spacing-lg);
+  }
+
+  .piles {
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .piles {
+    gap: var(--spacing-sm);
+  }
+
+  .pileCard {
+    width: calc(var(--card-width) * 0.8);
+    height: calc(var(--card-height) * 0.8);
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .gameOverContent {
+    padding: var(--spacing-xl);
+  }
+
+  .gameOverContent h2 {
+    font-size: var(--font-size-2xl);
+  }
+}
+
