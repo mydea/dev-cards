@@ -5,6 +5,7 @@ import type {
   GameEngine,
   CardInstance,
   EffectResolution,
+  CardEffect,
 } from '@dev-cards/data';
 import { checkWinCondition, checkLoseCondition } from '@dev-cards/data';
 import GameInfo from '../UI/GameInfo';
@@ -13,6 +14,7 @@ import GameActions from '../UI/GameActions';
 import ParticleEffect from '../UI/ParticleEffect';
 import AnimationLayer, { type AnimationLayerRef } from '../UI/AnimationLayer';
 import Pile from '../UI/Pile';
+import CoinFlip from '../UI/CoinFlip';
 import Hand from '../Hand/Hand';
 import styles from './GameBoard.module.css';
 
@@ -41,6 +43,22 @@ function GameBoard({
   });
 
   const [showParticles, setShowParticles] = useState(false);
+
+  // Coin flip animation state
+  const [coinFlipState, setCoinFlipState] = useState<{
+    isVisible: boolean;
+    effects: Array<{
+      effect: CardEffect;
+      result: 'heads' | 'tails';
+      resolvedValue: number;
+    }>;
+    currentIndex: number;
+    cardInstanceId?: string;
+  }>({
+    isVisible: false,
+    effects: [],
+    currentIndex: 0,
+  });
   const [isAnimating, setIsAnimating] = useState(false);
   const [animatingCardIds, setAnimatingCardIds] = useState<Set<string>>(
     new Set()
@@ -154,10 +172,26 @@ function GameBoard({
       return;
     }
 
-    // Prepare the card play to see if it has discard requirements (before processing)
+    // Prepare the card play to see if it has discard requirements or coin flips
     const preparation = gameEngine.prepareCardPlay(cardInstanceId);
 
-    // Process the card play immediately (game logic)
+    // Check if there are coin flip effects that need animation
+    if (
+      preparation.success &&
+      preparation.coinFlipEffects &&
+      preparation.coinFlipEffects.length > 0
+    ) {
+      // Start coin flip animations before processing card
+      setCoinFlipState({
+        isVisible: true,
+        effects: preparation.coinFlipEffects,
+        currentIndex: 0,
+        cardInstanceId,
+      });
+      return; // Wait for coin flip animations to complete
+    }
+
+    // No coin flips, process the card play immediately (game logic)
     const playResult = handlePlayCard(cardInstanceId);
 
     if (!playResult.success) {
@@ -187,7 +221,7 @@ function GameBoard({
     // Handle draw animations if any cards were drawn
     if (playResult.drawnCards && playResult.drawnCards.length > 0) {
       const drawnCardIds: string[] = playResult.drawnCards.map(
-        (card: any) => card.instanceId as string
+        (card) => card.instanceId as string
       );
       setAnimatingCardIds(
         (prev) => new Set<string>([...prev, ...drawnCardIds])
@@ -289,6 +323,73 @@ function GameBoard({
         completeVisualAnimation();
       }
     });
+  };
+
+  // Handle coin flip animation completion
+  const handleCoinFlipComplete = (_result: 'heads' | 'tails') => {
+    const { effects, currentIndex, cardInstanceId } = coinFlipState;
+
+    if (currentIndex < effects.length - 1) {
+      // More coin flips to show
+      setCoinFlipState((prev) => ({
+        ...prev,
+        currentIndex: prev.currentIndex + 1,
+      }));
+    } else {
+      // All coin flips complete, hide overlay and process card
+      setCoinFlipState({
+        isVisible: false,
+        effects: [],
+        currentIndex: 0,
+      });
+
+      if (cardInstanceId) {
+        // Process the card play now that animations are complete
+        const playResult = handlePlayCard(cardInstanceId);
+
+        if (playResult.success) {
+          // Start visual-only animation
+          setIsAnimating(true);
+          setAnimatingCardIds((prev) => new Set(prev).add(cardInstanceId));
+
+          const cardElement = cardElements[cardInstanceId];
+          if (cardElement) {
+            // Get the preparation again for visual animation
+            const preparation = gameEngine.prepareCardPlay(cardInstanceId);
+
+            if (
+              preparation.success &&
+              preparation.cardsToDiscard &&
+              preparation.cardsToDiscard.length > 0
+            ) {
+              // Animate discard requirements (visual only)
+              handleVisualDiscardAnimation(
+                cardElement,
+                preparation.cardsToDiscard,
+                cardInstanceId
+              );
+            } else {
+              // Simple card to graveyard animation (visual only)
+              handleVisualCardToGraveyardAnimation(cardElement, cardInstanceId);
+            }
+
+            // Handle draw animations if any cards were drawn
+            if (playResult.drawnCards && playResult.drawnCards.length > 0) {
+              const drawnCardIds: string[] = playResult.drawnCards.map(
+                (card) => card.instanceId as string
+              );
+              setAnimatingCardIds(
+                (prev) => new Set<string>([...prev, ...drawnCardIds])
+              );
+
+              handleDrawCardsAnimated(playResult.drawnCards, () => {
+                // Draw animations complete
+              });
+            }
+          }
+        }
+      }
+    }
   };
 
   const handleEndTurn = () => {
@@ -631,6 +732,11 @@ function GameBoard({
       won: false,
       message: '',
     });
+    setCoinFlipState({
+      isVisible: false,
+      effects: [],
+      currentIndex: 0,
+    });
   };
 
   // Animation variants
@@ -715,7 +821,9 @@ function GameBoard({
               onCardUnmount={handleCardUnmount}
               animatingCardIds={animatingCardIds}
               gameState={gameState}
-              disabled={gameOver.isGameOver || isAnimating}
+              disabled={
+                gameOver.isGameOver || isAnimating || coinFlipState.isVisible
+              }
             />
           </motion.div>
 
@@ -724,7 +832,9 @@ function GameBoard({
               onEndTurn={handleEndTurnAnimated}
               onTechnicalDebtReduction={handleTechnicalDebtReductionAnimated}
               gameState={gameState}
-              disabled={gameOver.isGameOver || isAnimating}
+              disabled={
+                gameOver.isGameOver || isAnimating || coinFlipState.isVisible
+              }
             />
           </motion.div>
         </motion.div>
@@ -821,6 +931,15 @@ function GameBoard({
           isActive={showParticles}
           type="celebration"
           onComplete={() => setShowParticles(false)}
+        />
+
+        {/* Coin flip animation overlay */}
+        <CoinFlip
+          isVisible={coinFlipState.isVisible}
+          result={
+            coinFlipState.effects[coinFlipState.currentIndex]?.result || 'heads'
+          }
+          onComplete={handleCoinFlipComplete}
         />
       </motion.div>
     </AnimationLayer>

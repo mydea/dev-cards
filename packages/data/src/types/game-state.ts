@@ -173,5 +173,5 @@ export interface ActionResult {
   error?: string;
 
   /** Additional data from the action */
-  data?: any;
+  data?: unknown;
 }

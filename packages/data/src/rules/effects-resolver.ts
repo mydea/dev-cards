@@ -15,7 +15,8 @@ import {
  */
 export function resolveEffect(
   effect: CardEffect,
-  _gameState: GameState
+  _gameState: GameState,
+  predeterminedOutcome?: 'heads' | 'tails'
 ): EffectResolution {
   let resolvedValue = 0;
   let randomOutcome: 'heads' | 'tails' | undefined;
@@ -27,10 +28,18 @@ export function resolveEffect(
       break;
 
     case RANDOM_EFFECT_TYPE_COIN_FLIP:
-      // Simulate coin flip
-      const isHeads = Math.random() < 0.5;
-      randomOutcome = isHeads ? 'heads' : 'tails';
-      resolvedValue = isHeads ? effect.headsValue : effect.tailsValue;
+      // Use predetermined outcome if provided, otherwise simulate coin flip
+      if (predeterminedOutcome) {
+        randomOutcome = predeterminedOutcome;
+        resolvedValue =
+          predeterminedOutcome === 'heads'
+            ? effect.headsValue
+            : effect.tailsValue;
+      } else {
+        const isHeads = Math.random() < 0.5;
+        randomOutcome = isHeads ? 'heads' : 'tails';
+        resolvedValue = isHeads ? effect.headsValue : effect.tailsValue;
+      }
       break;
 
     default:
@@ -126,7 +135,8 @@ export function applyEffectToGameState(
  */
 export function resolveAndApplyEffects(
   effects: CardEffect[],
-  gameState: GameState
+  gameState: GameState,
+  predeterminedOutcomes?: { [effectIndex: number]: 'heads' | 'tails' }
 ): {
   newGameState: GameState;
   resolutions: EffectResolution[];
@@ -134,9 +144,14 @@ export function resolveAndApplyEffects(
   let currentGameState = gameState;
   const resolutions: EffectResolution[] = [];
 
-  for (const effect of effects) {
+  for (let i = 0; i < effects.length; i++) {
+    const effect = effects[i];
     // Resolve the effect based on current state
-    const resolution = resolveEffect(effect, currentGameState);
+    const resolution = resolveEffect(
+      effect,
+      currentGameState,
+      predeterminedOutcomes?.[i]
+    );
     resolutions.push(resolution);
 
     // Apply the resolved effect to get new state

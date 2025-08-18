@@ -8,6 +8,9 @@ import type {
   GamePiles,
   CardInstance,
   GameHistoryEntry,
+  EffectType,
+  CardEffect,
+  EffectResolution,
 } from '../types';
 import {
   GAME_PHASE_PLANNING,
@@ -19,6 +22,7 @@ import {
   REQUIREMENT_TYPE_DISCARD_CARDS,
 } from '../types';
 import { DEFAULT_DECK, createCardInstance, shuffleDeck } from '../cards';
+import { RANDOM_EFFECT_TYPE_COIN_FLIP } from '../types';
 import {
   validateCardPlay,
   validateTechnicalDebtReduction,
@@ -219,12 +223,17 @@ export class GameEngine {
   }
 
   /**
-   * Prepares a card for playing and returns discard requirements for animation
+   * Prepares a card for playing and returns requirements/coin flips for animation
    */
   public prepareCardPlay(cardInstanceId: string): {
     success: boolean;
     error?: string;
     cardsToDiscard?: CardInstance[];
+    coinFlipEffects?: Array<{
+      effect: CardEffect;
+      result: 'heads' | 'tails';
+      resolvedValue: number;
+    }>;
   } {
     if (!this.gameState) {
       return { success: false, error: 'No game state' };
@@ -267,9 +276,31 @@ export class GameEngine {
       }
     }
 
+    // Pre-resolve coin flip effects for animation
+    const coinFlipEffects: Array<{
+      effect: CardEffect;
+      result: 'heads' | 'tails';
+      resolvedValue: number;
+    }> = [];
+
+    cardInstance.card.effects.forEach((effect) => {
+      if (effect.randomType === RANDOM_EFFECT_TYPE_COIN_FLIP) {
+        const isHeads = Math.random() < 0.5;
+        const result = isHeads ? 'heads' : 'tails';
+        const resolvedValue = isHeads ? effect.headsValue : effect.tailsValue;
+
+        coinFlipEffects.push({
+          effect,
+          result,
+          resolvedValue,
+        });
+      }
+    });
+
     return {
       success: true,
       cardsToDiscard,
+      coinFlipEffects: coinFlipEffects.length > 0 ? coinFlipEffects : undefined,
     };
   }
 
@@ -589,7 +620,7 @@ export class GameEngine {
     stateBefore: Partial<GameResources>,
     stateAfter: Partial<GameResources>,
     cardId?: string,
-    effectResolutions?: any[]
+    effectResolutions?: EffectResolution[]
   ): void {
     if (!this.gameState) return;
 
@@ -618,7 +649,11 @@ export class GameEngine {
   /**
    * Gets a serializable save state
    */
-  getSaveState(): any {
+  getSaveState(): {
+    gameState: GameState;
+    savedAt: number;
+    version: string;
+  } | null {
     if (!this.gameState) return null;
 
     return {
