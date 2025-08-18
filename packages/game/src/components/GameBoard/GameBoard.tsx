@@ -7,7 +7,7 @@ import ResourceDisplay from '../UI/ResourceDisplay';
 import GameActions from '../UI/GameActions';
 import ParticleEffect from '../UI/ParticleEffect';
 import AnimationLayer, { type AnimationLayerRef } from '../UI/AnimationLayer';
-import Hand, { type HandRef } from '../Hand/Hand';
+import Hand from '../Hand/Hand';
 import styles from './GameBoard.module.css';
 
 interface GameBoardProps {
@@ -40,7 +40,31 @@ function GameBoard({
   const animationLayerRef = useRef<AnimationLayerRef>(null);
   const graveyardRef = useRef<HTMLDivElement>(null);
   const discardRef = useRef<HTMLDivElement>(null);
-  const handRef = useRef<HandRef>(null);
+
+  // Track card elements for animations
+  const [cardElements, setCardElements] = useState<{
+    [cardId: string]: HTMLElement;
+  }>({});
+
+  const handleCardMount = (cardId: string, element: HTMLElement) => {
+    console.log('Card mounted:', cardId, !!element);
+    setCardElements((prev) => {
+      // Only update if the element is different to prevent unnecessary re-renders
+      if (prev[cardId] === element) return prev;
+      return { ...prev, [cardId]: element };
+    });
+  };
+
+  const handleCardUnmount = (cardId: string) => {
+    console.log('Card unmounted:', cardId);
+    setCardElements((prev) => {
+      // Only update if the element actually exists
+      if (!(cardId in prev)) return prev;
+      const newElements = { ...prev };
+      delete newElements[cardId];
+      return newElements;
+    });
+  };
 
   // Check for game over conditions whenever game state changes
   useEffect(() => {
@@ -145,30 +169,58 @@ function GameBoard({
     }
   };
 
-  // Animated discard handler using Hand ref
+  // Animated discard handler using tracked card elements
   const handleTechnicalDebtReductionAnimated = () => {
-    if (!handRef.current) {
-      // Fallback to immediate action if hand ref isn't available
+    console.log('handleTechnicalDebtReductionAnimated called');
+    console.log('Cards in hand:', gameState.piles.hand.length);
+    console.log('Tracked card elements:', Object.keys(cardElements));
+
+    if (gameState.piles.hand.length === 0) {
+      console.log('No cards in hand - immediate action');
       handleTechnicalDebtReduction();
       return;
     }
 
-    // Trigger the animated discard through the Hand component
-    handRef.current.discardAllCardsAnimated(() => {
-      // This callback is called when the animation setup is complete
-      // The actual game action will be processed after all animations finish
-    });
+    // Get card elements for cards in hand
+    const handCardElements = gameState.piles.hand
+      .map((card) => cardElements[card.instanceId])
+      .filter(Boolean);
+
+    console.log(
+      'Found',
+      handCardElements.length,
+      'card elements for animation'
+    );
+
+    if (handCardElements.length === 0) {
+      console.log('No card elements found - immediate action');
+      handleTechnicalDebtReduction();
+      return;
+    }
+
+    // Trigger animation directly
+    handleDiscardAllCardsWithAnimation(handCardElements);
   };
 
-  // Animated discard handler for multiple cards (called by Hand component)
-  const handleDiscardAllCardsWithAnimation = (cardElements: HTMLElement[]) => {
+  // Animated discard handler for multiple cards
+  const handleDiscardAllCardsWithAnimation = (
+    elementsToAnimate: HTMLElement[]
+  ) => {
     const cardsToDiscard = [...gameState.piles.hand];
+
+    console.log(
+      'Starting discard animation for',
+      cardsToDiscard.length,
+      'cards'
+    );
+    console.log('Card elements received:', elementsToAnimate.length);
 
     if (
       cardsToDiscard.length === 0 ||
       !animationLayerRef.current ||
       !discardRef.current
     ) {
+      console.log('Fallback to immediate action');
       // Fallback to immediate action if no cards or animation isn't available
       handleTechnicalDebtReduction();
       return;
@@ -179,10 +231,15 @@ function GameBoard({
     const totalCards = cardsToDiscard.length;
 
     cardsToDiscard.forEach((cardInstance, index) => {
-      const cardElement = cardElements[index];
+      const cardElement = elementsToAnimate[index];
+      console.log(`Card ${index}: element exists:`, !!cardElement);
+
       if (!cardElement) {
         completedAnimations++;
         if (completedAnimations === totalCards) {
+          console.log(
+            'All animations complete (no elements) - processing game logic'
+          );
           handleTechnicalDebtReduction();
         }
         return;
@@ -190,14 +247,21 @@ function GameBoard({
 
       // Stagger the animation start times
       setTimeout(() => {
+        console.log(
+          `Starting animation ${index} for card ${cardInstance.instanceId}`
+        );
         animationLayerRef.current?.animateCardToDiscard(
           cardInstance,
           cardElement,
           discardRef.current!,
           () => {
             completedAnimations++;
+            console.log(
+              `Animation ${index} complete - ${completedAnimations}/${totalCards}`
+            );
             // When all animations are done, process the game action
             if (completedAnimations === totalCards) {
+              console.log('All animations complete - processing game logic');
               handleTechnicalDebtReduction();
             }
           }
@@ -382,10 +446,20 @@ function GameBoard({
 
           <motion.div className={styles.handArea} variants={sectionVariants}>
             <Hand
-              ref={handRef}
               cards={gameState.piles.hand}
               onPlayCard={handlePlayCardWithAnimation}
-              onDiscardAll={handleDiscardAllCardsWithAnimation}
+              onCardMount={(cardId, element) => {
+                console.log(
+                  'GameBoard received onCardMount:',
+                  cardId,
+                  !!element
+                );
+                handleCardMount(cardId, element);
+              }}
+              onCardUnmount={(cardId) => {
+                console.log('GameBoard received onCardUnmount:', cardId);
+                handleCardUnmount(cardId);
+              }}
               gameState={gameState}
               disabled={gameOver.isGameOver}
             />
