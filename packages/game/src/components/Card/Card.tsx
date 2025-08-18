@@ -129,11 +129,7 @@ function Card({
             return `Draw ${effect.value} cards`;
           }
           break;
-        case 'SHUFFLE_DISCARD_TO_DECK':
-          if (effect.randomType === 'STATIC') {
-            return `Shuffle ${effect.value} from discard`;
-          }
-          break;
+
         default:
           return 'Unknown effect';
       }

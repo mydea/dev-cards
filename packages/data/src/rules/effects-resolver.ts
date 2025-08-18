@@ -5,7 +5,6 @@ import {
   EFFECT_TYPE_REMOVE_BUGS,
   EFFECT_TYPE_ADD_TECHNICAL_DEBT,
   EFFECT_TYPE_REMOVE_TECHNICAL_DEBT,
-  EFFECT_TYPE_SHUFFLE_DISCARD_TO_DECK,
   EFFECT_TYPE_DRAW_CARDS,
   RANDOM_EFFECT_TYPE_STATIC,
   RANDOM_EFFECT_TYPE_COIN_FLIP,
@@ -97,23 +96,6 @@ export function applyEffectToGameState(
         0,
         newResources.technicalDebt - resolution.resolvedValue
       );
-      break;
-
-    case EFFECT_TYPE_SHUFFLE_DISCARD_TO_DECK:
-      // Move cards from discard pile back to deck and shuffle
-      const cardsToShuffle = newPiles.discard.splice(
-        0,
-        Math.min(resolution.resolvedValue, newPiles.discard.length)
-      );
-      newPiles.deck.push(...cardsToShuffle);
-      // Simple shuffle algorithm (Fisher-Yates)
-      for (let i = newPiles.deck.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newPiles.deck[i], newPiles.deck[j]] = [
-          newPiles.deck[j],
-          newPiles.deck[i],
-        ];
-      }
       break;
 
     case EFFECT_TYPE_DRAW_CARDS:
