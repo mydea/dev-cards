@@ -19,11 +19,7 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "references": [
-    { "path": "./packages/data" },
-    { "path": "./packages/game" },
-    { "path": "./packages/api" }
-  ],
+  "references": [{ "path": "./packages/game" }, { "path": "./packages/api" }],
   "include": [],
   "exclude": ["node_modules", "**/dist", "**/build"]
 }
