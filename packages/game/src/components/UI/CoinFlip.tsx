@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './CoinFlip.module.css';
 
@@ -84,10 +84,27 @@ function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
           }
           isCompleted = true;
           onComplete(result);
-        }, RESULT_DISPLAY_DURATION); // Show result for 4 seconds
+        }, RESULT_DISPLAY_DURATION); // Show result for 3 seconds
       }, COIN_FLIP_DURATION); // Flip for 3 seconds
     }
   }, [isVisible, result, onComplete]);
+
+  // Handle click to complete early (only when showing result)
+  const handleClick = () => {
+    if (!isVisible || isCompleted) {
+      return;
+    }
+
+    // If flipping, stop it immediately
+    if (isFlipping) {
+      setIsFlipping(false);
+      return;
+    }
+
+    // Else, complete the flip
+    isCompleted = true;
+    onComplete(result);
+  };
 
   if (!isVisible) return null;
 
@@ -99,6 +116,10 @@ function CoinFlip({ onComplete, result, isVisible, effect }: CoinFlipProps) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
+        onClick={handleClick}
+        style={{
+          cursor: !isFlipping && !isCompleted ? 'pointer' : 'default',
+        }}
       >
         <motion.div
           className={styles.coinFlipContainer}

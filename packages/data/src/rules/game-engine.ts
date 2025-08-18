@@ -8,7 +8,6 @@ import type {
   GamePiles,
   CardInstance,
   GameHistoryEntry,
-  EffectType,
   CardEffect,
   EffectResolution,
 } from '../types';
@@ -21,7 +20,7 @@ import {
   REQUIREMENT_TYPE_SPEND_PP,
   REQUIREMENT_TYPE_DISCARD_CARDS,
 } from '../types';
-import { DEFAULT_DECK, createCardInstance, shuffleDeck } from '../cards';
+import { createCardInstance, createDeck, shuffleDeck } from '../cards';
 import { RANDOM_EFFECT_TYPE_COIN_FLIP } from '../types';
 import {
   validateCardPlay,
@@ -44,11 +43,12 @@ export class GameEngine {
     const seed = config?.seed || `game_${Date.now()}_${Math.random()}`;
     const playerId = config?.playerId;
     const deckCards = config?.deckIds
-      ? DEFAULT_DECK.filter((card) => config.deckIds!.includes(card.id))
-      : [...DEFAULT_DECK];
+      ? createDeck().filter((card) => config.deckIds!.includes(card.id))
+      : createDeck();
 
     // Create shuffled deck
     const shuffledDeck = shuffleDeck(deckCards);
+
     const cardInstances = shuffledDeck.map((card) => createCardInstance(card));
 
     // Initial hand (5 cards)
