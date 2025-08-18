@@ -91,8 +91,6 @@ function Hand({
     },
   };
 
-  console.log('Hand component rendering with', cards.length, 'cards');
-
   return (
     <motion.div
       className={styles.hand}
@@ -111,11 +109,6 @@ function Hand({
 
       <div className={styles.cards}>
         {cards.map((cardInstance, index) => {
-          console.log(
-            'SIMPLE MAP - Processing card',
-            index,
-            cardInstance.instanceId
-          );
           const validation = validateCardPlay(cardInstance, gameState);
           const isPlayable = validation.canPlay && !disabled;
 
@@ -123,18 +116,9 @@ function Hand({
             <div
               key={cardInstance.instanceId}
               ref={(el) => {
-                console.log(
-                  'SIMPLE REF CALLBACK - card:',
-                  cardInstance.instanceId,
-                  'element:',
-                  !!el
-                );
                 if (el && onCardMount) {
-                  console.log('SIMPLE - Calling onCardMount');
                   onCardMount(cardInstance.instanceId, el);
                 }
-                // Remove the onCardUnmount call to prevent infinite loop
-                // We'll clean up differently if needed
               }}
               style={{
                 display: 'inline-block',
