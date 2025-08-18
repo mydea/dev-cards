@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { GameState, GameEngine } from '@dev-cards/data';
+import type { GameState, GameEngine, CardInstance } from '@dev-cards/data';
 import { checkWinCondition, checkLoseCondition } from '@dev-cards/data';
 import GameInfo from '../UI/GameInfo';
 import ResourceDisplay from '../UI/ResourceDisplay';
@@ -126,24 +126,56 @@ function GameBoard({
       return;
     }
 
+    // Prepare the card play to see if it has discard requirements
+    const preparation = gameEngine.prepareCardPlay(cardInstanceId);
+
+    if (!preparation.success) {
+      console.error('Card preparation failed:', preparation.error);
+      return;
+    }
+
+    // Check if there are cards to discard as requirements
+    const hasDiscardRequirements =
+      (preparation.cardsToDiscard && preparation.cardsToDiscard.length > 0) ||
+      (preparation.cardsToGraveyard && preparation.cardsToGraveyard.length > 0);
+
+    if (hasDiscardRequirements) {
+      // Handle card with discard requirements
+      handleCardWithDiscardRequirements(
+        cardInstanceId,
+        cardElement,
+        preparation.cardsToDiscard || [],
+        preparation.cardsToGraveyard || []
+      );
+    } else {
+      // Handle normal card without discard requirements
+      handleNormalCardAnimation(cardInstanceId, cardElement);
+    }
+  };
+
+  // Handle normal card animation (no discard requirements)
+  const handleNormalCardAnimation = (
+    cardInstanceId: string,
+    cardElement: HTMLElement
+  ) => {
+    const cardInstance = gameState.piles.hand.find(
+      (card) => card.instanceId === cardInstanceId
+    );
+
+    if (!cardInstance) return;
+
     // Start animation state
     setIsAnimating(true);
     setAnimatingCardIds((prev) => new Set(prev).add(cardInstanceId));
 
-    // Store the game state at animation start to avoid stale closure issues
-    const gameStateAtAnimationStart = gameState;
-
     // Trigger the animation first
-    animationLayerRef.current.animateCardToGraveyard(
+    animationLayerRef.current!.animateCardToGraveyard(
       cardInstance,
       cardElement,
-      graveyardRef.current,
+      graveyardRef.current!,
       () => {
         // After animation completes, process the actual card action
-        // Check if the card still exists in the original state we captured
-        const cardStillExists = gameStateAtAnimationStart.piles.hand.find(
-          (card) => card.instanceId === cardInstanceId
-        );
+        handlePlayCard(cardInstanceId);
 
         setIsAnimating(false);
         setAnimatingCardIds((prev) => {
@@ -151,12 +183,84 @@ function GameBoard({
           newSet.delete(cardInstanceId);
           return newSet;
         });
-
-        if (cardStillExists) {
-          handlePlayCard(cardInstanceId);
-        }
       }
     );
+  };
+
+  // Handle card with discard requirements
+  const handleCardWithDiscardRequirements = (
+    cardInstanceId: string,
+    cardElement: HTMLElement,
+    cardsToDiscard: CardInstance[],
+    cardsToGraveyard: CardInstance[]
+  ) => {
+    const cardInstance = gameState.piles.hand.find(
+      (card) => card.instanceId === cardInstanceId
+    );
+
+    if (!cardInstance) return;
+
+    // Start animation state
+    setIsAnimating(true);
+
+    // Mark all cards that will be animated
+    const allAnimatingCards = [
+      cardInstanceId,
+      ...cardsToDiscard.map((c) => c.instanceId),
+      ...cardsToGraveyard.map((c) => c.instanceId),
+    ];
+    setAnimatingCardIds(new Set(allAnimatingCards));
+
+    let completedAnimations = 0;
+    const totalAnimations = 1 + cardsToDiscard.length + cardsToGraveyard.length;
+
+    const completeAnimation = () => {
+      completedAnimations++;
+      if (completedAnimations === totalAnimations) {
+        // All animations complete, now process the card
+        setIsAnimating(false);
+        setAnimatingCardIds(new Set());
+        handlePlayCard(cardInstanceId);
+      }
+    };
+
+    // Animate the main card to graveyard
+    animationLayerRef.current!.animateCardToGraveyard(
+      cardInstance,
+      cardElement,
+      graveyardRef.current!,
+      completeAnimation
+    );
+
+    // Animate requirement discards to discard pile
+    cardsToDiscard.forEach((discardCard) => {
+      const discardElement = cardElements[discardCard.instanceId];
+      if (discardElement && discardRef.current) {
+        animationLayerRef.current!.animateCardToDiscard(
+          discardCard,
+          discardElement,
+          discardRef.current,
+          completeAnimation
+        );
+      } else {
+        completeAnimation();
+      }
+    });
+
+    // Animate requirement graveyards to graveyard pile
+    cardsToGraveyard.forEach((graveCard) => {
+      const graveElement = cardElements[graveCard.instanceId];
+      if (graveElement && graveyardRef.current) {
+        animationLayerRef.current!.animateCardToGraveyard(
+          graveCard,
+          graveElement,
+          graveyardRef.current,
+          completeAnimation
+        );
+      } else {
+        completeAnimation();
+      }
+    });
   };
 
   const handleEndTurn = () => {

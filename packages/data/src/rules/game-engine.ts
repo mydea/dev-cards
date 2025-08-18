@@ -146,6 +146,74 @@ export class GameEngine {
   }
 
   /**
+   * Prepares a card for playing and returns discard requirements for animation
+   */
+  public prepareCardPlay(cardInstanceId: string): {
+    success: boolean;
+    error?: string;
+    cardsToDiscard?: CardInstance[];
+    cardsToGraveyard?: CardInstance[];
+  } {
+    if (!this.gameState) {
+      return { success: false, error: 'No game state' };
+    }
+
+    if (this.gameState.phase !== GAME_PHASE_PLANNING) {
+      return { success: false, error: 'Cannot play cards in current phase' };
+    }
+
+    const cardInstance = this.gameState.piles.hand.find(
+      (card) => card.instanceId === cardInstanceId
+    );
+
+    if (!cardInstance) {
+      return { success: false, error: 'Card not found in hand' };
+    }
+
+    const validation = validateCardPlay(cardInstance, this.gameState);
+    if (!validation.canPlay) {
+      return { success: false, error: validation.reasons.join(', ') };
+    }
+
+    // Identify cards that need to be discarded for requirements
+    const cardsToDiscard: CardInstance[] = [];
+    const cardsToGraveyard: CardInstance[] = [];
+    const availableCards = this.gameState.piles.hand.filter(
+      (card) => card.instanceId !== cardInstanceId
+    );
+
+    for (const requirement of cardInstance.card.requirements) {
+      if (requirement.type === REQUIREMENT_TYPE_DISCARD_CARDS) {
+        for (
+          let i = 0;
+          i < requirement.value && availableCards.length > 0;
+          i++
+        ) {
+          const randomIndex = Math.floor(Math.random() * availableCards.length);
+          const cardToDiscard = availableCards.splice(randomIndex, 1)[0];
+          cardsToDiscard.push(cardToDiscard);
+        }
+      } else if (requirement.type === REQUIREMENT_TYPE_SEND_TO_GRAVEYARD) {
+        for (
+          let i = 0;
+          i < requirement.value && availableCards.length > 0;
+          i++
+        ) {
+          const randomIndex = Math.floor(Math.random() * availableCards.length);
+          const cardToGrave = availableCards.splice(randomIndex, 1)[0];
+          cardsToGraveyard.push(cardToGrave);
+        }
+      }
+    }
+
+    return {
+      success: true,
+      cardsToDiscard,
+      cardsToGraveyard,
+    };
+  }
+
+  /**
    * Handles playing a card
    */
   private handlePlayCard(cardInstanceId: string): ActionResult {
