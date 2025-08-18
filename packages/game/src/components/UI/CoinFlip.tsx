@@ -64,7 +64,10 @@ function CoinFlip({ onComplete, result, isVisible }: CoinFlipProps) {
                     // Calculate rotation to end on correct face
                     // Heads = even number of 180° rotations (0°, 360°, 720°)
                     // Tails = odd number of 180° rotations (180°, 540°, 900°)
-                    rotateY: result === 'heads' ? [0, 360 * 3, 720 * 3] : [0, 360 * 3, 900 * 3],
+                    rotateY:
+                      result === 'heads'
+                        ? [0, 360 * 3, 720 * 3]
+                        : [0, 360 * 3, 900 * 3],
                     scale: [1, 1.2, 1],
                   }
                 : {
@@ -92,21 +95,16 @@ function CoinFlip({ onComplete, result, isVisible }: CoinFlipProps) {
             </div>
           </motion.div>
 
-          <AnimatePresence>
-            {showResult && (
-              <motion.div
-                className={styles.result}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className={styles.resultText}>
-                  {result === 'heads' ? '🎯 HEADS!' : '🎲 TAILS!'}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Always show result area to prevent layout shift */}
+          <div className={styles.result}>
+            <div className={styles.resultText}>
+              {isFlipping
+                ? 'Wait for it...'
+                : result === 'heads'
+                  ? '🎯 HEADS!'
+                  : '🎲 TAILS!'}
+            </div>
+          </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
