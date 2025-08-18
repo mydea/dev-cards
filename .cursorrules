@@ -13,6 +13,7 @@ Always look at RULES.md for the general game rules, as well as PLAN.md for the d
 - Write ESM code only - no CommonJS output needed
 - Prefer `type` over `interface` for simple type definitions
 - Use strict TypeScript configuration
+- Avoid using `any` at all cost. Instead, make sure to use proper types everywhere.
 
 ## Code Style
 - Use single quotes for strings
