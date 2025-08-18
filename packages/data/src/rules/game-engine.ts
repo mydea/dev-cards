@@ -145,6 +145,80 @@ export class GameEngine {
   }
 
   /**
+   * Prepares end turn action and returns cards to be drawn for animation
+   */
+  public prepareEndTurn(): {
+    success: boolean;
+    error?: string;
+    cardsToDraw?: CardInstance[];
+  } {
+    if (!this.gameState) {
+      return { success: false, error: 'No game state' };
+    }
+
+    if (this.gameState.phase !== GAME_PHASE_PLANNING) {
+      return {
+        success: false,
+        error: 'Cannot end turn outside planning phase',
+      };
+    }
+
+    const currentGameState = this.gameState; // Store reference for TypeScript
+
+    // Simulate the draw to see which cards would be drawn
+    const tempState = { ...currentGameState };
+    tempState.piles = {
+      deck: [...currentGameState.piles.deck],
+      hand: [], // Clear hand as it would be discarded
+      discard: [
+        ...currentGameState.piles.discard,
+        ...currentGameState.piles.hand,
+      ], // Add current hand to discard
+      graveyard: [...currentGameState.piles.graveyard],
+    };
+
+    const cardsToDraw: CardInstance[] = [];
+    let cardsDrawn = 0;
+
+    // Draw from deck first
+    while (cardsDrawn < 5 && tempState.piles.deck.length > 0) {
+      const card = tempState.piles.deck.shift()!;
+      cardsToDraw.push(card);
+      cardsDrawn++;
+    }
+
+    // If we need more cards and discard pile has cards, shuffle them back
+    if (cardsDrawn < 5 && tempState.piles.discard.length > 0) {
+      // Shuffle discard pile back into deck (excluding the cards we just added from current hand)
+      const availableDiscard = tempState.piles.discard.filter(
+        (card) => !currentGameState.piles.hand.includes(card)
+      );
+      const shuffledDiscard = shuffleDeck(availableDiscard);
+      tempState.piles.deck.push(...shuffledDiscard);
+
+      // Continue drawing
+      while (cardsDrawn < 5 && tempState.piles.deck.length > 0) {
+        const card = tempState.piles.deck.shift()!;
+        cardsToDraw.push(card);
+        cardsDrawn++;
+      }
+    }
+
+    // Check if we can draw enough cards
+    if (cardsDrawn < 5) {
+      return {
+        success: false,
+        error: `Cannot draw enough cards for new hand: only ${cardsDrawn} available`,
+      };
+    }
+
+    return {
+      success: true,
+      cardsToDraw,
+    };
+  }
+
+  /**
    * Prepares a card for playing and returns discard requirements for animation
    */
   public prepareCardPlay(cardInstanceId: string): {

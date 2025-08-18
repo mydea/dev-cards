@@ -44,6 +44,7 @@ function GameBoard({
   const animationLayerRef = useRef<AnimationLayerRef>(null);
   const graveyardRef = useRef<HTMLDivElement>(null);
   const discardRef = useRef<HTMLDivElement>(null);
+  const deckRef = useRef<HTMLDivElement>(null);
 
   // Track card elements for animations
   const [cardElements, setCardElements] = useState<{
@@ -266,10 +267,63 @@ function GameBoard({
     }
   };
 
+  // Handle animated card drawing from deck to hand
+  const handleDrawCardsAnimated = (
+    cardsToDraw: CardInstance[],
+    onComplete: () => void
+  ) => {
+    if (!deckRef.current || cardsToDraw.length === 0) {
+      onComplete();
+      return;
+    }
+
+    let completedAnimations = 0;
+    const totalCards = cardsToDraw.length;
+
+    const completeDrawAnimation = () => {
+      completedAnimations++;
+      if (completedAnimations === totalCards) {
+        onComplete();
+      }
+    };
+
+    // Animate all cards from deck to hand with slight stagger
+    cardsToDraw.forEach((cardInstance, index) => {
+      setTimeout(() => {
+        // Find hand area element - approximate position
+        const handArea = document.querySelector(
+          '[class*="handArea"]'
+        ) as HTMLElement;
+        const targetElement = handArea || document.body;
+
+        animationLayerRef.current?.animateCardFromDeck(
+          cardInstance,
+          deckRef.current!,
+          targetElement,
+          completeDrawAnimation
+        );
+      }, index * 100); // 100ms stagger between cards
+    });
+  };
+
   // Animated end turn handler
   const handleEndTurnAnimated = () => {
-    if (gameState.piles.hand.length === 0) {
+    // Prepare the end turn to get cards to draw
+    const preparation = gameEngine.prepareEndTurn();
+    if (!preparation.success) {
+      console.error('End turn preparation failed:', preparation.error);
+      // Fall back to normal end turn
       handleEndTurn();
+      return;
+    }
+
+    if (gameState.piles.hand.length === 0) {
+      // No cards to discard, just draw new cards
+      setIsAnimating(true);
+      handleDrawCardsAnimated(preparation.cardsToDraw || [], () => {
+        handleEndTurn();
+        setIsAnimating(false);
+      });
       return;
     }
 
@@ -288,13 +342,17 @@ function GameBoard({
     const cardIds = gameState.piles.hand.map((card) => card.instanceId);
     setAnimatingCardIds(new Set(cardIds));
 
-    // Trigger animation for end turn
-    handleDiscardAllCardsWithAnimationForEndTurn(handCardElements);
+    // Modify the discard animation to trigger draw animations after
+    handleDiscardAllCardsWithAnimationForEndTurn(
+      handCardElements,
+      preparation.cardsToDraw || []
+    );
   };
 
   // Animated discard handler for end turn
   const handleDiscardAllCardsWithAnimationForEndTurn = (
-    elementsToAnimate: HTMLElement[]
+    elementsToAnimate: HTMLElement[],
+    cardsToDraw?: CardInstance[]
   ) => {
     const cardsToDiscard = [...gameState.piles.hand];
 
@@ -303,9 +361,18 @@ function GameBoard({
       !animationLayerRef.current ||
       !discardRef.current
     ) {
-      setIsAnimating(false);
-      setAnimatingCardIds(new Set());
-      handleEndTurn();
+      if (cardsToDraw && cardsToDraw.length > 0) {
+        // Skip discard, go straight to draw animation
+        handleDrawCardsAnimated(cardsToDraw, () => {
+          handleEndTurn();
+          setIsAnimating(false);
+          setAnimatingCardIds(new Set());
+        });
+      } else {
+        setIsAnimating(false);
+        setAnimatingCardIds(new Set());
+        handleEndTurn();
+      }
       return;
     }
 
@@ -319,9 +386,17 @@ function GameBoard({
       if (!cardElement) {
         completedAnimations++;
         if (completedAnimations === totalCards) {
-          setIsAnimating(false);
-          setAnimatingCardIds(new Set());
-          handleEndTurn();
+          // After discarding, animate drawing new cards
+          setAnimatingCardIds(new Set()); // Clear animating card IDs
+          if (cardsToDraw && cardsToDraw.length > 0) {
+            handleDrawCardsAnimated(cardsToDraw, () => {
+              handleEndTurn();
+              setIsAnimating(false);
+            });
+          } else {
+            handleEndTurn();
+            setIsAnimating(false);
+          }
         }
         return;
       }
@@ -333,11 +408,18 @@ function GameBoard({
         discardRef.current!,
         () => {
           completedAnimations++;
-          // When all animations are done, process the end turn action
+          // When all discard animations are done, animate drawing new cards
           if (completedAnimations === totalCards) {
-            setIsAnimating(false);
-            setAnimatingCardIds(new Set());
-            handleEndTurn();
+            setAnimatingCardIds(new Set()); // Clear animating card IDs
+            if (cardsToDraw && cardsToDraw.length > 0) {
+              handleDrawCardsAnimated(cardsToDraw, () => {
+                handleEndTurn();
+                setIsAnimating(false);
+              });
+            } else {
+              handleEndTurn();
+              setIsAnimating(false);
+            }
           }
         }
       );
@@ -531,6 +613,7 @@ function GameBoard({
               whileTap="tap"
             >
               <motion.div
+                ref={deckRef}
                 className={styles.pileCard}
                 data-type="deck"
                 animate={{

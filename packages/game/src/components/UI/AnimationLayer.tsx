@@ -16,6 +16,7 @@ interface FlyingCard {
   startPosition: { x: number; y: number };
   endPosition: { x: number; y: number };
   onComplete: () => void;
+  flipAnimation?: boolean; // For cards drawn from deck that need to flip
 }
 
 interface AnimationLayerProps {
@@ -33,6 +34,12 @@ interface AnimationLayerRef {
     cardInstance: CardInstance,
     startElement: HTMLElement,
     discardElement: HTMLElement,
+    onComplete: () => void
+  ) => void;
+  animateCardFromDeck: (
+    cardInstance: CardInstance,
+    deckElement: HTMLElement,
+    handElement: HTMLElement,
     onComplete: () => void
   ) => void;
 }
@@ -113,13 +120,51 @@ const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
       []
     );
 
+    const animateCardFromDeck = useCallback(
+      (
+        cardInstance: CardInstance,
+        deckElement: HTMLElement,
+        handElement: HTMLElement,
+        onComplete: () => void
+      ) => {
+        const startRect = deckElement.getBoundingClientRect();
+        const endRect = handElement.getBoundingClientRect();
+
+        const flyingCard: FlyingCard = {
+          id: `flying-draw-${cardInstance.instanceId}-${Date.now()}`,
+          cardInstance,
+          startPosition: {
+            x: startRect.left,
+            y: startRect.top,
+          },
+          endPosition: {
+            x: endRect.left + endRect.width / 2 - startRect.width / 2,
+            y: endRect.top + endRect.height / 2 - startRect.height / 2,
+          },
+          flipAnimation: true,
+          onComplete: () => {
+            // Remove this flying card from the list
+            setFlyingCards((prev) =>
+              prev.filter((fc) => fc.id !== flyingCard.id)
+            );
+            // Call the completion callback
+            onComplete();
+          },
+        };
+
+        setFlyingCards((prev) => [...prev, flyingCard]);
+      },
+      []
+    );
+
     useImperativeHandle(
       ref,
       () => ({
         animateCardToGraveyard,
         animateCardToDiscard,
+        animateCardFromDeck,
       }),
-      [animateCardToGraveyard, animateCardToDiscard]
+      [animateCardToGraveyard, animateCardToDiscard, animateCardFromDeck]
     );
 
     return (
@@ -137,29 +182,53 @@ const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
                   y: flyingCard.startPosition.y,
                   scale: 1,
                   rotate: 0,
+                  rotateY: flyingCard.flipAnimation ? 180 : 0, // Start face-down for drawn cards
                   zIndex: 1000,
                 }}
                 animate={{
                   x: flyingCard.endPosition.x,
                   y: flyingCard.endPosition.y,
-                  scale: 0.6,
-                  rotate: Math.random() * 20 - 10, // Random rotation for natural feel
+                  scale: flyingCard.flipAnimation ? 1 : 0.6,
+                  rotate: flyingCard.flipAnimation
+                    ? 0
+                    : Math.random() * 20 - 10,
+                  rotateY: 0, // Flip to face-up
                 }}
                 exit={{
                   scale: 0,
                   opacity: 0,
                 }}
                 transition={{
-                  duration: 0.4,
-                  ease: [0.25, 0.46, 0.45, 0.94], // Custom easing for natural arc
+                  duration: flyingCard.flipAnimation ? 0.8 : 0.4,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                  rotateY: {
+                    duration: flyingCard.flipAnimation ? 0.4 : 0,
+                    delay: flyingCard.flipAnimation ? 0.2 : 0,
+                  },
                 }}
                 onAnimationComplete={flyingCard.onComplete}
+                style={{
+                  transformStyle: 'preserve-3d',
+                }}
               >
-                <Card
-                  cardInstance={flyingCard.cardInstance}
-                  disabled={true}
-                  style={{ pointerEvents: 'none' }}
-                />
+                <motion.div
+                  initial={{ rotateY: flyingCard.flipAnimation ? 180 : 0 }}
+                  animate={{ rotateY: 0 }}
+                  transition={{
+                    duration: flyingCard.flipAnimation ? 0.4 : 0,
+                    delay: flyingCard.flipAnimation ? 0.2 : 0,
+                  }}
+                  style={{
+                    transformStyle: 'preserve-3d',
+                    backfaceVisibility: 'hidden',
+                  }}
+                >
+                  <Card
+                    cardInstance={flyingCard.cardInstance}
+                    disabled={true}
+                    style={{ pointerEvents: 'none' }}
+                  />
+                </motion.div>
               </motion.div>
             ))}
           </AnimatePresence>
