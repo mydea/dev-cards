@@ -48,31 +48,35 @@ function Card({
             if (effect.randomType === 'STATIC') {
               description = `+${effect.value}% progress`;
             } else if (effect.randomType === 'COIN_FLIP') {
-              description = `Coin flip: ${effect.headsValue}% or ${effect.tailsValue}% progress`;
+              description = `🪙 ${effect.headsValue}% or ${effect.tailsValue}% progress`;
             }
             break;
           case 'REMOVE_BUGS':
             if (effect.randomType === 'STATIC') {
-              description = `-${effect.value} bugs`;
+              description = `-${effect.value} 🐛`;
             } else if (effect.randomType === 'COIN_FLIP') {
-              description = `Coin flip: -${effect.headsValue} or -${effect.tailsValue} bugs`;
+              description = `🪙 -${effect.headsValue} or -${effect.tailsValue} 🐛`;
             }
             break;
           case 'ADD_BUGS':
             if (effect.randomType === 'STATIC') {
-              description = `+${effect.value} bugs`;
+              description = `+${effect.value} 🐛`;
             } else if (effect.randomType === 'COIN_FLIP') {
-              description = `Coin flip: +${effect.headsValue} or +${effect.tailsValue} bugs`;
+              description = `🪙 +${effect.headsValue} or +${effect.tailsValue} 🐛`;
             }
             break;
           case 'REMOVE_TECHNICAL_DEBT':
             if (effect.randomType === 'STATIC') {
               description = `-${effect.value} TD`;
+            } else if (effect.randomType === 'COIN_FLIP') {
+              description = `🪙 -${effect.headsValue} or -${effect.tailsValue} TD`;
             }
             break;
           case 'ADD_TECHNICAL_DEBT':
             if (effect.randomType === 'STATIC') {
               description = `+${effect.value} TD`;
+            } else if (effect.randomType === 'COIN_FLIP') {
+              description = `🪙 +${effect.headsValue} or +${effect.tailsValue} TD`;
             }
             break;
           case 'DRAW_CARDS':
@@ -82,7 +86,7 @@ function Card({
             break;
           case 'SHUFFLE_DISCARD_TO_DECK':
             if (effect.randomType === 'STATIC') {
-              description = `Shuffle ${effect.value} cards from discard`;
+              description = `Shuffle ${effect.value} from discard`;
             }
             break;
           default:
@@ -91,11 +95,11 @@ function Card({
 
         return description;
       })
-      .join(', ');
+      .join(' • ');
   };
 
   const formatRequirements = () => {
-    if (card.requirements.length === 0) return 'No requirements';
+    if (card.requirements.length === 0) return 'Free';
 
     return card.requirements
       .map((req) => {
@@ -103,14 +107,14 @@ function Card({
           case 'SPEND_PP':
             return `${req.value} PP`;
           case 'DISCARD_CARDS':
-            return `Discard ${req.value} cards`;
+            return `+${req.value} discard`;
           case 'SEND_TO_GRAVEYARD':
-            return `Send ${req.value} to graveyard`;
+            return `+${req.value} bury`;
           default:
-            return 'Unknown requirement';
+            return 'Unknown';
         }
       })
-      .join(', ');
+      .join(' • ');
   };
 
   return (
