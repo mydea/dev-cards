@@ -1,6 +1,8 @@
-import { CardInstance, CardId } from './card';
-import { GamePhase, GameEndState } from './enums';
-import { EffectResolution } from './effects';
+import type { CardInstance } from './card';
+import type { GamePhase, GameEndState } from './enums';
+import type { EffectResolution } from './effects';
+
+type CardId = string;
 
 /**
  * Core game resources that the player manages

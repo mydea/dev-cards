@@ -1,4 +1,4 @@
-import { GameState, CardInstance, CardValidation } from '../types';
+import type { GameState, CardInstance, CardValidation } from '../types';
 
 /**
  * Validates whether a card can be played in the current game state

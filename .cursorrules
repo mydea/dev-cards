@@ -1,0 +1,46 @@
+# Dev-Cards Project Rules
+
+## Package Management
+- Always use `pnpm` for installing dependencies and running scripts
+- Use workspace commands: `pnpm --filter <package>` for package-specific operations
+- Never use npm or yarn in this project
+
+## TypeScript Guidelines
+- Avoid TypeScript enums - use const assertions and union types instead
+- Use erasable syntax only in TypeScript configurations (no runtime transforms)
+- Write ESM code only - no CommonJS output needed
+- Prefer `type` over `interface` for simple type definitions
+- Use strict TypeScript configuration
+
+## Code Style
+- Use single quotes for strings
+- Trailing commas in multi-line structures
+- 2-space indentation
+- Semi-colons required
+- Prefer arrow functions for callbacks
+- Use const assertions (`as const`) instead of enums
+- Run `pnpm format` after changing code to ensure code is correctly formatted
+
+## Project Structure
+- Workspace packages: `@dev-cards/data`, `@dev-cards/game`, `@dev-cards/api`
+- Keep shared types in `@dev-cards/data`
+- Use absolute imports where possible
+- Organize by feature, not by file type
+
+## Game Development
+- Card effects should be stateless and pure functions
+- Game state should be immutable (use spread operators for updates)
+- Prefer composition over inheritance
+- Write comprehensive JSDoc comments for public APIs
+
+## Build and Deployment
+- ESM-only builds (no CommonJS)
+- Tree-shakable exports
+- Cloudflare targets for deployment
+- Bundle splitting for performance
+
+## Testing
+- Use Vitest for testing
+- Test files co-located with source code
+- Comprehensive unit tests for game logic
+- Integration tests for game flows

@@ -1,4 +1,4 @@
-import { Card, CardInstance } from '../types';
+import type { Card, CardInstance } from '../types';
 
 /**
  * Creates a card instance from a card definition

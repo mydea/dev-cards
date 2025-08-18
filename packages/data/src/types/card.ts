@@ -1,4 +1,4 @@
-import { CardEffect, CardRequirement } from './effects';
+import type { CardEffect, CardRequirement } from './effects';
 
 /**
  * Card definition that represents a single card in the deck

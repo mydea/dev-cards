@@ -1,4 +1,4 @@
-import { CardEffect, EffectResolution, GameState } from '../types';
+import type { CardEffect, EffectResolution, GameState } from '../types';
 
 /**
  * Resolves a card effect and returns the resolution result

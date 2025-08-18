@@ -1,4 +1,4 @@
-import { Card } from '../types';
+import type { Card } from '../types';
 
 /**
  * Default deck of cards for the game

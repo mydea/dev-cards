@@ -1,4 +1,4 @@
-import { GameState, GameConfig, ActionResult, PlayerAction } from '../types';
+import type { GameState, GameConfig, ActionResult, PlayerAction } from '../types';
 
 /**
  * Core game engine that manages game state and processes player actions

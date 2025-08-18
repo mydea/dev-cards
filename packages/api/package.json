@@ -2,6 +2,7 @@
   "name": "@dev-cards/api",
   "version": "1.0.0",
   "description": "Cloudflare Worker API for dev-cards leaderboard",
+  "type": "module",
   "main": "src/index.ts",
   "scripts": {
     "build": "wrangler build",

@@ -1,4 +1,5 @@
-import { EffectType, RequirementType, RandomEffectType } from './enums';
+import type { EffectType, RequirementType } from './enums';
+import { RANDOM_EFFECT_TYPE, REQUIREMENT_TYPE } from './enums';
 
 /**
  * Base interface for all card effects
@@ -12,7 +13,7 @@ export interface BaseEffect {
  * Effect with a static value
  */
 export interface StaticEffect extends BaseEffect {
-  randomType: RandomEffectType.STATIC;
+  randomType: typeof RANDOM_EFFECT_TYPE.STATIC;
   value: number;
 }
 
@@ -20,7 +21,7 @@ export interface StaticEffect extends BaseEffect {
  * Effect determined by a coin flip
  */
 export interface CoinFlipEffect extends BaseEffect {
-  randomType: RandomEffectType.COIN_FLIP;
+  randomType: typeof RANDOM_EFFECT_TYPE.COIN_FLIP;
   headsValue: number;
   tailsValue: number;
 }
@@ -29,7 +30,7 @@ export interface CoinFlipEffect extends BaseEffect {
  * Effect determined by a dice roll (1-6)
  */
 export interface DiceRollEffect extends BaseEffect {
-  randomType: RandomEffectType.DICE_ROLL;
+  randomType: typeof RANDOM_EFFECT_TYPE.DICE_ROLL;
   diceValues: [number, number, number, number, number, number]; // Values for 1,2,3,4,5,6
 }
 
@@ -51,21 +52,21 @@ export interface BaseRequirement {
  * Requirement to spend Productivity Points
  */
 export interface SpendPPRequirement extends BaseRequirement {
-  type: RequirementType.SPEND_PP;
+  type: typeof REQUIREMENT_TYPE.SPEND_PP;
 }
 
 /**
  * Requirement to discard cards from hand
  */
 export interface DiscardCardsRequirement extends BaseRequirement {
-  type: RequirementType.DISCARD_CARDS;
+  type: typeof REQUIREMENT_TYPE.DISCARD_CARDS;
 }
 
 /**
  * Requirement to send cards from hand to graveyard
  */
 export interface SendToGraveyardRequirement extends BaseRequirement {
-  type: RequirementType.SEND_TO_GRAVEYARD;
+  type: typeof REQUIREMENT_TYPE.SEND_TO_GRAVEYARD;
 }
 
 /**
