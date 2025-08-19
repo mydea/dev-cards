@@ -32,6 +32,6 @@
   "peerDependencies": {},
   "dependencies": {},
   "volta": {
-    "extends": "../.."
+    "extends": "../../package.json"
   }
 }
