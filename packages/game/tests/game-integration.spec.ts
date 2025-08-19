@@ -64,8 +64,9 @@ test.describe('Dev-Cards Game Integration', () => {
 
           // Check if card is playable using data attributes
           const cardInner = card.locator('[data-playable]');
-          const isPlayable = (await cardInner.getAttribute('data-playable')) === 'true' &&
-                            (await cardInner.getAttribute('data-disabled')) === 'false';
+          const isPlayable =
+            (await cardInner.getAttribute('data-playable')) === 'true' &&
+            (await cardInner.getAttribute('data-disabled')) === 'false';
 
           if (isPlayable) {
             console.log(`Playing card ${i + 1}/${cardCount}`);
@@ -85,10 +86,7 @@ test.describe('Dev-Cards Game Integration', () => {
               console.log('Coin flip appeared, waiting for it to complete');
               // Click to skip coin flip animation
               await page.locator('[class*="coinFlipOverlay"]').click();
-              
-              // Wait a bit for the click to register
-              await page.waitForTimeout(500);
-              
+
               // Click again if still visible (sometimes needs double click)
               const stillVisible = await page
                 .locator('[class*="coinFlipOverlay"]')
@@ -96,9 +94,8 @@ test.describe('Dev-Cards Game Integration', () => {
                 .catch(() => false);
               if (stillVisible) {
                 await page.locator('[class*="coinFlipOverlay"]').click();
-                await page.waitForTimeout(1000);
               }
-              
+
               // Final wait for disappearance with longer timeout
               await page.waitForSelector('[class*="coinFlipOverlay"]', {
                 state: 'hidden',
@@ -133,8 +130,22 @@ test.describe('Dev-Cards Game Integration', () => {
         await expect(endTurnButton).toBeVisible();
         await endTurnButton.click();
 
-        // Wait for turn end animation
-        await page.waitForTimeout(2000);
+        // Wait for turn end animation to complete
+        await page.waitForTimeout(1000);
+
+        // Wait for the "drawing cards" text to appear and disappear
+        try {
+          await page.waitForSelector(':has-text("drawing cards")', {
+            timeout: 5000,
+          });
+          await page.waitForSelector(':has-text("drawing cards")', {
+            state: 'hidden',
+            timeout: 10000,
+          });
+        } catch {
+          // If drawing text doesn't appear, just wait a bit more
+          await page.waitForTimeout(1000);
+        }
       } else if (!canPlayAnyCard) {
         // No cards could be played at all, reduce technical debt
         console.log('No cards playable, reducing technical debt');
@@ -249,24 +260,32 @@ test.describe('Dev-Cards Game Integration', () => {
     // Wait for game to load
     await expect(page.getByText('Round')).toBeVisible();
 
-    // Check initial statistics - use first() to avoid strict mode violations
-    const initialRound = await page
-      .locator('[class*="stat"]:has-text("Round") [class*="statValue"]')
-      .first()
+    // Check initial statistics - be more specific to avoid ambiguity
+    const statsContainer = page.locator('[class*="stats"]');
+    const roundStat = statsContainer
+      .locator('[class*="stat"]')
+      .filter({ hasText: 'Round' });
+    const timeStat = statsContainer
+      .locator('[class*="stat"]')
+      .filter({ hasText: 'Time' });
+    const cardsPlayedStat = statsContainer
+      .locator('[class*="stat"]')
+      .filter({ hasText: 'Cards Played' });
+    const cardsRemainingStat = statsContainer
+      .locator('[class*="stat"]')
+      .filter({ hasText: 'Cards Remaining' });
+
+    const initialRound = await roundStat
+      .locator('[class*="statValue"]')
       .textContent();
-    const initialTime = await page
-      .locator('[class*="stat"]:has-text("Time") [class*="timeValue"]')
-      .first()
+    const initialTime = await timeStat
+      .locator('[class*="timeValue"]')
       .textContent();
-    const initialCardsPlayed = await page
-      .locator('[class*="stat"]:has-text("Cards Played") [class*="statValue"]')
-      .first()
+    const initialCardsPlayed = await cardsPlayedStat
+      .locator('[class*="statValue"]')
       .textContent();
-    const initialCardsRemaining = await page
-      .locator(
-        '[class*="stat"]:has-text("Cards Remaining") [class*="statValue"]'
-      )
-      .first()
+    const initialCardsRemaining = await cardsRemainingStat
+      .locator('[class*="statValue"]')
       .textContent();
 
     expect(initialRound).toBe('1');
@@ -285,11 +304,12 @@ test.describe('Dev-Cards Game Integration', () => {
       await page.waitForTimeout(1000);
 
       // Check that cards played increased
-      const newCardsPlayed = await page
-        .locator(
-          '[class*="stat"]:has-text("Cards Played") [class*="statValue"]'
-        )
-        .first()
+      const newStatsContainer = page.locator('[class*="stats"]');
+      const newCardsPlayedStat = newStatsContainer
+        .locator('[class*="stat"]')
+        .filter({ hasText: 'Cards Played' });
+      const newCardsPlayed = await newCardsPlayedStat
+        .locator('[class*="statValue"]')
         .textContent();
       expect(parseInt(newCardsPlayed!)).toBeGreaterThanOrEqual(
         parseInt(initialCardsPlayed!)
