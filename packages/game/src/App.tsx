@@ -23,11 +23,6 @@ function App() {
 
   return (
     <div className={styles.app}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Dev-Cards</h1>
-        <p className={styles.subtitle}>The Developer's Card Game</p>
-      </header>
-
       <main className={styles.main}>
         {currentView === 'menu' ? (
           <MainMenu onStartGame={startNewGame} />

@@ -7,33 +7,7 @@
   font-family: var(--font-family-base);
 }
 
-.header {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem 1rem 0.5rem;
-  background: var(--surface-dark);
-  box-shadow: 0 2px 4px var(--shadow-color);
-}
 
-.title {
-  font-size: 2.25rem;
-  font-weight: 700;
-  margin: 0;
-  background: var(--gradient-primary);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-family: var(--font-family-heading);
-}
-
-.subtitle {
-  font-size: 1rem;
-  margin: 0;
-  color: var(--text-secondary);
-  font-weight: 300;
-}
 
 .main {
   flex: 1;
@@ -60,20 +34,6 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    gap: 0.25rem;
-    text-align: center;
-  }
-  
-  .title {
-    font-size: 2rem;
-  }
-  
-  .subtitle {
-    font-size: 0.9rem;
-  }
-  
   .main {
     padding: 1rem;
   }
