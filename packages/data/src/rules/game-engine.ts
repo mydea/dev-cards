@@ -851,7 +851,18 @@ export class GameEngine {
     cardInstance: CardInstance,
     gameState: GameState
   ): GameState {
-    const newState = { ...gameState };
+    const newState = {
+      ...gameState,
+      resources: {
+        ...gameState.resources,
+      },
+      piles: {
+        deck: [...gameState.piles.deck],
+        hand: [...gameState.piles.hand],
+        discard: [...gameState.piles.discard],
+        graveyard: [...gameState.piles.graveyard],
+      },
+    };
 
     for (const requirement of cardInstance.card.requirements) {
       switch (requirement.type) {
