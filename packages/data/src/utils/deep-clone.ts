@@ -20,7 +20,7 @@ export function deepClone<T>(obj: T): T {
 
   // Handle Arrays
   if (Array.isArray(obj)) {
-    return obj.map(item => deepClone(item)) as T;
+    return obj.map((item) => deepClone(item)) as T;
   }
 
   // Handle Objects

@@ -6,7 +6,11 @@ import type {
   CardInstance,
   CoinFlipEffect,
 } from '@dev-cards/data';
-import { checkWinCondition, checkLoseCondition, cloneGameState } from '@dev-cards/data';
+import {
+  checkWinCondition,
+  checkLoseCondition,
+  cloneGameState,
+} from '@dev-cards/data';
 import GameInfo from '../UI/GameInfo';
 import ResourceDisplay from '../UI/ResourceDisplay';
 import GameActions from '../UI/GameActions';
@@ -645,14 +649,14 @@ function GameBoard({
       setGameState((currentState) => {
         // Add the round progression and PP replenishment to current state
         const newState = cloneGameState(currentState);
-        
+
         // Update round and PP
         newState.stats.currentRound += 1;
         newState.resources.productivityPoints = Math.max(
           0,
           20 - newState.resources.technicalDebt
         );
-        
+
         // Add round_start to history so tech debt reduction becomes available
         newState.history.push({
           round: newState.stats.currentRound,
@@ -661,7 +665,7 @@ function GameBoard({
           stateAfter: newState.resources,
           timestamp: Date.now(),
         });
-        
+
         // Sync the game engine state
         gameEngine.updateGameState(newState);
         return newState;
