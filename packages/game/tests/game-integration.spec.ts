@@ -47,10 +47,8 @@ test.describe('Dev-Cards Game Integration', () => {
 
       // Try to play cards until no more can be played
       while (true) {
-        // Get all cards in hand
-        const handCards = page.locator(
-          '[class*="hand"] [class*="cardWrapper"]'
-        );
+        // Get all cards in hand - use the working selector from debug
+        const handCards = page.locator('[class*="cards"] > div');
         const cardCount = await handCards.count();
 
         if (cardCount === 0) {
@@ -64,22 +62,16 @@ test.describe('Dev-Cards Game Integration', () => {
         for (let i = 0; i < cardCount; i++) {
           const card = handCards.nth(i);
 
-          // Check if card is playable (not grayed out/disabled)
-          const cardElement = await card.first();
-          const isPlayable = await cardElement
-            .evaluate((el) => {
-              const styles = window.getComputedStyle(el);
-              const hasGrayFilter = styles.filter.includes('grayscale');
-              const hasReducedOpacity = parseFloat(styles.opacity) < 0.9;
-              return !hasGrayFilter && !hasReducedOpacity;
-            })
-            .catch(() => false);
+          // Check if card is playable using data attributes
+          const cardInner = card.locator('[data-playable]');
+          const isPlayable = (await cardInner.getAttribute('data-playable')) === 'true' &&
+                            (await cardInner.getAttribute('data-disabled')) === 'false';
 
           if (isPlayable) {
             console.log(`Playing card ${i + 1}/${cardCount}`);
 
-            // Click the card
-            await card.click();
+            // Click the actual card element (with role="button")
+            await cardInner.click();
 
             // Wait for animation and any coin flips
             await page.waitForTimeout(500);
@@ -176,7 +168,7 @@ test.describe('Dev-Cards Game Integration', () => {
 
       // Safety check: ensure we have cards or game should have ended
       await page.waitForTimeout(500);
-      const handCards = page.locator('[class*="hand"] [class*="cardWrapper"]');
+      const handCards = page.locator('[class*="cards"] > div');
       const finalCardCount = await handCards.count();
 
       if (finalCardCount === 0) {
@@ -268,12 +260,13 @@ test.describe('Dev-Cards Game Integration', () => {
     expect(parseInt(initialCardsRemaining!)).toBeGreaterThan(0);
 
     // Play one card if possible
-    const handCards = page.locator('[class*="hand"] [class*="cardWrapper"]');
+    const handCards = page.locator('[class*="cards"] > div');
     const cardCount = await handCards.count();
 
     if (cardCount > 0) {
-      // Try to play first card
-      await handCards.first().click();
+      // Try to play first card - click the actual card element
+      const firstCard = handCards.first().locator('[data-playable="true"]');
+      await firstCard.click();
       await page.waitForTimeout(1000);
 
       // Check that cards played increased
