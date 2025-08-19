@@ -44,7 +44,7 @@
   font-feature-settings: 'tnum' 1;
 }
 
-.menuButton {
+.endGameButton {
   background: var(--color-gray-500);
   color: var(--text-inverse);
   border: none;
@@ -54,16 +54,16 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--transition-base);
-  min-width: 60px;
+  min-width: 80px;
 }
 
-.menuButton:hover {
+.endGameButton:hover {
   background: var(--color-gray-600);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px var(--shadow-color);
 }
 
-.menuButton:active {
+.endGameButton:active {
   transform: translateY(0);
 }
 
@@ -89,10 +89,10 @@
     font-size: var(--font-size-base);
   }
 
-  .menuButton {
+  .endGameButton {
     padding: var(--spacing-xs) var(--spacing-md);
     font-size: var(--font-size-xs);
-    min-width: 50px;
+    min-width: 70px;
   }
 }
 

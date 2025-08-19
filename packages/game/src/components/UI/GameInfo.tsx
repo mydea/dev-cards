@@ -10,6 +10,16 @@ interface GameInfoProps {
 function GameInfo({ gameState, onReturnToMenu }: GameInfoProps) {
   const [currentTime, setCurrentTime] = useState(Date.now());
 
+  const handleEndGameClick = () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to end the current game?\n\nThis will discard all your current progress and return to the main menu.'
+    );
+
+    if (confirmed) {
+      onReturnToMenu();
+    }
+  };
+
   // Update current time every second
   useEffect(() => {
     // Don't start interval if game has ended
@@ -76,12 +86,12 @@ function GameInfo({ gameState, onReturnToMenu }: GameInfoProps) {
       </div>
 
       <button
-        className={styles.menuButton}
-        onClick={onReturnToMenu}
+        className={styles.endGameButton}
+        onClick={handleEndGameClick}
         type="button"
-        title="Return to main menu"
+        title="End current game and return to main menu"
       >
-        Menu
+        End Game
       </button>
     </div>
   );
