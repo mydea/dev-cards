@@ -758,6 +758,23 @@ function GameBoard({
               20 - currentState.resources.technicalDebt
             ),
           },
+          // Add round_start to history so tech debt reduction becomes available
+          history: [
+            ...currentState.history,
+            {
+              round: currentState.stats.currentRound + 1,
+              action: 'round_start' as const,
+              stateBefore: currentState.resources,
+              stateAfter: {
+                ...currentState.resources,
+                productivityPoints: Math.max(
+                  0,
+                  20 - currentState.resources.technicalDebt
+                ),
+              },
+              timestamp: Date.now(),
+            },
+          ],
         };
         // Sync the game engine state
         gameEngine.updateGameState(newState);
