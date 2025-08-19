@@ -22,32 +22,25 @@ test.describe('Dev-Cards Game Integration', () => {
 
     // Helper function to handle coin flip overlays
     async function handleCoinFlip() {
-      const coinFlipVisible = await page
-        .locator('[class*="coinFlipOverlay"]')
-        .isVisible()
-        .catch(() => false);
-
-      if (coinFlipVisible) {
-        console.log('Coin flip appeared, waiting for it to complete');
-        // Click to skip coin flip animation
-        await page.locator('[class*="coinFlipOverlay"]').click();
-        await page.waitForTimeout(200);
-
-        // Click again if still visible (sometimes needs double click)
-        const stillVisible = await page
+      console.log('handling coin flip...');
+      // the coin flip overlay is visible, we keep clicking to skip the animation
+      // Once the overlay is gone, we can continue with progress
+      while (true) {
+        const coinFlipVisible = await page
           .locator('[class*="coinFlipOverlay"]')
           .isVisible()
           .catch(() => false);
-        if (stillVisible) {
-          await page.locator('[class*="coinFlipOverlay"]').click();
+
+        if (!coinFlipVisible) {
+          break;
         }
 
-        // Final wait for disappearance with longer timeout
-        await page.waitForSelector('[class*="coinFlipOverlay"]', {
-          state: 'hidden',
-          timeout: 15000,
-        });
+        // Click to skip animation
+        await page.locator('[class*="coinFlipOverlay"]').click();
+        await page.waitForTimeout(100);
       }
+
+      console.log('coin flip completed');
     }
 
     // Helper function to wait for turn end completion

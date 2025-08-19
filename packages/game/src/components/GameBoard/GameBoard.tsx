@@ -520,7 +520,10 @@ function GameBoard({
       piles: {
         ...currentGameState.piles,
         hand: [],
-        discard: [...currentGameState.piles.discard, ...currentGameState.piles.hand],
+        discard: [
+          ...currentGameState.piles.discard,
+          ...currentGameState.piles.hand,
+        ],
       },
     };
 
@@ -543,13 +546,16 @@ function GameBoard({
     }
   };
 
-  const animateCardsToDiscardForNewTurn = (drawPlan: {
-    canDraw: boolean;
-    deckCards: number;
-    needsShuffle: boolean;
-    discardCards: number;
-    totalAvailable: number;
-  }, currentGameState: GameState) => {
+  const animateCardsToDiscardForNewTurn = (
+    drawPlan: {
+      canDraw: boolean;
+      deckCards: number;
+      needsShuffle: boolean;
+      discardCards: number;
+      totalAvailable: number;
+    },
+    currentGameState: GameState
+  ) => {
     const cardsToDiscard = [...currentGameState.piles.hand];
     const handCardElements = cardsToDiscard
       .map((card) => cardElements[card.instanceId])
@@ -602,20 +608,26 @@ function GameBoard({
     });
   };
 
-  const completeDiscardStep = (drawPlan: {
-    canDraw: boolean;
-    deckCards: number;
-    needsShuffle: boolean;
-    discardCards: number;
-    totalAvailable: number;
-  }, originalGameState: GameState) => {
+  const completeDiscardStep = (
+    drawPlan: {
+      canDraw: boolean;
+      deckCards: number;
+      needsShuffle: boolean;
+      discardCards: number;
+      totalAvailable: number;
+    },
+    originalGameState: GameState
+  ) => {
     // Update game state after discard animation - use the original state that may include tech debt reduction
     const stateAfterDiscard = {
       ...originalGameState,
       piles: {
         ...originalGameState.piles,
         hand: [],
-        discard: [...originalGameState.piles.discard, ...originalGameState.piles.hand],
+        discard: [
+          ...originalGameState.piles.discard,
+          ...originalGameState.piles.hand,
+        ],
       },
     };
     setGameState(stateAfterDiscard);
