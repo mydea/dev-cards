@@ -9,19 +9,23 @@
     "preview": "vite preview",
     "test": "vitest --run",
     "test:watch": "vitest --watch",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@dev-cards/data": "workspace:*",
+    "clsx": "^2.1.0",
+    "framer-motion": "^11.0.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "framer-motion": "^11.0.0",
-    "zustand": "^4.5.0",
-    "clsx": "^2.1.0"
+    "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
