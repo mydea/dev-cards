@@ -11,7 +11,7 @@ test.describe('Reduce Tech Debt Button', () => {
     await page.getByRole('button', { name: 'Start New Game' }).click();
 
     // Wait for the game to load
-    await expect(page.locator('[data-testid="game-board"]')).toBeVisible();
+    await expect(page.locator('text=Your Hand (5 cards)')).toBeVisible();
 
     // Step 2: Verify "Reduce Tech Debt" is not disabled initially
     const reduceDebtButton = page.getByRole('button', {
@@ -21,7 +21,10 @@ test.describe('Reduce Tech Debt Button', () => {
     await expect(reduceDebtButton).not.toBeDisabled();
 
     // Step 3: Play the first card from hand
-    const firstCard = page.getByRole('button').filter({ hasText: /PP/ }).first();
+    const firstCard = page
+      .getByRole('button')
+      .filter({ hasText: /PP/ })
+      .first();
     await expect(firstCard).toBeVisible();
     await firstCard.click();
 
@@ -39,14 +42,14 @@ test.describe('Reduce Tech Debt Button', () => {
       )
     ).toBeVisible();
 
-     // End the turn
-     const endTurnButton = page.getByRole('button', { name: /End Turn/i });
-     await endTurnButton.click();
- 
-     // Wait for turn to complete and new round to start
-     await page.waitForTimeout(2000);
- 
-     // Verify the "Reduce Tech Debt" button is enabled again in the new round
-     await expect(reduceDebtButton).not.toBeDisabled();
+    // End the turn
+    const endTurnButton = page.getByRole('button', { name: /End Turn/i });
+    await endTurnButton.click();
+
+    // Wait for turn to complete and new round to start
+    await page.waitForTimeout(2000);
+
+    // Verify the "Reduce Tech Debt" button is enabled again in the new round
+    await expect(reduceDebtButton).not.toBeDisabled();
   });
 });
