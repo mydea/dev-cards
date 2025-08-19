@@ -28,12 +28,12 @@ export const CARD_QUICK_BUG_FIX = {
   ],
   effects: [
     {
-      type: EFFECT_TYPE_REMOVE_BUGS,
+      type: EFFECT_TYPE_ADD_PROGRESS,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
       value: 1,
     },
     {
-      type: EFFECT_TYPE_ADD_PROGRESS,
+      type: EFFECT_TYPE_REMOVE_BUGS,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
       value: 1,
     },
@@ -160,14 +160,14 @@ export const CARD_REFACTOR_LEGACY = {
   ],
   effects: [
     {
-      type: EFFECT_TYPE_REMOVE_TECHNICAL_DEBT,
-      randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 3,
-    },
-    {
       type: EFFECT_TYPE_ADD_PROGRESS,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
       value: 1,
+    },
+    {
+      type: EFFECT_TYPE_REMOVE_TECHNICAL_DEBT,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 3,
     },
   ],
 } as const satisfies Card;
@@ -408,15 +408,15 @@ export const CARD_RUBBER_DUCK = {
   ],
   effects: [
     {
+      type: EFFECT_TYPE_ADD_PROGRESS,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 1,
+    },
+    {
       type: EFFECT_TYPE_REMOVE_BUGS,
       randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
       headsValue: 2,
       tailsValue: 1,
-    },
-    {
-      type: EFFECT_TYPE_ADD_PROGRESS,
-      randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 1,
     },
     {
       type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
@@ -438,7 +438,7 @@ export const CARD_TECH_DEBT_CLEANUP = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 7,
+      value: 5,
     },
     {
       type: REQUIREMENT_TYPE_DISCARD_CARDS,
@@ -449,7 +449,7 @@ export const CARD_TECH_DEBT_CLEANUP = {
     {
       type: EFFECT_TYPE_REMOVE_TECHNICAL_DEBT,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
-      value: 4,
+      value: 5,
     },
   ],
 } as const satisfies Card;
@@ -564,16 +564,16 @@ export const CARD_SKIP_CODE_REVIEW = {
       value: 6,
     },
     {
+      type: EFFECT_TYPE_ADD_BUGS,
+      randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
+      headsValue: 0,
+      tailsValue: 2,
+    },
+    {
       type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
       randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
       headsValue: 1,
       tailsValue: 3,
-    },
-    {
-      type: 'ADD_BUGS',
-      randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
-      headsValue: 0,
-      tailsValue: 2,
     },
   ],
 } as const satisfies Card;
