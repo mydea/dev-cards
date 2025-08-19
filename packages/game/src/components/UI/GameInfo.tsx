@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import type { GameState } from '@dev-cards/data';
 import styles from './GameInfo.module.css';
 
@@ -7,6 +8,22 @@ interface GameInfoProps {
 }
 
 function GameInfo({ gameState, onReturnToMenu }: GameInfoProps) {
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  // Update current time every second
+  useEffect(() => {
+    // Don't start interval if game has ended
+    if (gameState.stats.endTime) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [gameState.stats.endTime]);
+
   const formatTime = (ms: number) => {
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
@@ -16,7 +33,7 @@ function GameInfo({ gameState, onReturnToMenu }: GameInfoProps) {
 
   const elapsedTime = gameState.stats.endTime
     ? gameState.stats.endTime - gameState.stats.startTime
-    : Date.now() - gameState.stats.startTime;
+    : currentTime - gameState.stats.startTime;
 
   return (
     <div className={styles.gameInfo}>
