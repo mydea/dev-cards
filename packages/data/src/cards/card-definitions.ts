@@ -569,5 +569,97 @@ export const CARD_SKIP_CODE_REVIEW = {
       headsValue: 1,
       tailsValue: 3,
     },
+    {
+      type: 'ADD_BUGS',
+      randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
+      headsValue: 0,
+      tailsValue: 2,
+    },
+  ],
+} as const satisfies Card;
+
+/**
+ * Setup Sentry - Error monitoring and bug prevention
+ */
+export const CARD_SETUP_SENTRY = {
+  id: 'setup-sentry',
+  title: 'Setup Sentry',
+  image: '/images/cards/setup-sentry.jpg',
+  quote: 'Know about bugs before your users do',
+  requirements: [
+    {
+      type: REQUIREMENT_TYPE_SPEND_PP,
+      value: 10,
+    },
+  ],
+  effects: [
+    {
+      type: EFFECT_TYPE_ADD_PROGRESS,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 2,
+    },
+    {
+      type: EFFECT_TYPE_REMOVE_BUGS,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 4,
+    },
+  ],
+} as const satisfies Card;
+
+/**
+ * Implement MVP - Rapid development with consequences
+ */
+export const CARD_IMPLEMENT_MVP = {
+  id: 'implement-mvp',
+  title: 'Implement MVP',
+  image: '/images/cards/implement-mvp.jpg',
+  quote: 'Ship the minimum viable product',
+  requirements: [
+    {
+      type: REQUIREMENT_TYPE_SPEND_PP,
+      value: 13,
+    },
+  ],
+  effects: [
+    {
+      type: EFFECT_TYPE_ADD_PROGRESS,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 8,
+    },
+    {
+      type: EFFECT_TYPE_ADD_BUGS,
+      randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
+      headsValue: 1,
+      tailsValue: 2,
+    },
+    {
+      type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
+      randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
+      headsValue: 0,
+      tailsValue: 2,
+    },
+  ],
+} as const satisfies Card;
+
+/**
+ * Deep Focus Time - High productivity through concentration
+ */
+export const CARD_DEEP_FOCUS_TIME = {
+  id: 'deep-focus-time',
+  title: 'Deep Focus Time',
+  image: '/images/cards/deep-focus-time.jpg',
+  quote: 'In the zone, nothing can stop you',
+  requirements: [
+    {
+      type: REQUIREMENT_TYPE_SPEND_PP,
+      value: 20,
+    },
+  ],
+  effects: [
+    {
+      type: EFFECT_TYPE_ADD_PROGRESS,
+      randomType: RANDOM_EFFECT_TYPE_STATIC,
+      value: 10,
+    },
   ],
 } as const satisfies Card;
