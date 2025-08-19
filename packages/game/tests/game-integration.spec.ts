@@ -83,15 +83,26 @@ test.describe('Dev-Cards Game Integration', () => {
               .catch(() => false);
             if (coinFlipVisible) {
               console.log('Coin flip appeared, waiting for it to complete');
-              // Click to skip coin flip animation if possible
-              await page
+              // Click to skip coin flip animation
+              await page.locator('[class*="coinFlipOverlay"]').click();
+              
+              // Wait a bit for the click to register
+              await page.waitForTimeout(500);
+              
+              // Click again if still visible (sometimes needs double click)
+              const stillVisible = await page
                 .locator('[class*="coinFlipOverlay"]')
-                .click()
-                .catch(() => {});
-              // Wait for coin flip to complete
+                .isVisible()
+                .catch(() => false);
+              if (stillVisible) {
+                await page.locator('[class*="coinFlipOverlay"]').click();
+                await page.waitForTimeout(1000);
+              }
+              
+              // Final wait for disappearance with longer timeout
               await page.waitForSelector('[class*="coinFlipOverlay"]', {
                 state: 'hidden',
-                timeout: 10000,
+                timeout: 15000,
               });
             }
 
@@ -238,20 +249,24 @@ test.describe('Dev-Cards Game Integration', () => {
     // Wait for game to load
     await expect(page.getByText('Round')).toBeVisible();
 
-    // Check initial statistics
+    // Check initial statistics - use first() to avoid strict mode violations
     const initialRound = await page
       .locator('[class*="stat"]:has-text("Round") [class*="statValue"]')
+      .first()
       .textContent();
     const initialTime = await page
       .locator('[class*="stat"]:has-text("Time") [class*="timeValue"]')
+      .first()
       .textContent();
     const initialCardsPlayed = await page
       .locator('[class*="stat"]:has-text("Cards Played") [class*="statValue"]')
+      .first()
       .textContent();
     const initialCardsRemaining = await page
       .locator(
         '[class*="stat"]:has-text("Cards Remaining") [class*="statValue"]'
       )
+      .first()
       .textContent();
 
     expect(initialRound).toBe('1');
@@ -274,6 +289,7 @@ test.describe('Dev-Cards Game Integration', () => {
         .locator(
           '[class*="stat"]:has-text("Cards Played") [class*="statValue"]'
         )
+        .first()
         .textContent();
       expect(parseInt(newCardsPlayed!)).toBeGreaterThanOrEqual(
         parseInt(initialCardsPlayed!)
