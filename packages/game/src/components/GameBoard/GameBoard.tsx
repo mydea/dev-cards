@@ -900,6 +900,7 @@ function GameBoard({
     });
   };
 
+  // Legacy tech debt reduction (no longer used - keeping for reference)
   const handleTechnicalDebtReduction = () => {
     try {
       const result = gameEngine.processAction({
@@ -916,82 +917,25 @@ function GameBoard({
     }
   };
 
-  // Animated discard handler using tracked card elements
+  // Unified tech debt reduction that uses the end turn flow
   const handleTechnicalDebtReductionAnimated = () => {
-    if (gameState.piles.hand.length === 0) {
-      handleTechnicalDebtReduction();
-      return;
-    }
+    try {
+      // First, reduce technical debt by 2 using the game engine
+      const result = gameEngine.reduceTechnicalDebt();
 
-    // Get card elements for cards in hand
-    const handCardElements = gameState.piles.hand
-      .map((card) => cardElements[card.instanceId])
-      .filter(Boolean);
-
-    if (handCardElements.length === 0) {
-      handleTechnicalDebtReduction();
-      return;
-    }
-
-    // Start animation state
-    setIsAnimating(true);
-    const cardIds = gameState.piles.hand.map((card) => card.instanceId);
-    setAnimatingCardIds(new Set(cardIds));
-
-    // Trigger animation directly
-    handleDiscardAllCardsWithAnimation(handCardElements);
-  };
-
-  // Animated discard handler for multiple cards
-  const handleDiscardAllCardsWithAnimation = (
-    elementsToAnimate: HTMLElement[]
-  ) => {
-    const cardsToDiscard = [...gameState.piles.hand];
-
-    if (
-      cardsToDiscard.length === 0 ||
-      !animationLayerRef.current ||
-      !discardRef.current
-    ) {
-      setIsAnimating(false);
-      setAnimatingCardIds(new Set());
-      handleTechnicalDebtReduction();
-      return;
-    }
-
-    // Animate all cards to discard pile with staggered timing
-    let completedAnimations = 0;
-    const totalCards = cardsToDiscard.length;
-
-    cardsToDiscard.forEach((cardInstance, index) => {
-      const cardElement = elementsToAnimate[index];
-
-      if (!cardElement) {
-        completedAnimations++;
-        if (completedAnimations === totalCards) {
-          setIsAnimating(false);
-          setAnimatingCardIds(new Set());
-          handleTechnicalDebtReduction();
-        }
+      if (!result.success || !result.newState) {
+        console.error('Error reducing technical debt:', result.error);
         return;
       }
 
-      // Start all animations immediately (no stagger)
-      animationLayerRef.current?.animateCardToDiscard(
-        cardInstance,
-        cardElement,
-        discardRef.current!,
-        () => {
-          completedAnimations++;
-          // When all animations are done, process the game action
-          if (completedAnimations === totalCards) {
-            setIsAnimating(false);
-            setAnimatingCardIds(new Set());
-            handleTechnicalDebtReduction();
-          }
-        }
-      );
-    });
+      // Update component state to match
+      setGameState(result.newState);
+
+      // Then use the unified end turn animation flow
+      handleEndTurnAnimated();
+    } catch (error) {
+      console.error('Error reducing technical debt:', error);
+    }
   };
 
   const handleNewGame = () => {

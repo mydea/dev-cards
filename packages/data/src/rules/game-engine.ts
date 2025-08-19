@@ -766,6 +766,45 @@ export class GameEngine {
   }
 
   /**
+   * Reduces technical debt.
+   */
+  public reduceTechnicalDebt(): ActionResult {
+    if (!this.gameState) {
+      return { success: false, error: 'No game state' };
+    }
+
+    if (!validateTechnicalDebtReduction(this.gameState)) {
+      return {
+        success: false,
+        error:
+          'Cannot reduce technical debt: You must not have played any cards this round',
+      };
+    }
+
+    const newState = {
+      ...this.gameState,
+      resources: {
+        ...this.gameState.resources,
+        technicalDebt: Math.max(0, this.gameState.resources.technicalDebt - 2),
+      },
+    };
+
+    // Add to history
+    this.addHistoryEntry(
+      'tech_debt_reduction',
+      'Discarded all cards to reduce technical debt',
+      this.gameState.resources,
+      newState.resources
+    );
+
+    this.gameState = newState;
+    return {
+      success: true,
+      newState: this.gameState,
+    };
+  }
+
+  /**
    * Draws specific number of cards from deck only (no shuffling)
    */
   public performDraw(
