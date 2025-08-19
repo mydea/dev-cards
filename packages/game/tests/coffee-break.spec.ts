@@ -62,6 +62,7 @@ test.describe('Coffee Break Card Test', () => {
 
           // Verify final state
           const finalStats = await getGameStats(page);
+          console.log('finalStats', finalStats);
 
           // Expected state after Coffee Break:
           // - Progress: 0 (no progress effect)
