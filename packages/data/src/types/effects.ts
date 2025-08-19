@@ -69,4 +69,5 @@ export interface EffectResolution {
   effect: CardEffect;
   resolvedValue: number;
   randomOutcome?: 'heads' | 'tails'; // For coin flip
+  cardsToDraw?: number; // Number of cards to draw from EFFECT_TYPE_DRAW_CARDS (UI handles actual drawing)
 }

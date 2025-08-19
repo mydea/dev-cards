@@ -420,6 +420,14 @@ export class GameEngine {
     );
     newState = effectResult.newGameState;
 
+    // Extract total cards to draw from effects for UI animation
+    let totalCardsToDraw = 0;
+    effectResult.resolutions.forEach((resolution) => {
+      if (resolution.cardsToDraw) {
+        totalCardsToDraw += resolution.cardsToDraw;
+      }
+    });
+
     // Update stats
     newState.stats.cardsPlayed++;
 
@@ -452,6 +460,7 @@ export class GameEngine {
       newState: this.gameState,
       data: {
         appliedEffects: effectResult.resolutions,
+        cardsToDraw: totalCardsToDraw > 0 ? totalCardsToDraw : undefined,
       },
     };
   }

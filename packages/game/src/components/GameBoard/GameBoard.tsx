@@ -115,6 +115,7 @@ function GameBoard({
   ): {
     success: boolean;
     newState?: GameState;
+    cardsToDraw?: number;
     error?: string;
   } => {
     try {
@@ -127,10 +128,15 @@ function GameBoard({
         // Update game state immediately
         setGameState(result.newState);
 
-        // Draw effects are now handled automatically by the game engine
+        // Extract cards to draw from effect results
+        const cardsToDraw =
+          (result.data as { appliedEffects: any[]; cardsToDraw?: number })
+            ?.cardsToDraw || 0;
+
         return {
           success: true,
           newState: result.newState,
+          cardsToDraw: cardsToDraw > 0 ? cardsToDraw : undefined,
         };
       } else {
         console.error('Error playing card:', result.error);
@@ -204,8 +210,17 @@ function GameBoard({
           return newSet;
         });
 
-        // Draw effects are now handled automatically by the game engine
-        setIsAnimating(false);
+        // If there are cards to draw from effects, animate them now
+        if (playResult.cardsToDraw && playResult.cardsToDraw > 0) {
+          console.log(
+            `Drawing ${playResult.cardsToDraw} cards from card effects`
+          );
+          drawCards(playResult.cardsToDraw, () => {
+            setIsAnimating(false);
+          });
+        } else {
+          setIsAnimating(false);
+        }
       }
     );
   };
