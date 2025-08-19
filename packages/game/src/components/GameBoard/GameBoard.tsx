@@ -713,21 +713,26 @@ function GameBoard({
   };
 
   const animateShuffleAndDrawRemaining = (
-    currentState: GameState,
+    _originalState: GameState,
     remainingCards: number
   ) => {
+    // Get current game state which includes already drawn cards
+    const currentStateWithDrawnCards = gameEngine.getGameState()!;
+
     // First animate shuffle from discard to deck
     animationLayerRef.current?.animateDiscardToDeck(
-      currentState.piles.discard.length,
+      currentStateWithDrawnCards.piles.discard.length,
       discardRef.current!,
       deckRef.current!,
       () => {
-        // Update game state after shuffle
-        const stateAfterShuffle = gameEngine.performShuffle(currentState);
+        // Update game state after shuffle - this preserves the already drawn cards in hand
+        const stateAfterShuffle = gameEngine.performShuffle(
+          currentStateWithDrawnCards
+        );
         setGameState(stateAfterShuffle);
         gameEngine.updateGameState(stateAfterShuffle);
 
-        // Then draw remaining cards
+        // Then draw remaining cards - this will add to the existing hand
         animateDrawFromDeck(stateAfterShuffle, remainingCards, () => {
           completeEndTurn();
         });
