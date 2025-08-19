@@ -50,7 +50,7 @@ function GameInfo({ gameState, onReturnToMenu }: GameInfoProps) {
 
         <div className={styles.stat}>
           <div className={styles.statLabel}>Time</div>
-          <div className={styles.statValue}>{formatTime(elapsedTime)}</div>
+          <div className={styles.timeValue}>{formatTime(elapsedTime)}</div>
         </div>
       </div>
 

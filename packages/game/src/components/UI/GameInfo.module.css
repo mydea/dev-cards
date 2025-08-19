@@ -34,6 +34,15 @@
   line-height: 1;
 }
 
+.timeValue {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
 .menuButton {
   background: var(--color-gray-500);
   color: var(--text-inverse);
@@ -73,7 +82,8 @@
     min-width: 50px;
   }
 
-  .statValue {
+  .statValue,
+  .timeValue {
     font-size: var(--font-size-base);
   }
 
