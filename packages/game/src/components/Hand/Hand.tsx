@@ -83,18 +83,7 @@ function Hand({
     },
   };
 
-  const cardContainerVariants = {
-    hidden: { opacity: 0, y: 50 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: 'spring',
-        stiffness: 300,
-        damping: 25,
-      },
-    },
-  };
+  const showHint = !disabled && animatingCardIds.size === 0 && cards.length > 0;
 
   return (
     <motion.div
@@ -115,7 +104,7 @@ function Hand({
       </motion.div>
 
       <div className={styles.cards}>
-        {cards.map((cardInstance, index) => {
+        {cards.map((cardInstance) => {
           const validation = validateCardPlay(cardInstance, gameState);
           const isPlayable = validation.canPlay && !disabled;
           const isAnimating = animatingCardIds.has(cardInstance.instanceId);
@@ -151,13 +140,13 @@ function Hand({
       </div>
 
       <AnimatePresence>
-        {!disabled && (
+        {showHint && (
           <motion.div
             className={styles.handHint}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            transition={{ delay: 0.5 }}
+            transition={!showHint ? { delay: 0.5 } : { delay: 0, duration: 0 }}
           >
             <span className={styles.hintIcon}>💡</span>
             Click on cards to play them
@@ -176,7 +165,7 @@ export default memo(Hand, (prevProps, nextProps) => {
   return (
     prevProps.cards.length === nextProps.cards.length &&
     prevProps.disabled === nextProps.disabled &&
-    prevProps.animatingCardIds.size === nextProps.animatingCardIds.size &&
+    prevProps.animatingCardIds?.size === nextProps.animatingCardIds?.size &&
     prevProps.cards.every(
       (card, index) => nextProps.cards[index]?.instanceId === card.instanceId
     ) &&
