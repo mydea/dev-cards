@@ -99,7 +99,7 @@ function GameBoard({
       setGameOver({
         isGameOver: true,
         won: true,
-        message: `Congratulations! You completed your project in ${gameState.stats.currentRound} rounds!`,
+        message: `Congratulations! You completed your project in ${gameState.stats.currentRound} rounds with ${gameState.stats.cardsPlayed} cards played.`,
       });
     } else if (hasLost) {
       setGameOver({
@@ -927,14 +927,42 @@ function GameBoard({
                 </motion.p>
 
                 {gameOver.won && (
-                  <motion.p
-                    className={styles.finalScore}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.5, type: 'spring' }}
-                  >
-                    Final Score: {gameState.stats.currentRound} rounds
-                  </motion.p>
+                  <>
+                    <motion.p
+                      className={styles.finalScore}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.5, type: 'spring' }}
+                    >
+                      Final Score: {gameState.stats.finalScore} points
+                    </motion.p>
+
+                    <motion.div
+                      className={styles.scoreBreakdown}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7 }}
+                    >
+                      <div className={styles.scoreStat}>
+                        <span>🏆 Rounds:</span> {gameState.stats.currentRound}
+                      </div>
+                      <div className={styles.scoreStat}>
+                        <span>🃏 Cards Played:</span>{' '}
+                        {gameState.stats.cardsPlayed}
+                      </div>
+                      <div className={styles.scoreStat}>
+                        <span>⏱️ Time:</span>{' '}
+                        {Math.round(
+                          ((gameState.stats.endTime! -
+                            gameState.stats.startTime) /
+                            1000 /
+                            60) *
+                            10
+                        ) / 10}
+                        m
+                      </div>
+                    </motion.div>
+                  </>
                 )}
 
                 <motion.div

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { CardInstance } from '@dev-cards/data';
 import styles from './Card.module.css';
@@ -336,4 +336,13 @@ function Card({
   );
 }
 
-export default Card;
+// Memoize Card component for better performance when rendering multiple cards
+export default memo(Card, (prevProps, nextProps) => {
+  return (
+    prevProps.cardInstance.instanceId === nextProps.cardInstance.instanceId &&
+    prevProps.isPlayable === nextProps.isPlayable &&
+    prevProps.disabled === nextProps.disabled &&
+    prevProps.isAnimating === nextProps.isAnimating &&
+    prevProps.validationError === nextProps.validationError
+  );
+});

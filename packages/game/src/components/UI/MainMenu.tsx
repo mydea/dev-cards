@@ -19,23 +19,50 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
         </div>
 
         <div className={styles.howToPlay}>
-          <h3>Quick Rules:</h3>
-          <ul>
-            <li>
-              <strong>Productivity Points (PP):</strong> Start each round with
-              20 PP minus Technical Debt
-            </li>
-            <li>
-              <strong>Playing Cards:</strong> Use PP to play cards and gain
-              progress
-            </li>
-            <li>
-              <strong>Win Condition:</strong> Reach 100% progress with 0 bugs
-            </li>
-            <li>
-              <strong>Score:</strong> Fewer rounds = better score
-            </li>
-          </ul>
+          <h3>How to Play:</h3>
+          <div className={styles.ruleSection}>
+            <h4>🎯 Objective</h4>
+            <p>
+              Complete your software project by reaching 100% Progress with 0
+              Bugs in the fewest rounds possible.
+            </p>
+          </div>
+
+          <div className={styles.ruleSection}>
+            <h4>🔄 Game Flow</h4>
+            <ol>
+              <li>
+                <strong>Start Round:</strong> Gain PP equal to (20 - Technical
+                Debt)
+              </li>
+              <li>
+                <strong>Play Cards:</strong> Spend PP to play cards from your
+                hand
+              </li>
+              <li>
+                <strong>End Turn:</strong> Discard remaining cards and draw 5
+                new ones
+              </li>
+              <li>
+                <strong>Repeat:</strong> Continue until you win or run out of
+                cards
+              </li>
+            </ol>
+          </div>
+
+          <div className={styles.ruleSection}>
+            <h4>💡 Strategy Tips</h4>
+            <ul>
+              <li>Balance progress cards with bug fixes and debt reduction</li>
+              <li>Some cards have coin flip effects - risk vs reward!</li>
+              <li>
+                Technical Debt reduces your PP each round - manage it carefully
+              </li>
+              <li>
+                Your score considers rounds, time, and cards played efficiently
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div className={styles.resources}>

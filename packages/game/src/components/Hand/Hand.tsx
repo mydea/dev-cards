@@ -1,3 +1,4 @@
+import { memo, useMemo, useCallback } from 'react';
 import type { CardInstance, GameState } from '@dev-cards/data';
 import { validateCardPlay } from '@dev-cards/data';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,18 +24,19 @@ function Hand({
   gameState,
   disabled = false,
 }: HandProps) {
-  const handleCardClick = (
-    cardInstance: CardInstance,
-    event: React.MouseEvent<HTMLDivElement>
-  ) => {
-    if (disabled) return;
+  // Memoize card click handler to prevent unnecessary re-renders of Card components
+  const handleCardClick = useCallback(
+    (cardInstance: CardInstance, event: React.MouseEvent<HTMLDivElement>) => {
+      if (disabled) return;
 
-    const validation = validateCardPlay(cardInstance, gameState);
-    if (validation.canPlay) {
-      const cardElement = event.currentTarget;
-      onPlayCard(cardInstance.instanceId, cardElement);
-    }
-  };
+      const validation = validateCardPlay(cardInstance, gameState);
+      if (validation.canPlay) {
+        const cardElement = event.currentTarget;
+        onPlayCard(cardInstance.instanceId, cardElement);
+      }
+    },
+    [disabled, gameState, onPlayCard]
+  );
 
   // Only show empty hand UI if there are no cards AND no animations in progress
   if (cards.length === 0 && animatingCardIds.size === 0) {
@@ -168,4 +170,20 @@ function Hand({
 
 Hand.displayName = 'Hand';
 
-export default Hand;
+// Memoize Hand component to prevent unnecessary re-renders
+export default memo(Hand, (prevProps, nextProps) => {
+  // Only re-render if essential props have changed
+  return (
+    prevProps.cards.length === nextProps.cards.length &&
+    prevProps.disabled === nextProps.disabled &&
+    prevProps.animatingCardIds.size === nextProps.animatingCardIds.size &&
+    prevProps.cards.every(
+      (card, index) => nextProps.cards[index]?.instanceId === card.instanceId
+    ) &&
+    // Compare game state properties that affect card validation
+    prevProps.gameState.resources.productivityPoints ===
+      nextProps.gameState.resources.productivityPoints &&
+    prevProps.gameState.piles.hand.length ===
+      nextProps.gameState.piles.hand.length
+  );
+});

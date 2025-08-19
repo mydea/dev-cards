@@ -6,8 +6,9 @@
 
 .stats {
   display: flex;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .stat {
@@ -15,7 +16,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  min-width: 60px;
+  min-width: 55px;
 }
 
 .statLabel {
@@ -75,11 +76,12 @@
   }
 
   .stats {
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
+    justify-content: center;
   }
 
   .stat {
-    min-width: 50px;
+    min-width: 45px;
   }
 
   .statValue,
