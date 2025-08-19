@@ -398,7 +398,7 @@ export const CARD_DATABASE_MIGRATION = {
 export const CARD_RUBBER_DUCK = {
   id: 'rubber-duck',
   title: 'Rubber Duck Debugging',
-  image: '/assets/images/icons/card-placeholder.png',
+  image: '/assets/images/cards/rubber-ducking.png',
   quote: 'Explain it to the duck',
   requirements: [
     {
@@ -433,7 +433,7 @@ export const CARD_RUBBER_DUCK = {
 export const CARD_TECH_DEBT_CLEANUP = {
   id: 'tech-debt-cleanup',
   title: 'Technical Debt Cleanup',
-  image: '/assets/images/icons/card-placeholder.png',
+  image: '/assets/images/cards/tech-debt-cleanup.png',
   quote: 'Pay down the debt before it grows',
   requirements: [
     {
@@ -460,7 +460,7 @@ export const CARD_TECH_DEBT_CLEANUP = {
 export const CARD_INTEGRATION_TESTING = {
   id: 'integration-testing',
   title: 'Integration Testing',
-  image: '/assets/images/icons/card-placeholder.png',
+  image: '/assets/images/cards/integration-testing.png',
   quote: 'Test how the pieces fit together',
   requirements: [
     {
@@ -493,7 +493,7 @@ export const CARD_INTEGRATION_TESTING = {
 export const CARD_RUSH_IMPLEMENTATION = {
   id: 'rush-implementation',
   title: 'Rush Implementation',
-  image: '/assets/images/icons/card-placeholder.png',
+  image: '/assets/images/cards/rush-implementation.png',
   quote: "We'll fix it in the next sprint... maybe",
   requirements: [
     {
@@ -521,7 +521,7 @@ export const CARD_RUSH_IMPLEMENTATION = {
 export const CARD_COPY_PASTE_SOLUTION = {
   id: 'copy-paste-solution',
   title: 'Copy-Paste Solution',
-  image: '/assets/images/icons/card-placeholder.png',
+  image: '/assets/images/cards/copy-paste.png',
   quote: 'Why reinvent the wheel? Ctrl+C, Ctrl+V!',
   requirements: [
     {
