@@ -88,7 +88,7 @@
   margin-bottom: var(--spacing-sm);
 }
 
-.possibleOutcomes {
+.outcomesList {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
@@ -106,27 +106,6 @@
   font-style: italic;
   opacity: 0.8;
   margin-top: var(--spacing-xs);
-}
-
-.resultText {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  text-align: center;
-  margin-bottom: var(--spacing-sm);
-}
-
-.finalValue {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  text-align: center;
-  opacity: 0.9;
-}
-
-.finalOutcomes {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-sm);
 }
 
 .outcomeWinner {

@@ -56,6 +56,32 @@ interface CoinFlipQueueItem {
   resolvedValue: number;
 }
 
+interface OutcomesListProps {
+  effect: CoinFlipEffect;
+  result?: 'heads' | 'tails' | null;
+  showResult: boolean;
+}
+
+function OutcomesList({ effect, result, showResult }: OutcomesListProps) {
+  const getOutcomeClass = (outcome: 'heads' | 'tails') => {
+    if (!showResult) {
+      return styles.outcome;
+    }
+    return result === outcome ? styles.outcomeWinner : styles.outcomeLoser;
+  };
+
+  return (
+    <div className={styles.outcomesList}>
+      <div className={getOutcomeClass('heads')}>
+        🎯 Heads: {formatEffectValue(effect.type, effect.headsValue)}
+      </div>
+      <div className={getOutcomeClass('tails')}>
+        🎲 Tails: {formatEffectValue(effect.type, effect.tailsValue)}
+      </div>
+    </div>
+  );
+}
+
 interface CoinFlipOverlayProps {
   queue: CoinFlipQueueItem[];
   onAllComplete: (results: CoinFlipQueueItem[]) => void;
@@ -211,63 +237,16 @@ function CoinFlipOverlay({ queue, onAllComplete }: CoinFlipOverlayProps) {
 
           {/* Always show result area to prevent layout shift */}
           <div className={styles.result}>
-            {isFlipping ? (
-              <>
-                <div className={styles.effectType}>
-                  {getEffectDisplayName(currentEffect.effect.type)}
-                </div>
-                <div className={styles.possibleOutcomes}>
-                  <div className={styles.outcome}>
-                    🎯 Heads:{' '}
-                    {formatEffectValue(
-                      currentEffect.effect.type,
-                      currentEffect.effect.headsValue
-                    )}
-                  </div>
-                  <div className={styles.outcome}>
-                    🎲 Tails:{' '}
-                    {formatEffectValue(
-                      currentEffect.effect.type,
-                      currentEffect.effect.tailsValue
-                    )}
-                  </div>
-                </div>
-                <div className={styles.waitText}>Wait for it...</div>
-              </>
-            ) : (
-              <>
-                <div className={styles.effectType}>
-                  {getEffectDisplayName(currentEffect.effect.type)}
-                </div>
-                <div className={styles.finalOutcomes}>
-                  <div
-                    className={
-                      currentEffect.result === 'heads'
-                        ? styles.outcomeWinner
-                        : styles.outcomeLoser
-                    }
-                  >
-                    🎯 Heads:{' '}
-                    {formatEffectValue(
-                      currentEffect.effect.type,
-                      currentEffect.effect.headsValue
-                    )}
-                  </div>
-                  <div
-                    className={
-                      currentEffect.result === 'tails'
-                        ? styles.outcomeWinner
-                        : styles.outcomeLoser
-                    }
-                  >
-                    🎲 Tails:{' '}
-                    {formatEffectValue(
-                      currentEffect.effect.type,
-                      currentEffect.effect.tailsValue
-                    )}
-                  </div>
-                </div>
-              </>
+            <div className={styles.effectType}>
+              {getEffectDisplayName(currentEffect.effect.type)}
+            </div>
+            <OutcomesList
+              effect={currentEffect.effect}
+              result={currentEffect.result}
+              showResult={!isFlipping}
+            />
+            {isFlipping && (
+              <div className={styles.waitText}>Wait for it...</div>
             )}
           </div>
         </motion.div>
