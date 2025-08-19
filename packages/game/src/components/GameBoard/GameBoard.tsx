@@ -5,6 +5,7 @@ import type {
   GameEngine,
   CardInstance,
   CoinFlipEffect,
+  GameHistory,
 } from '@dev-cards/data';
 import {
   checkWinCondition,
@@ -39,6 +40,7 @@ function GameBoard({
   onReturnToMenu,
 }: GameBoardProps) {
   const [gameState, setGameState] = useState(initialGameState);
+  const [history] = useState<GameHistory>(() => gameEngine.getHistory());
   const [gameOver, setGameOver] = useState<GameOverState>({
     isGameOver: false,
     won: false,
@@ -657,14 +659,13 @@ function GameBoard({
           20 - newState.resources.technicalDebt
         );
 
-        // Add round_start to history so tech debt reduction becomes available
-        newState.history.push({
-          round: newState.stats.currentRound,
-          action: 'round_start' as const,
-          stateBefore: currentState.resources,
-          stateAfter: newState.resources,
-          timestamp: Date.now(),
-        });
+        history.addEntry(
+          'round_start',
+          'Game started',
+          currentState.resources,
+          newState.resources,
+          newState.stats.currentRound
+        );
 
         // Sync the game engine state
         gameEngine.updateGameState(newState);
@@ -807,6 +808,7 @@ function GameBoard({
               onEndTurn={handleEndTurnAnimated}
               onTechnicalDebtReduction={handleTechnicalDebtReductionAnimated}
               gameState={gameState}
+              history={history}
               disabled={
                 gameOver.isGameOver ||
                 isAnimating ||

@@ -1,4 +1,4 @@
-import type { GameState } from '@dev-cards/data';
+import type { GameState, GameHistory } from '@dev-cards/data';
 import { validateTechnicalDebtReduction } from '@dev-cards/data';
 import styles from './GameActions.module.css';
 
@@ -6,6 +6,7 @@ interface GameActionsProps {
   onEndTurn: () => void;
   onTechnicalDebtReduction: () => void;
   gameState: GameState;
+  history: GameHistory;
   disabled?: boolean;
 }
 
@@ -13,9 +14,11 @@ function GameActions({
   onEndTurn,
   onTechnicalDebtReduction,
   gameState,
+  history,
   disabled = false,
 }: GameActionsProps) {
-  const canReduceDebt = validateTechnicalDebtReduction(gameState) && !disabled;
+  const canReduceDebt =
+    validateTechnicalDebtReduction(gameState, history) && !disabled;
   const hasCards = gameState.piles.hand.length > 0;
 
   return (

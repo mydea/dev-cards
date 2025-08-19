@@ -80,10 +80,10 @@ export interface GameHistoryEntry {
   effectResolutions?: EffectResolution[];
 
   /** State before the action */
-  stateBefore: Partial<GameResources>;
+  stateBefore: GameResources;
 
   /** State after the action */
-  stateAfter: Partial<GameResources>;
+  stateAfter: GameResources;
 
   /** Timestamp */
   timestamp: number;
@@ -107,9 +107,6 @@ export interface GameState {
 
   /** Card piles */
   piles: GamePiles;
-
-  /** Game history for replay/undo */
-  history: GameHistoryEntry[];
 
   /** Random seed for reproducible gameplay */
   seed: string;

@@ -7,10 +7,9 @@ import type {
   GameStats,
   GamePiles,
   CardInstance,
-  GameHistoryEntry,
-  EffectResolution,
   CoinFlipEffect,
 } from '../types';
+import { GameHistory } from '../utils/game-history';
 import {
   GAME_PHASE_PLANNING,
   GAME_PHASE_GAME_OVER,
@@ -37,6 +36,7 @@ import { cloneGameState } from '../utils/deep-clone';
  */
 export class GameEngine {
   private gameState: GameState | null = null;
+  private history: GameHistory = new GameHistory();
 
   /**
    * Creates a new game with the given configuration
@@ -83,12 +83,19 @@ export class GameEngine {
       resources: initialResources,
       stats: initialStats,
       piles: initialPiles,
-      history: [],
       seed,
       playerId,
     };
 
-    this.addHistoryEntry('round_start', 'Game started', {}, initialResources);
+    // Clear history for new game and add initial entry
+    this.history.clear();
+    this.history.addEntry(
+      'round_start',
+      'Game started',
+      initialResources,
+      initialResources,
+      1
+    );
 
     return this.gameState;
   }
@@ -105,6 +112,13 @@ export class GameEngine {
    */
   public updateGameState(newState: GameState): void {
     this.gameState = newState;
+  }
+
+  /**
+   * Gets the current game history
+   */
+  public getHistory(): GameHistory {
+    return this.history;
   }
 
   /**
@@ -430,11 +444,12 @@ export class GameEngine {
     newState.stats.cardsPlayed++;
 
     // Add to history
-    this.addHistoryEntry(
+    this.history.addEntry(
       'card_played',
       `Played ${cardInstance.card.title}`,
       this.gameState.resources,
       newState.resources,
+      newState.stats.currentRound,
       cardInstance.card.id,
       effectResult.resolutions
     );
@@ -536,11 +551,12 @@ export class GameEngine {
     newState.stats.cardsPlayed++;
 
     // Add to history
-    this.addHistoryEntry(
+    this.history.addEntry(
       'card_played',
       `Played ${cardInstance.card.title}`,
       this.gameState.resources,
       newState.resources,
+      newState.stats.currentRound,
       cardInstance.card.id,
       effectResult.resolutions
     );
@@ -576,7 +592,7 @@ export class GameEngine {
       return { success: false, error: 'No game state' };
     }
 
-    if (!validateTechnicalDebtReduction(this.gameState)) {
+    if (!validateTechnicalDebtReduction(this.gameState, this.history)) {
       return {
         success: false,
         error:
@@ -591,11 +607,12 @@ export class GameEngine {
     );
 
     // Add to history
-    this.addHistoryEntry(
+    this.history.addEntry(
       'tech_debt_reduction',
       'Discarded all cards to reduce technical debt',
       this.gameState.resources,
-      newState.resources
+      newState.resources,
+      newState.stats.currentRound
     );
 
     // End turn after TD reduction
@@ -642,11 +659,12 @@ export class GameEngine {
     }
 
     // Add round start to history
-    this.addHistoryEntry(
+    this.history.addEntry(
       'round_start',
       `Started round ${newState.stats.currentRound}`,
       this.gameState.resources,
-      newState.resources
+      newState.resources,
+      newState.stats.currentRound
     );
 
     this.gameState = newState;
@@ -751,7 +769,7 @@ export class GameEngine {
       return { success: false, error: 'No game state' };
     }
 
-    if (!validateTechnicalDebtReduction(this.gameState)) {
+    if (!validateTechnicalDebtReduction(this.gameState, this.history)) {
       return {
         success: false,
         error:
@@ -766,11 +784,12 @@ export class GameEngine {
     );
 
     // Add to history
-    this.addHistoryEntry(
+    this.history.addEntry(
       'tech_debt_reduction',
       'Discarded all cards to reduce technical debt',
       this.gameState.resources,
-      newState.resources
+      newState.resources,
+      newState.stats.currentRound
     );
 
     this.gameState = newState;
@@ -860,32 +879,6 @@ export class GameEngine {
     const efficiencyScore = Math.max(0, 50 - gameState.stats.cardsPlayed);
 
     return Math.round(roundScore + timeScore + efficiencyScore);
-  }
-
-  /**
-   * Adds an entry to the game history
-   */
-  private addHistoryEntry(
-    action: GameHistoryEntry['action'],
-    _description: string,
-    stateBefore: Partial<GameResources>,
-    stateAfter: Partial<GameResources>,
-    cardId?: string,
-    effectResolutions?: EffectResolution[]
-  ): void {
-    if (!this.gameState) return;
-
-    const entry: GameHistoryEntry = {
-      round: this.gameState.stats.currentRound,
-      action,
-      cardId,
-      effectResolutions,
-      stateBefore,
-      stateAfter,
-      timestamp: Date.now(),
-    };
-
-    this.gameState.history.push(entry);
   }
 
   /**
