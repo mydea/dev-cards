@@ -8,8 +8,8 @@ import type {
   GamePiles,
   CardInstance,
   GameHistoryEntry,
-  CardEffect,
   EffectResolution,
+  CoinFlipEffect,
 } from '../types';
 import {
   GAME_PHASE_PLANNING,
@@ -297,7 +297,7 @@ export class GameEngine {
     error?: string;
     cardsToDiscard?: CardInstance[];
     coinFlipEffects?: Array<{
-      effect: CardEffect;
+      effect: CoinFlipEffect;
       result: 'heads' | 'tails';
       resolvedValue: number;
     }>;
@@ -345,7 +345,7 @@ export class GameEngine {
 
     // Pre-resolve coin flip effects for animation
     const coinFlipEffects: Array<{
-      effect: CardEffect;
+      effect: CoinFlipEffect;
       result: 'heads' | 'tails';
       resolvedValue: number;
     }> = [];

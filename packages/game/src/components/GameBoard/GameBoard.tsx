@@ -900,23 +900,6 @@ function GameBoard({
     });
   };
 
-  // Legacy tech debt reduction (no longer used - keeping for reference)
-  const handleTechnicalDebtReduction = () => {
-    try {
-      const result = gameEngine.processAction({
-        type: 'DISCARD_ALL_FOR_TD_REDUCTION',
-      });
-
-      if (result.success && result.newState) {
-        setGameState(result.newState);
-      } else {
-        console.error('Error reducing technical debt:', result.error);
-      }
-    } catch (error) {
-      console.error('Error reducing technical debt:', error);
-    }
-  };
-
   // Unified tech debt reduction that uses the end turn flow
   const handleTechnicalDebtReductionAnimated = () => {
     try {
