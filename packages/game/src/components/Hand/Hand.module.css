@@ -14,7 +14,7 @@
 
 .cards {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
@@ -79,7 +79,7 @@
 /* Responsive design */
 @media (max-width: 1024px) {
   .cards {
-    gap: var(--spacing-xs);
+    gap: 4px;
   }
 }
 
@@ -90,7 +90,7 @@
 
   .cards {
     padding: var(--spacing-sm);
-    gap: 4px;
+    gap: 2px;
   }
 
   .handHint {

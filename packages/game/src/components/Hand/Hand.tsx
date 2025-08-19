@@ -119,7 +119,7 @@ function Hand({
               }}
               style={{
                 display: 'inline-block',
-                margin: '10px',
+                margin: '4px',
               }}
             >
               <Card
