@@ -35,30 +35,20 @@ function GameInfo({ gameState, onReturnToMenu }: GameInfoProps) {
     ? gameState.stats.endTime - gameState.stats.startTime
     : currentTime - gameState.stats.startTime;
 
-  // Calculate additional statistics (memoized to prevent unnecessary recalculations)
+  // Calculate card statistics (memoized to prevent unnecessary recalculations)
   const statistics = useMemo(() => {
-    const cardsInHand = gameState.piles.hand.length;
-    const cardsInDeck = gameState.piles.deck.length;
-    const avgCardsPerRound =
-      gameState.stats.currentRound > 0
-        ? (gameState.stats.cardsPlayed / gameState.stats.currentRound).toFixed(
-            1
-          )
-        : '0.0';
-    const progressPerRound =
-      gameState.stats.currentRound > 0
-        ? (gameState.resources.progress / gameState.stats.currentRound).toFixed(
-            1
-          )
-        : '0.0';
+    const cardsPlayed = gameState.piles.graveyard.length;
+    const cardsRemaining =
+      gameState.piles.deck.length +
+      gameState.piles.discard.length +
+      gameState.piles.hand.length;
 
-    return { cardsInHand, cardsInDeck, avgCardsPerRound, progressPerRound };
+    return { cardsPlayed, cardsRemaining };
   }, [
-    gameState.piles.hand.length,
+    gameState.piles.graveyard.length,
     gameState.piles.deck.length,
-    gameState.stats.cardsPlayed,
-    gameState.stats.currentRound,
-    gameState.resources.progress,
+    gameState.piles.discard.length,
+    gameState.piles.hand.length,
   ]);
 
   return (
@@ -70,33 +60,18 @@ function GameInfo({ gameState, onReturnToMenu }: GameInfoProps) {
         </div>
 
         <div className={styles.stat}>
-          <div className={styles.statLabel}>Cards Played</div>
-          <div className={styles.statValue}>{gameState.stats.cardsPlayed}</div>
-        </div>
-
-        <div className={styles.stat}>
           <div className={styles.statLabel}>Time</div>
           <div className={styles.timeValue}>{formatTime(elapsedTime)}</div>
         </div>
 
         <div className={styles.stat}>
-          <div className={styles.statLabel}>Hand</div>
-          <div className={styles.statValue}>{statistics.cardsInHand}</div>
+          <div className={styles.statLabel}>Cards Played</div>
+          <div className={styles.statValue}>{statistics.cardsPlayed}</div>
         </div>
 
         <div className={styles.stat}>
-          <div className={styles.statLabel}>Deck</div>
-          <div className={styles.statValue}>{statistics.cardsInDeck}</div>
-        </div>
-
-        <div className={styles.stat}>
-          <div className={styles.statLabel}>Avg/Round</div>
-          <div className={styles.statValue}>{statistics.avgCardsPerRound}</div>
-        </div>
-
-        <div className={styles.stat}>
-          <div className={styles.statLabel}>Progress/Round</div>
-          <div className={styles.statValue}>{statistics.progressPerRound}%</div>
+          <div className={styles.statLabel}>Cards Remaining</div>
+          <div className={styles.statValue}>{statistics.cardsRemaining}</div>
         </div>
       </div>
 
@@ -118,16 +93,14 @@ export default memo(GameInfo, (prevProps, nextProps) => {
   const nextStats = nextProps.gameState.stats;
   const prevPiles = prevProps.gameState.piles;
   const nextPiles = nextProps.gameState.piles;
-  const prevResources = prevProps.gameState.resources;
-  const nextResources = nextProps.gameState.resources;
 
-  // Only re-render if relevant statistics have changed
+  // Only re-render if the displayed statistics have changed
   return (
     prevStats.currentRound === nextStats.currentRound &&
-    prevStats.cardsPlayed === nextStats.cardsPlayed &&
     prevStats.endTime === nextStats.endTime &&
+    prevPiles.graveyard.length === nextPiles.graveyard.length &&
     prevPiles.hand.length === nextPiles.hand.length &&
     prevPiles.deck.length === nextPiles.deck.length &&
-    prevResources.progress === nextResources.progress
+    prevPiles.discard.length === nextPiles.discard.length
   );
 });
