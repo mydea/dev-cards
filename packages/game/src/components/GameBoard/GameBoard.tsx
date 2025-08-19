@@ -162,6 +162,8 @@ function GameBoard({
       (card) => card.instanceId === cardInstanceId
     );
 
+    console.log('PLAYING CARD', cardInstanceId);
+
     if (!cardInstance || !animationLayerRef.current || !graveyardRef.current) {
       // Fallback to immediate play if animation isn't available
       handlePlayCard(cardInstanceId);
@@ -212,9 +214,6 @@ function GameBoard({
 
         // If there are cards to draw from effects, animate them now
         if (playResult.cardsToDraw && playResult.cardsToDraw > 0) {
-          console.log(
-            `Drawing ${playResult.cardsToDraw} cards from card effects`
-          );
           drawCards(playResult.cardsToDraw, () => {
             setIsAnimating(false);
           });
@@ -368,44 +367,21 @@ function GameBoard({
           });
         }
 
-        const playResult = {
-          success: true,
-          drawnCards: [],
-        };
+        // Extract cards to draw from effect results
+        const cardsToDraw =
+          (result.data as { appliedEffects: any[]; cardsToDraw?: number })
+            ?.cardsToDraw || 0;
 
-        if (playResult.success) {
-          // Start visual-only animation
-          setIsAnimating(true);
-          setAnimatingCardIds((prev) => new Set(prev).add(cardInstanceId));
-
-          const cardElement = cardElements[cardInstanceId];
-          if (cardElement) {
-            if (cardsToDiscard && cardsToDiscard.length > 0) {
-              // Animate discard requirements (visual only)
-              handleVisualDiscardAnimation(
-                cardElement,
-                cardsToDiscard,
-                cardInstanceId
-              );
-            } else {
-              // Simple card to graveyard animation (visual only)
-              handleVisualCardToGraveyardAnimation(cardElement, cardInstanceId);
-            }
-
-            // Handle draw animations if any cards were drawn
-            if (playResult.drawnCards && playResult.drawnCards.length > 0) {
-              const drawnCardIds: string[] = playResult.drawnCards.map(
-                (card: CardInstance) => card.instanceId
-              );
-              setAnimatingCardIds(
-                (prev) => new Set<string>([...prev, ...drawnCardIds])
-              );
-
-              handleDrawCardsAnimated(playResult.drawnCards, () => {
-                // Draw animations complete
-              });
-            }
-          }
+        // Handle draw cards from effects (coin flip cards already animated to graveyard visually)
+        if (cardsToDraw > 0) {
+          console.log(
+            `Drawing ${cardsToDraw} cards from coin flip card effects`
+          );
+          drawCards(cardsToDraw, () => {
+            setIsAnimating(false);
+          });
+        } else {
+          setIsAnimating(false);
         }
       } else {
         console.error('Card play failed after coin flip:', result.error);
@@ -777,11 +753,11 @@ function GameBoard({
         // Draw available cards from deck first
         animateDrawFromDeck(currentState, deckCards, () => {
           // After first draw, animate shuffle
-          animateShuffleAndDrawRemaining(currentState, 5 - deckCards);
+          animateShuffleAndDrawRemaining(currentState, 5 - deckCards, () => {});
         });
       } else {
         // No cards in deck, just shuffle and draw all
-        animateShuffleAndDrawRemaining(currentState, 5);
+        animateShuffleAndDrawRemaining(currentState, 5, () => {});
       }
     } else {
       // No shuffle needed, just draw all 5 cards

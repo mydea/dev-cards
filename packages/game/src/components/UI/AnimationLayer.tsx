@@ -3,13 +3,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { CardInstance } from '@dev-cards/data';
 import Card from '../Card/Card';
 import styles from './AnimationLayer.module.css';
+import { generateUUID } from '@dev-cards/data';
 
 interface FlyingCard {
   id: string;
   cardInstance: CardInstance;
   startPosition: { x: number; y: number };
   endPosition: { x: number; y: number };
-  onComplete: () => void;
+  onComplete: (completeResult: {
+    x?: number;
+    y?: number;
+    scale?: number;
+    opacity?: number;
+    rotate?: number;
+  }) => void;
   delay?: number; // Delay before animation starts (in milliseconds)
 }
 
@@ -62,8 +69,10 @@ const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
         const scrollX = window.scrollX || window.pageXOffset;
         const scrollY = window.scrollY || window.pageYOffset;
 
+        const id = `flying-${cardInstance.instanceId}-${generateUUID()}`;
+
         const flyingCard: FlyingCard = {
-          id: `flying-${cardInstance.instanceId}-${Date.now()}`,
+          id,
           cardInstance,
           startPosition: {
             x: startRect.left + scrollX,
@@ -74,11 +83,14 @@ const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
             y:
               endRect.top + scrollY + endRect.height / 2 - startRect.height / 2,
           },
-          onComplete: () => {
+          onComplete: (completeResult) => {
+            // ignore the exit animation
+            if (completeResult.scale === 0 && completeResult.opacity === 0) {
+              return;
+            }
+
             // Remove this flying card from the list
-            setFlyingCards((prev) =>
-              prev.filter((fc) => fc.id !== flyingCard.id)
-            );
+            setFlyingCards((prev) => prev.filter((fc) => fc.id !== id));
             // Call the completion callback
             onComplete();
           },
@@ -104,7 +116,7 @@ const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
         const scrollY = window.scrollY || window.pageYOffset;
 
         const flyingCard: FlyingCard = {
-          id: `flying-discard-${cardInstance.instanceId}-${Date.now()}`,
+          id: `flying-discard-${cardInstance.instanceId}-${generateUUID()}`,
           cardInstance,
           startPosition: {
             x: startRect.left + scrollX,
@@ -145,7 +157,7 @@ const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
         const scrollY = window.scrollY || window.pageYOffset;
 
         const flyingCard: FlyingCard = {
-          id: `flying-draw-${cardInstance.instanceId}-${Date.now()}`,
+          id: `flying-draw-${cardInstance.instanceId}-${generateUUID()}`,
           cardInstance,
           startPosition: {
             x: startRect.left + scrollX,
@@ -201,9 +213,9 @@ const AnimationLayer = forwardRef<AnimationLayerRef, AnimationLayerProps>(
           const randomOffset = (Math.random() - 0.5) * 20; // Add some randomness
 
           const flyingCard: FlyingCard = {
-            id: `flying-shuffle-${i}-${Date.now()}`,
+            id: `flying-shuffle-${i}-${generateUUID()}`,
             cardInstance: {
-              instanceId: `shuffle-placeholder-${i}`,
+              instanceId: `shuffle-placeholder-${generateUUID()}`,
               card: {
                 id: 'placeholder',
                 title: '',

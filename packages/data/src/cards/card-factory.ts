@@ -1,4 +1,5 @@
 import type { Card, CardInstance } from '../types';
+import { generateUUID } from '../utils/uuid';
 
 /**
  * Creates a card instance from a card definition
@@ -11,7 +12,7 @@ export function createCardInstance(
     card,
     instanceId:
       instanceId ||
-      `${card.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      `${card.id}_${generateUUID()}`,
     isPlayable: false,
     visualState: {
       isSelected: false,

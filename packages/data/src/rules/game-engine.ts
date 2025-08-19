@@ -29,6 +29,7 @@ import {
   checkLoseCondition,
 } from './validators';
 import { resolveAndApplyEffects } from './effects-resolver';
+import { generateUUID } from '../utils/uuid';
 
 /**
  * Core game engine that manages game state and processes player actions
@@ -40,7 +41,7 @@ export class GameEngine {
    * Creates a new game with the given configuration
    */
   createNewGame(config?: GameConfig): GameState {
-    const seed = config?.seed || `game_${Date.now()}_${Math.random()}`;
+    const seed = config?.seed || `game_${generateUUID()}`;
     const playerId = config?.playerId;
     const deckCards = config?.deckIds
       ? createDeck().filter((card) => config.deckIds!.includes(card.id))
