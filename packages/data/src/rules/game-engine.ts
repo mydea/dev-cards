@@ -99,6 +99,13 @@ export class GameEngine {
   }
 
   /**
+   * Updates the game engine's internal state (for animation synchronization)
+   */
+  public updateGameState(newState: GameState): void {
+    this.gameState = newState;
+  }
+
+  /**
    * Processes a player action and returns the result
    */
   processAction(action: PlayerAction): ActionResult {

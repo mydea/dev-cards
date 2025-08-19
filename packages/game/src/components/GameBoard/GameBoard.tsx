@@ -565,6 +565,7 @@ function GameBoard({
         },
       };
       setGameState(stateAfterDiscard);
+      gameEngine.updateGameState(stateAfterDiscard);
       handleDrawingSequence(stateAfterDiscard, drawPlan);
       return;
     }
@@ -617,6 +618,7 @@ function GameBoard({
       },
     };
     setGameState(stateAfterDiscard);
+    gameEngine.updateGameState(stateAfterDiscard);
     setAnimatingCardIds(new Set());
 
     // Step 2: Start drawing sequence
@@ -671,8 +673,9 @@ function GameBoard({
       cardCount
     );
 
-    // Update game state with drawn cards
+    // Update game state with drawn cards and sync game engine
     setGameState(newState);
+    gameEngine.updateGameState(newState);
 
     // Mark drawn cards as animating (so they're hidden during animation)
     const drawnCardIds = new Set(
@@ -722,6 +725,7 @@ function GameBoard({
         // Update game state after shuffle
         const stateAfterShuffle = gameEngine.performShuffle(currentState);
         setGameState(stateAfterShuffle);
+        gameEngine.updateGameState(stateAfterShuffle);
 
         // Then draw remaining cards
         animateDrawFromDeck(stateAfterShuffle, remainingCards, () => {
@@ -736,7 +740,7 @@ function GameBoard({
     setTimeout(() => {
       setGameState((currentState) => {
         // Add the round progression and PP replenishment to current state
-        return {
+        const newState = {
           ...currentState,
           stats: {
             ...currentState.stats,
@@ -750,6 +754,9 @@ function GameBoard({
             ),
           },
         };
+        // Sync the game engine state
+        gameEngine.updateGameState(newState);
+        return newState;
       });
       setIsAnimating(false);
       setAnimatingCardIds(new Set());
