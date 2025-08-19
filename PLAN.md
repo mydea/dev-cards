@@ -188,8 +188,6 @@ dev-cards/
 2. Implement scoring calculation
 3. Add game statistics tracking
 4. Create tutorial/help system
-5. Performance optimization
-6. Cross-browser testing
 
 **Deliverables:**
 
