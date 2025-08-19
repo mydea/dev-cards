@@ -1,4 +1,4 @@
-import { memo, useMemo, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import type { CardInstance, GameState } from '@dev-cards/data';
 import { validateCardPlay } from '@dev-cards/data';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,7 +19,7 @@ function Hand({
   cards,
   onPlayCard,
   onCardMount,
-  onCardUnmount,
+  onCardUnmount: _onCardUnmount,
   animatingCardIds = new Set(),
   gameState,
   disabled = false,
@@ -38,8 +38,8 @@ function Hand({
     [disabled, gameState, onPlayCard]
   );
 
-  // Only show empty hand UI if there are no cards AND no animations in progress
-  if (cards.length === 0 && animatingCardIds.size === 0) {
+  // Only show empty hand UI if there are no cards AND no animations in progress AND not disabled
+  if (cards.length === 0 && animatingCardIds.size === 0 && !disabled) {
     return (
       <motion.div
         className={styles.emptyHand}
