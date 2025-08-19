@@ -1,9 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Dev-Cards Game Integration', () => {
-  test.skip('should play a complete game from start to finish', async ({
-    page,
-  }) => {
+  test('should play a complete game from start to finish', async ({ page }) => {
     // Navigate to the game
     await page.goto('/');
 
@@ -144,6 +142,24 @@ test.describe('Dev-Cards Game Integration', () => {
 
       while (await tryPlayCardFromHand()) {
         cardsPlayedThisRound++;
+
+        // Check if game has ended
+        const victoryVisible = await page
+          .getByText('Victory!')
+          .isVisible()
+          .catch(() => false);
+        const gameOverVisible = await page
+          .getByText('Game Over')
+          .isVisible()
+          .catch(() => false);
+
+        if (victoryVisible || gameOverVisible) {
+          console.log(
+            'Game ended with',
+            victoryVisible ? 'victory' : 'game over'
+          );
+          return true; // Game ended
+        }
       }
 
       console.log('No more playable cards found');
@@ -178,21 +194,6 @@ test.describe('Dev-Cards Game Integration', () => {
 
         // Wait for tech debt reduction and turn end animation
         await waitForTurnEndComplete();
-      }
-
-      // Check if game ended after this action
-      const victoryVisibleAfterAction = await page
-        .getByText('Victory!')
-        .isVisible()
-        .catch(() => false);
-      const gameOverVisibleAfterAction = await page
-        .getByText('Game Over')
-        .isVisible()
-        .catch(() => false);
-
-      if (victoryVisibleAfterAction || gameOverVisibleAfterAction) {
-        console.log(victoryVisibleAfterAction ? 'Game won!' : 'Game lost!');
-        return true; // Game ended
       }
 
       // Safety check: ensure we have cards or game should have ended
