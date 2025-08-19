@@ -280,16 +280,11 @@ function Card({
             src={card.image}
             alt={card.title}
             onError={(e) => {
-              // Fallback to placeholder if image fails to load
-              e.currentTarget.style.display = 'none';
-              const nextElement = e.currentTarget
-                .nextElementSibling as HTMLElement;
-              if (nextElement) {
-                nextElement.style.display = 'flex';
-              }
+              // Fallback to placeholder image if card image fails to load
+              e.currentTarget.src = '/assets/images/icons/card-placeholder.png';
+              e.currentTarget.onerror = null; // Prevent infinite loop if placeholder also fails
             }}
           />
-          <div className={styles.imagePlaceholder}>🎯</div>
         </div>
 
         <div className={styles.cardEffects}>
