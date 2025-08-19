@@ -117,32 +117,3 @@ Create images following the following specification. The images are for a card g
 **Visual Elements**: Connected system components, integration flows, comprehensive testing
 **Color Palette**: Connected blues and greens, system integration colors
 **Mood**: Comprehensive, systematic, thorough validation
-
-## Image Generation Tools & Resources
-
-### AI Image Generation:
-
-- **DALL-E 3** (OpenAI): High quality, good with text descriptions
-- **Midjourney**: Excellent artistic quality, great for stylized images
-- **Stable Diffusion**: Open source, customizable
-- **Adobe Firefly**: Commercial-safe, integrated with Adobe tools
-
-### Design Tools:
-
-- **Figma**: Vector-based design
-- **Canva**: Template-based design
-- **Adobe Photoshop/Illustrator**: Professional design tools
-
-### Stock Photo Resources:
-
-- **Unsplash**: Free high-quality photos
-- **Pexels**: Free stock photos
-- **Adobe Stock**: Premium stock imagery
-- **Shutterstock**: Large commercial library
-
-### Placeholder Images:
-
-You can start with placeholder images using services like:
-
-- `https://via.placeholder.com/800x640/0066cc/ffffff?text=Card+Name`
-- `https://picsum.photos/800/640` (random images)

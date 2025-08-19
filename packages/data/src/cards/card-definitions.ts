@@ -18,7 +18,7 @@ import {
 export const CARD_QUICK_BUG_FIX = {
   id: 'quick-bug-fix',
   title: 'Quick Bug Fix',
-  image: '/images/cards/quick-bug-fix.jpg',
+  image: '/assets/images/icons/card-placeholder.png',
   quote: 'It was just a missing semicolon...',
   requirements: [
     {
@@ -51,7 +51,7 @@ export const CARD_QUICK_BUG_FIX = {
 export const CARD_WRITE_UNIT_TESTS = {
   id: 'write-unit-tests',
   title: 'Write Unit Tests',
-  image: '/images/cards/unit-tests.jpg',
+  image: '/assets/images/cards/unit-tests.png',
   quote: 'Test all the things!',
   requirements: [
     {
@@ -79,7 +79,7 @@ export const CARD_WRITE_UNIT_TESTS = {
 export const CARD_IMPLEMENT_FEATURE = {
   id: 'implement-feature',
   title: 'Implement Feature',
-  image: '/images/cards/implement-feature.jpg',
+  image: '/assets/images/icons/card-placeholder.png',
   quote: 'Shipping is a feature!',
   requirements: [
     {
@@ -113,7 +113,7 @@ export const CARD_IMPLEMENT_FEATURE = {
 export const CARD_CODE_REVIEW = {
   id: 'code-review',
   title: 'Code Review',
-  image: '/images/cards/code-review.jpg',
+  image: '/assets/images/cards/code-review.png',
   quote: 'Four eyes see more than two',
   requirements: [
     {
@@ -150,7 +150,7 @@ export const CARD_CODE_REVIEW = {
 export const CARD_REFACTOR_LEGACY = {
   id: 'refactor-legacy',
   title: 'Refactor Legacy Code',
-  image: '/images/cards/refactor.jpg',
+  image: '/assets/images/cards/refactor.png',
   quote: 'Sometimes you have to go backwards to go forwards',
   requirements: [
     {
@@ -178,7 +178,7 @@ export const CARD_REFACTOR_LEGACY = {
 export const CARD_PAIR_PROGRAMMING = {
   id: 'pair-programming',
   title: 'Pair Programming',
-  image: '/images/cards/pair-programming.jpg',
+  image: '/assets/images/cards/pair-programming.png',
   quote: 'Two minds, one keyboard',
   requirements: [
     {
@@ -211,7 +211,7 @@ export const CARD_PAIR_PROGRAMMING = {
 export const CARD_STACK_OVERFLOW = {
   id: 'stack-overflow',
   title: 'Stack Overflow Research',
-  image: '/images/cards/stack-overflow.jpg',
+  image: '/assets/images/cards/stack-overflow.png',
   quote: 'Someone else has definitely solved this before',
   requirements: [
     {
@@ -241,7 +241,7 @@ export const CARD_STACK_OVERFLOW = {
 export const CARD_ALL_NIGHTER = {
   id: 'all-nighter',
   title: 'Pull an All-Nighter',
-  image: '/images/cards/all-nighter.jpg',
+  image: '/assets/images/cards/pull-all-nighter.png',
   quote: "Coffee is a programmer's best friend",
   requirements: [
     {
@@ -278,7 +278,7 @@ export const CARD_ALL_NIGHTER = {
 export const CARD_DOCUMENTATION = {
   id: 'documentation',
   title: 'Documentation Sprint',
-  image: '/images/cards/documentation.jpg',
+  image: '/assets/images/cards/documentation.png',
   quote: 'Future you will thank present you',
   requirements: [
     {
@@ -306,7 +306,7 @@ export const CARD_DOCUMENTATION = {
 export const CARD_EMERGENCY_HOTFIX = {
   id: 'emergency-hotfix',
   title: 'Emergency Hotfix',
-  image: '/images/cards/hotfix.jpg',
+  image: '/assets/images/cards/emergency-bugfix.png',
   quote: 'Production is down! Ship it now!',
   requirements: [
     {
@@ -339,7 +339,7 @@ export const CARD_EMERGENCY_HOTFIX = {
 export const CARD_COFFEE_BREAK = {
   id: 'coffee-break',
   title: 'Coffee Break',
-  image: '/images/cards/coffee-break.jpg',
+  image: '/assets/images/cards/coffee-break.png',
   quote: 'Sometimes the best code is written away from the keyboard',
   requirements: [
     {
@@ -362,7 +362,7 @@ export const CARD_COFFEE_BREAK = {
 export const CARD_DATABASE_MIGRATION = {
   id: 'database-migration',
   title: 'Database Migration',
-  image: '/images/cards/database-migration.jpg',
+  image: '/assets/images/cards/database-migration.png',
   quote: 'Pray to the backup gods',
   requirements: [
     {
@@ -398,7 +398,7 @@ export const CARD_DATABASE_MIGRATION = {
 export const CARD_RUBBER_DUCK = {
   id: 'rubber-duck',
   title: 'Rubber Duck Debugging',
-  image: '/images/cards/rubber-duck.jpg',
+  image: '/assets/images/icons/card-placeholder.png',
   quote: 'Explain it to the duck',
   requirements: [
     {
@@ -433,7 +433,7 @@ export const CARD_RUBBER_DUCK = {
 export const CARD_TECH_DEBT_CLEANUP = {
   id: 'tech-debt-cleanup',
   title: 'Technical Debt Cleanup',
-  image: '/images/cards/tech-debt-cleanup.jpg',
+  image: '/assets/images/icons/card-placeholder.png',
   quote: 'Pay down the debt before it grows',
   requirements: [
     {
@@ -460,7 +460,7 @@ export const CARD_TECH_DEBT_CLEANUP = {
 export const CARD_INTEGRATION_TESTING = {
   id: 'integration-testing',
   title: 'Integration Testing',
-  image: '/images/cards/integration-testing.jpg',
+  image: '/assets/images/icons/card-placeholder.png',
   quote: 'Test how the pieces fit together',
   requirements: [
     {
@@ -493,7 +493,7 @@ export const CARD_INTEGRATION_TESTING = {
 export const CARD_RUSH_IMPLEMENTATION = {
   id: 'rush-implementation',
   title: 'Rush Implementation',
-  image: '/images/cards/rush-implementation.jpg',
+  image: '/assets/images/icons/card-placeholder.png',
   quote: "We'll fix it in the next sprint... maybe",
   requirements: [
     {
@@ -521,7 +521,7 @@ export const CARD_RUSH_IMPLEMENTATION = {
 export const CARD_COPY_PASTE_SOLUTION = {
   id: 'copy-paste-solution',
   title: 'Copy-Paste Solution',
-  image: '/images/cards/copy-paste.jpg',
+  image: '/assets/images/icons/card-placeholder.png',
   quote: 'Why reinvent the wheel? Ctrl+C, Ctrl+V!',
   requirements: [
     {
@@ -549,7 +549,7 @@ export const CARD_COPY_PASTE_SOLUTION = {
 export const CARD_SKIP_CODE_REVIEW = {
   id: 'skip-code-review',
   title: 'Skip Code Review',
-  image: '/images/cards/skip-review.jpg',
+  image: '/assets/images/icons/card-placeholder.png',
   quote: 'Trust me, this code is perfect',
   requirements: [
     {
@@ -584,7 +584,7 @@ export const CARD_SKIP_CODE_REVIEW = {
 export const CARD_SETUP_SENTRY = {
   id: 'setup-sentry',
   title: 'Setup Sentry',
-  image: '/images/cards/setup-sentry.jpg',
+  image: '/assets/images/icons/card-placeholder.png',
   quote: 'Know about bugs before your users do',
   requirements: [
     {
@@ -612,7 +612,7 @@ export const CARD_SETUP_SENTRY = {
 export const CARD_IMPLEMENT_MVP = {
   id: 'implement-mvp',
   title: 'Implement MVP',
-  image: '/images/cards/implement-mvp.jpg',
+  image: '/assets/images/icons/card-placeholder.png',
   quote: 'Ship the minimum viable product',
   requirements: [
     {
@@ -647,7 +647,7 @@ export const CARD_IMPLEMENT_MVP = {
 export const CARD_DEEP_FOCUS_TIME = {
   id: 'deep-focus-time',
   title: 'Deep Focus Time',
-  image: '/images/cards/deep-focus-time.jpg',
+  image: '/assets/images/icons/card-placeholder.png',
   quote: 'In the zone, nothing can stop you',
   requirements: [
     {
