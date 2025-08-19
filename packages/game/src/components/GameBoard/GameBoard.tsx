@@ -513,13 +513,14 @@ function GameBoard({
 
     setIsAnimating(true);
 
-    // Step 1: Get the draw plan to know if we need to shuffle
+    // Step 1: Get the current game state (may have been updated by tech debt reduction)
+    const currentGameState = gameEngine.getGameState()!;
     const stateAfterDiscard = {
-      ...gameState,
+      ...currentGameState,
       piles: {
-        ...gameState.piles,
+        ...currentGameState.piles,
         hand: [],
-        discard: [...gameState.piles.discard, ...gameState.piles.hand],
+        discard: [...currentGameState.piles.discard, ...currentGameState.piles.hand],
       },
     };
 
@@ -533,12 +534,12 @@ function GameBoard({
     }
 
     // Start the animation sequence
-    if (gameState.piles.hand.length > 0) {
+    if (currentGameState.piles.hand.length > 0) {
       // Step 1: Animate cards to discard pile
-      animateCardsToDiscardForNewTurn(drawPlan);
+      animateCardsToDiscardForNewTurn(drawPlan, currentGameState);
     } else {
       // No cards to discard, go straight to drawing
-      handleDrawingSequence(gameState, drawPlan);
+      handleDrawingSequence(currentGameState, drawPlan);
     }
   };
 
@@ -548,8 +549,8 @@ function GameBoard({
     needsShuffle: boolean;
     discardCards: number;
     totalAvailable: number;
-  }) => {
-    const cardsToDiscard = [...gameState.piles.hand];
+  }, currentGameState: GameState) => {
+    const cardsToDiscard = [...currentGameState.piles.hand];
     const handCardElements = cardsToDiscard
       .map((card) => cardElements[card.instanceId])
       .filter(Boolean);
@@ -557,11 +558,11 @@ function GameBoard({
     if (handCardElements.length === 0) {
       // No elements to animate, do immediate discard
       const stateAfterDiscard = {
-        ...gameState,
+        ...currentGameState,
         piles: {
-          ...gameState.piles,
+          ...currentGameState.piles,
           hand: [],
-          discard: [...gameState.piles.discard, ...cardsToDiscard],
+          discard: [...currentGameState.piles.discard, ...cardsToDiscard],
         },
       };
       setGameState(stateAfterDiscard);
@@ -582,7 +583,7 @@ function GameBoard({
       if (!cardElement) {
         completedAnimations++;
         if (completedAnimations === totalCards) {
-          completeDiscardStep(drawPlan);
+          completeDiscardStep(drawPlan, currentGameState);
         }
         return;
       }
@@ -594,7 +595,7 @@ function GameBoard({
         () => {
           completedAnimations++;
           if (completedAnimations === totalCards) {
-            completeDiscardStep(drawPlan);
+            completeDiscardStep(drawPlan, currentGameState);
           }
         }
       );
@@ -607,14 +608,14 @@ function GameBoard({
     needsShuffle: boolean;
     discardCards: number;
     totalAvailable: number;
-  }) => {
-    // Update game state after discard animation
+  }, originalGameState: GameState) => {
+    // Update game state after discard animation - use the original state that may include tech debt reduction
     const stateAfterDiscard = {
-      ...gameState,
+      ...originalGameState,
       piles: {
-        ...gameState.piles,
+        ...originalGameState.piles,
         hand: [],
-        discard: [...gameState.piles.discard, ...gameState.piles.hand],
+        discard: [...originalGameState.piles.discard, ...originalGameState.piles.hand],
       },
     };
     setGameState(stateAfterDiscard);
