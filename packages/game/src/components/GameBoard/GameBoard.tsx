@@ -686,10 +686,17 @@ function GameBoard({
     // Animation completion tracking
     let completedAnimations = 0;
     const completeDrawAnimation = (cardId: string) => {
+      // Remove this specific card from animating set so it appears in hand immediately
+      setAnimatingCardIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(cardId);
+        return newSet;
+      });
+
+      // Track completion for final callback
       completedAnimations++;
       if (completedAnimations === drawnCards.length) {
-        setAnimatingCardIds(new Set());
-        onComplete();
+        onComplete(); // All cards already individually removed from animating set
       }
     };
 
