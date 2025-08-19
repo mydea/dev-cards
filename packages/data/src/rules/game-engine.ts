@@ -614,13 +614,13 @@ export class GameEngine {
       },
     };
 
-    // Draw new hand (5 cards)
+    // Try to draw new hand (5 cards)
     const result = this.drawCards(stateWithDiscardedHand, 5);
 
     let newState: GameState;
 
     if (!result.success) {
-      // Game over - cannot draw enough cards
+      // Game over - actually failed to draw enough cards after trying
       newState = {
         ...stateWithDiscardedHand,
         phase: GAME_PHASE_GAME_OVER,
@@ -631,7 +631,7 @@ export class GameEngine {
         },
       };
     } else {
-      // Start new round and replenish PP (20 - TD)
+      // Successfully drew cards - start new round and replenish PP (20 - TD)
       const drawnState = result.newState!;
       newState = {
         ...drawnState,

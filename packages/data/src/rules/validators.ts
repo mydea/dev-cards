@@ -163,7 +163,9 @@ export function checkWinCondition(gameState: GameState): boolean {
 export function checkLoseCondition(gameState: GameState): boolean {
   // Lose if unable to draw a full hand (5 cards)
   const totalAvailableCards =
-    gameState.piles.deck.length + gameState.piles.discard.length;
+    gameState.piles.deck.length +
+    gameState.piles.discard.length +
+    gameState.piles.hand.length;
   return totalAvailableCards < 5;
 }
 
