@@ -6,7 +6,7 @@ import type {
   CardInstance,
   CoinFlipEffect,
 } from '@dev-cards/data';
-import { checkWinCondition, checkLoseCondition } from '@dev-cards/data';
+import { checkWinCondition, checkLoseCondition, cloneGameState } from '@dev-cards/data';
 import GameInfo from '../UI/GameInfo';
 import ResourceDisplay from '../UI/ResourceDisplay';
 import GameActions from '../UI/GameActions';
@@ -644,37 +644,24 @@ function GameBoard({
     setTimeout(() => {
       setGameState((currentState) => {
         // Add the round progression and PP replenishment to current state
-        const newState = {
-          ...currentState,
-          stats: {
-            ...currentState.stats,
-            currentRound: currentState.stats.currentRound + 1,
-          },
-          resources: {
-            ...currentState.resources,
-            productivityPoints: Math.max(
-              0,
-              20 - currentState.resources.technicalDebt
-            ),
-          },
-          // Add round_start to history so tech debt reduction becomes available
-          history: [
-            ...currentState.history,
-            {
-              round: currentState.stats.currentRound + 1,
-              action: 'round_start' as const,
-              stateBefore: currentState.resources,
-              stateAfter: {
-                ...currentState.resources,
-                productivityPoints: Math.max(
-                  0,
-                  20 - currentState.resources.technicalDebt
-                ),
-              },
-              timestamp: Date.now(),
-            },
-          ],
-        };
+        const newState = cloneGameState(currentState);
+        
+        // Update round and PP
+        newState.stats.currentRound += 1;
+        newState.resources.productivityPoints = Math.max(
+          0,
+          20 - newState.resources.technicalDebt
+        );
+        
+        // Add round_start to history so tech debt reduction becomes available
+        newState.history.push({
+          round: newState.stats.currentRound,
+          action: 'round_start' as const,
+          stateBefore: currentState.resources,
+          stateAfter: newState.resources,
+          timestamp: Date.now(),
+        });
+        
         // Sync the game engine state
         gameEngine.updateGameState(newState);
         return newState;

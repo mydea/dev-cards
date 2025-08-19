@@ -30,6 +30,7 @@ import {
 } from './validators';
 import { resolveAndApplyEffects } from './effects-resolver';
 import { generateUUID } from '../utils/uuid';
+import { cloneGameState } from '../utils/deep-clone';
 
 /**
  * Core game engine that manages game state and processes player actions
@@ -238,16 +239,12 @@ export class GameEngine {
     const currentGameState = this.gameState; // Store reference for TypeScript
 
     // Simulate the draw to see which cards would be drawn
-    const tempState = { ...currentGameState };
-    tempState.piles = {
-      deck: [...currentGameState.piles.deck],
-      hand: [], // Clear hand as it would be discarded
-      discard: [
-        ...currentGameState.piles.discard,
-        ...currentGameState.piles.hand,
-      ], // Add current hand to discard
-      graveyard: [...currentGameState.piles.graveyard],
-    };
+    const tempState = cloneGameState(currentGameState);
+    tempState.piles.hand = [];
+    tempState.piles.discard = [
+      ...currentGameState.piles.discard,
+      ...currentGameState.piles.hand,
+    ];
 
     const cardsToDraw: CardInstance[] = [];
     let cardsDrawn = 0;
@@ -404,8 +401,8 @@ export class GameEngine {
       };
     }
 
-    // Create new state
-    let newState = { ...this.gameState };
+    // Create new state with deep clone to ensure immutability
+    let newState = cloneGameState(this.gameState);
 
     // Pay requirements
     newState = this.payRequirements(cardInstance, newState);
@@ -505,8 +502,8 @@ export class GameEngine {
       };
     }
 
-    // Create new state
-    let newState = { ...this.gameState };
+    // Create new state with deep clone to ensure immutability
+    let newState = cloneGameState(this.gameState);
 
     // Pay requirements
     newState = this.payRequirements(cardInstance, newState);
@@ -587,14 +584,11 @@ export class GameEngine {
       };
     }
 
-    const newState = {
-      ...this.gameState,
-
-      resources: {
-        ...this.gameState.resources,
-        technicalDebt: Math.max(0, this.gameState.resources.technicalDebt - 2),
-      },
-    };
+    const newState = cloneGameState(this.gameState);
+    newState.resources.technicalDebt = Math.max(
+      0,
+      this.gameState.resources.technicalDebt - 2
+    );
 
     // Add to history
     this.addHistoryEntry(
@@ -618,18 +612,12 @@ export class GameEngine {
     }
 
     // Move remaining cards in hand to discard pile
-    const stateWithDiscardedHand = {
-      ...this.gameState,
-      piles: {
-        deck: [...this.gameState.piles.deck],
-        hand: [],
-        discard: [
-          ...this.gameState.piles.discard,
-          ...this.gameState.piles.hand,
-        ],
-        graveyard: [...this.gameState.piles.graveyard],
-      },
-    };
+    const stateWithDiscardedHand = cloneGameState(this.gameState);
+    stateWithDiscardedHand.piles.hand = [];
+    stateWithDiscardedHand.piles.discard = [
+      ...this.gameState.piles.discard,
+      ...this.gameState.piles.hand,
+    ];
 
     // Try to draw new hand (5 cards)
     const result = this.drawCards(stateWithDiscardedHand, 5);
@@ -638,41 +626,28 @@ export class GameEngine {
 
     if (!result.success) {
       // Game over - actually failed to draw enough cards after trying
-      newState = {
-        ...stateWithDiscardedHand,
-        phase: GAME_PHASE_GAME_OVER,
-        endState: GAME_END_STATE_LOST_NO_CARDS,
-        stats: {
-          ...stateWithDiscardedHand.stats,
-          endTime: Date.now(),
-        },
-      };
+      newState = cloneGameState(stateWithDiscardedHand);
+      newState.phase = GAME_PHASE_GAME_OVER;
+      newState.endState = GAME_END_STATE_LOST_NO_CARDS;
+      newState.stats.endTime = Date.now();
     } else {
       // Successfully drew cards - start new round and replenish PP (20 - TD)
       const drawnState = result.newState!;
-      newState = {
-        ...drawnState,
-        stats: {
-          ...drawnState.stats,
-          currentRound: drawnState.stats.currentRound + 1,
-        },
-        resources: {
-          ...drawnState.resources,
-          productivityPoints: Math.max(
-            0,
-            20 - drawnState.resources.technicalDebt
-          ),
-        },
-      };
-
-      // Add round start to history
-      this.addHistoryEntry(
-        'round_start',
-        `Started round ${newState.stats.currentRound}`,
-        this.gameState.resources,
-        newState.resources
+      newState = cloneGameState(drawnState);
+      newState.stats.currentRound++;
+      newState.resources.productivityPoints = Math.max(
+        0,
+        20 - drawnState.resources.technicalDebt
       );
     }
+
+    // Add round start to history
+    this.addHistoryEntry(
+      'round_start',
+      `Started round ${newState.stats.currentRound}`,
+      this.gameState.resources,
+      newState.resources
+    );
 
     this.gameState = newState;
 
@@ -689,13 +664,7 @@ export class GameEngine {
     gameState: GameState,
     count: number
   ): ActionResult & { newState?: GameState } {
-    const newState = { ...gameState };
-    newState.piles = {
-      deck: [...gameState.piles.deck],
-      hand: [...gameState.piles.hand],
-      discard: [...gameState.piles.discard],
-      graveyard: [...gameState.piles.graveyard],
-    };
+    const newState = cloneGameState(gameState);
 
     let cardsDrawn = 0;
 
@@ -765,13 +734,12 @@ export class GameEngine {
    * Performs the shuffle operation (moves discard to deck)
    */
   public performShuffle(gameState: GameState): GameState {
-    const newState = { ...gameState };
-    newState.piles = {
-      deck: [...gameState.piles.deck, ...shuffleDeck(gameState.piles.discard)],
-      hand: [...gameState.piles.hand],
-      discard: [], // Clear discard pile
-      graveyard: [...gameState.piles.graveyard],
-    };
+    const newState = cloneGameState(gameState);
+    newState.piles.deck = [
+      ...gameState.piles.deck,
+      ...shuffleDeck(gameState.piles.discard),
+    ];
+    newState.piles.discard = [];
     return newState;
   }
 
@@ -791,13 +759,11 @@ export class GameEngine {
       };
     }
 
-    const newState = {
-      ...this.gameState,
-      resources: {
-        ...this.gameState.resources,
-        technicalDebt: Math.max(0, this.gameState.resources.technicalDebt - 2),
-      },
-    };
+    const newState = cloneGameState(this.gameState);
+    newState.resources.technicalDebt = Math.max(
+      0,
+      this.gameState.resources.technicalDebt - 2
+    );
 
     // Add to history
     this.addHistoryEntry(
@@ -824,13 +790,7 @@ export class GameEngine {
     newState: GameState;
     drawnCards: CardInstance[];
   } {
-    const newState = { ...gameState };
-    newState.piles = {
-      deck: [...gameState.piles.deck],
-      hand: [...gameState.piles.hand],
-      discard: [...gameState.piles.discard],
-      graveyard: [...gameState.piles.graveyard],
-    };
+    const newState = cloneGameState(gameState);
 
     const drawnCards: CardInstance[] = [];
     const cardsToDraw = Math.min(count, newState.piles.deck.length);
@@ -851,18 +811,7 @@ export class GameEngine {
     cardInstance: CardInstance,
     gameState: GameState
   ): GameState {
-    const newState = {
-      ...gameState,
-      resources: {
-        ...gameState.resources,
-      },
-      piles: {
-        deck: [...gameState.piles.deck],
-        hand: [...gameState.piles.hand],
-        discard: [...gameState.piles.discard],
-        graveyard: [...gameState.piles.graveyard],
-      },
-    };
+    const newState = cloneGameState(gameState);
 
     for (const requirement of cardInstance.card.requirements) {
       switch (requirement.type) {

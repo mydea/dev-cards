@@ -1,4 +1,5 @@
 import type { CardEffect, EffectResolution, GameState } from '../types';
+import { cloneGameState } from '../utils/deep-clone';
 import {
   EFFECT_TYPE_ADD_PROGRESS,
   EFFECT_TYPE_ADD_BUGS,
@@ -62,48 +63,42 @@ export function applyEffectToGameState(
   resolution: EffectResolution,
   gameState: GameState
 ): GameState {
-  const newResources = { ...gameState.resources };
-  const newPiles = {
-    deck: [...gameState.piles.deck],
-    hand: [...gameState.piles.hand],
-    discard: [...gameState.piles.discard],
-    graveyard: [...gameState.piles.graveyard],
-  };
+  const newState = cloneGameState(gameState);
 
   // Apply the effect based on its type
   switch (resolution.effect.type) {
     case EFFECT_TYPE_ADD_PROGRESS:
-      newResources.progress = Math.min(
+      newState.resources.progress = Math.min(
         100,
-        newResources.progress + resolution.resolvedValue
+        newState.resources.progress + resolution.resolvedValue
       );
       break;
 
     case EFFECT_TYPE_ADD_BUGS:
-      newResources.bugs = Math.max(
+      newState.resources.bugs = Math.max(
         0,
-        newResources.bugs + resolution.resolvedValue
+        newState.resources.bugs + resolution.resolvedValue
       );
       break;
 
     case EFFECT_TYPE_REMOVE_BUGS:
-      newResources.bugs = Math.max(
+      newState.resources.bugs = Math.max(
         0,
-        newResources.bugs - resolution.resolvedValue
+        newState.resources.bugs - resolution.resolvedValue
       );
       break;
 
     case EFFECT_TYPE_ADD_TECHNICAL_DEBT:
-      newResources.technicalDebt = Math.min(
+      newState.resources.technicalDebt = Math.min(
         20,
-        newResources.technicalDebt + resolution.resolvedValue
+        newState.resources.technicalDebt + resolution.resolvedValue
       );
       break;
 
     case EFFECT_TYPE_REMOVE_TECHNICAL_DEBT:
-      newResources.technicalDebt = Math.max(
+      newState.resources.technicalDebt = Math.max(
         0,
-        newResources.technicalDebt - resolution.resolvedValue
+        newState.resources.technicalDebt - resolution.resolvedValue
       );
       break;
 
@@ -117,11 +112,7 @@ export function applyEffectToGameState(
       throw new Error(`Unknown effect type: ${resolution.effect.type}`);
   }
 
-  return {
-    ...gameState,
-    resources: newResources,
-    piles: newPiles,
-  };
+  return newState;
 }
 
 /**
