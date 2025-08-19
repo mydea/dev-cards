@@ -719,6 +719,76 @@ export class GameEngine {
   }
 
   /**
+   * Gets information about what would happen when drawing cards, for animation planning
+   */
+  public getDrawCardsPlan(
+    gameState: GameState,
+    count: number
+  ): {
+    canDraw: boolean;
+    deckCards: number;
+    needsShuffle: boolean;
+    discardCards: number;
+    totalAvailable: number;
+  } {
+    const deckCards = gameState.piles.deck.length;
+    const discardCards = gameState.piles.discard.length;
+    const totalAvailable = deckCards + discardCards;
+
+    return {
+      canDraw: totalAvailable >= count,
+      deckCards,
+      needsShuffle: deckCards < count && discardCards > 0,
+      discardCards,
+      totalAvailable,
+    };
+  }
+
+  /**
+   * Performs the shuffle operation (moves discard to deck)
+   */
+  public performShuffle(gameState: GameState): GameState {
+    const newState = { ...gameState };
+    newState.piles = {
+      deck: [...gameState.piles.deck, ...shuffleDeck(gameState.piles.discard)],
+      hand: [...gameState.piles.hand],
+      discard: [], // Clear discard pile
+      graveyard: [...gameState.piles.graveyard],
+    };
+    return newState;
+  }
+
+  /**
+   * Draws specific number of cards from deck only (no shuffling)
+   */
+  public performDraw(
+    gameState: GameState,
+    count: number
+  ): {
+    newState: GameState;
+    drawnCards: CardInstance[];
+  } {
+    const newState = { ...gameState };
+    newState.piles = {
+      deck: [...gameState.piles.deck],
+      hand: [...gameState.piles.hand],
+      discard: [...gameState.piles.discard],
+      graveyard: [...gameState.piles.graveyard],
+    };
+
+    const drawnCards: CardInstance[] = [];
+    const cardsToDraw = Math.min(count, newState.piles.deck.length);
+
+    for (let i = 0; i < cardsToDraw; i++) {
+      const card = newState.piles.deck.shift()!;
+      newState.piles.hand.push(card);
+      drawnCards.push(card);
+    }
+
+    return { newState, drawnCards };
+  }
+
+  /**
    * Pays the requirements for playing a card
    */
   private payRequirements(

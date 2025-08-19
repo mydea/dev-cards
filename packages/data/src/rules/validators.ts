@@ -159,9 +159,10 @@ export function checkWinCondition(gameState: GameState): boolean {
 
 /**
  * Checks if the game has been lost
+ * Should only be checked at end of turn
  */
 export function checkLoseCondition(gameState: GameState): boolean {
-  // Lose if unable to draw a full hand (5 cards)
+  // Lose if total cards in deck + discard + hand < 5
   const totalAvailableCards =
     gameState.piles.deck.length +
     gameState.piles.discard.length +
