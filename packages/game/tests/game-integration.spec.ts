@@ -225,16 +225,12 @@ test.describe('Dev-Cards Game Integration', () => {
     expect(gameEnded).toBe(true);
 
     // Verify we can see final results
-    const finalScoreVisible = await page
-      .getByText('Final Score')
-      .isVisible()
-      .catch(() => false);
-    const roundsInfo = await page
-      .getByText('Rounds:')
+    const cardsPlayedVisible = await page
+      .getByText('Cards Played:')
       .isVisible()
       .catch(() => false);
 
-    expect(finalScoreVisible || roundsInfo).toBe(true);
+    expect(cardsPlayedVisible).toBe(true);
 
     console.log(`Game completed successfully in ${roundCount} rounds`);
   });

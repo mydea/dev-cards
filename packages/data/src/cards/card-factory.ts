@@ -10,9 +10,7 @@ export function createCardInstance(
 ): CardInstance {
   return {
     card,
-    instanceId:
-      instanceId ||
-      `${card.id}_${generateUUID()}`,
+    instanceId: instanceId || `${card.id}_${generateUUID()}`,
     isPlayable: false,
     visualState: {
       isSelected: false,

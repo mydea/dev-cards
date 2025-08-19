@@ -871,7 +871,7 @@ function GameBoard({
                   {gameOver.message}
                 </motion.p>
 
-                {gameOver.won && (
+                {gameOver.won ? (
                   <>
                     <motion.p
                       className={styles.finalScore}
@@ -908,6 +908,37 @@ function GameBoard({
                       </div>
                     </motion.div>
                   </>
+                ) : (
+                  <motion.div
+                    className={styles.scoreBreakdown}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <div className={styles.scoreStat}>
+                      <span>📊 Rounds Survived:</span>{' '}
+                      {gameState.stats.currentRound}
+                    </div>
+                    <div className={styles.scoreStat}>
+                      <span>🃏 Cards Played:</span>{' '}
+                      {gameState.stats.cardsPlayed}
+                    </div>
+                    <div className={styles.scoreStat}>
+                      <span>⏱️ Time Played:</span>{' '}
+                      {Math.round(
+                        ((gameState.stats.endTime! -
+                          gameState.stats.startTime) /
+                          1000 /
+                          60) *
+                          10
+                      ) / 10}
+                      m
+                    </div>
+                    <div className={styles.scoreStat}>
+                      <span>📈 Progress Reached:</span>{' '}
+                      {gameState.resources.progress}%
+                    </div>
+                  </motion.div>
                 )}
 
                 <motion.div
