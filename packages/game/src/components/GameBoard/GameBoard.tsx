@@ -499,7 +499,7 @@ function GameBoard({
           targetElement,
           () => completeDrawAnimation(cardInstance.instanceId)
         );
-      }, index * 100); // 100ms stagger between cards
+      }, index * 150); // 150ms stagger between cards
     });
   };
 
@@ -715,7 +715,7 @@ function GameBoard({
           targetElement,
           () => completeDrawAnimation(card.instanceId)
         );
-      }, index * 100); // 100ms stagger between cards
+      }, index * 150); // 150ms stagger between cards
     });
   };
 
