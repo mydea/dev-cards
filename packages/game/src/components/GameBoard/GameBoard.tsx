@@ -115,7 +115,6 @@ function GameBoard({
   ): {
     success: boolean;
     newState?: GameState;
-    drawnCards?: CardInstance[];
     error?: string;
   } => {
     try {
@@ -128,13 +127,10 @@ function GameBoard({
         // Update game state immediately
         setGameState(result.newState);
 
-        // Check if any cards were drawn from effects
-        const drawnCards: CardInstance[] = [];
-
+        // Draw effects are now handled automatically by the game engine
         return {
           success: true,
           newState: result.newState,
-          drawnCards: drawnCards.length > 0 ? drawnCards : undefined,
         };
       } else {
         console.error('Error playing card:', result.error);
@@ -195,36 +191,23 @@ function GameBoard({
     setIsAnimating(true);
     setAnimatingCardIds((prev) => new Set(prev).add(cardInstanceId));
 
-    if (
-      preparation.success &&
-      preparation.cardsToDiscard &&
-      preparation.cardsToDiscard.length > 0
-    ) {
-      // Animate discard requirements (visual only)
-      handleVisualDiscardAnimation(
-        cardElement,
-        preparation.cardsToDiscard,
-        cardInstanceId
-      );
-    } else {
-      // Simple card to graveyard animation (visual only)
-      handleVisualCardToGraveyardAnimation(cardElement, cardInstanceId);
-    }
+    // Animate card to graveyard
+    animationLayerRef.current.animateCardToGraveyard(
+      cardInstance,
+      cardElement,
+      graveyardRef.current,
+      () => {
+        // Animation complete - remove from animating set
+        setAnimatingCardIds((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(cardInstanceId);
+          return newSet;
+        });
 
-    // Handle draw animations if any cards were drawn
-    if (playResult.drawnCards && playResult.drawnCards.length > 0) {
-      const drawnCardIds: string[] = playResult.drawnCards.map(
-        (card) => card.instanceId as string
-      );
-      setAnimatingCardIds(
-        (prev) => new Set<string>([...prev, ...drawnCardIds])
-      );
-
-      handleDrawCardsAnimated(playResult.drawnCards, () => {
-        // Draw animations complete - don't need to do anything here
-        // The individual card animations will handle their own cleanup
-      });
-    }
+        // Draw effects are now handled automatically by the game engine
+        setIsAnimating(false);
+      }
+    );
   };
 
   // Visual-only animation for simple card to graveyard
@@ -503,6 +486,43 @@ function GameBoard({
     });
   };
 
+  // Unified function to draw cards with animation (used by both end turn and card effects)
+  const drawCards = (numCards: number, onComplete: () => void) => {
+    const currentState = gameEngine.getGameState()!;
+    const drawPlan = gameEngine.getDrawCardsPlan(currentState, numCards);
+
+    if (!drawPlan.canDraw) {
+      console.error(
+        `Cannot draw ${numCards} cards - insufficient cards available`
+      );
+      onComplete();
+      return;
+    }
+
+    if (drawPlan.needsShuffle) {
+      // Draw what we can from deck first, then shuffle, then draw remaining
+      const deckCards = Math.min(drawPlan.deckCards, numCards);
+
+      if (deckCards > 0) {
+        // Draw available cards from deck first
+        animateDrawFromDeck(currentState, deckCards, () => {
+          // After first draw, animate shuffle and draw remaining
+          animateShuffleAndDrawRemaining(
+            currentState,
+            numCards - deckCards,
+            onComplete
+          );
+        });
+      } else {
+        // No cards in deck, just shuffle and draw all
+        animateShuffleAndDrawRemaining(currentState, numCards, onComplete);
+      }
+    } else {
+      // No shuffle needed, just draw all cards
+      animateDrawFromDeck(currentState, numCards, onComplete);
+    }
+  };
+
   // New animated end turn handler with shuffle support
   const handleEndTurnAnimated = () => {
     if (!animationLayerRef.current || !discardRef.current || !deckRef.current) {
@@ -538,12 +558,98 @@ function GameBoard({
 
     // Start the animation sequence
     if (currentGameState.piles.hand.length > 0) {
-      // Step 1: Animate cards to discard pile
-      animateCardsToDiscardForNewTurn(drawPlan, currentGameState);
+      // Step 1: Animate cards to discard pile, then draw new hand
+      animateCardsToDiscardForEndTurn(currentGameState, () => {
+        // After discard, draw 5 new cards
+        drawCards(5, () => {
+          completeEndTurn();
+        });
+      });
     } else {
-      // No cards to discard, go straight to drawing
-      handleDrawingSequence(currentGameState, drawPlan);
+      // No cards to discard, just draw new hand
+      drawCards(5, () => {
+        completeEndTurn();
+      });
     }
+  };
+
+  // Simple function to animate cards to discard pile for end turn
+  const animateCardsToDiscardForEndTurn = (
+    currentGameState: GameState,
+    onComplete: () => void
+  ) => {
+    const cardsToDiscard = [...currentGameState.piles.hand];
+    const handCardElements = cardsToDiscard
+      .map((card) => cardElements[card.instanceId])
+      .filter(Boolean);
+
+    if (handCardElements.length === 0) {
+      // No elements to animate, do immediate discard
+      const stateAfterDiscard = {
+        ...currentGameState,
+        piles: {
+          ...currentGameState.piles,
+          hand: [],
+          discard: [...currentGameState.piles.discard, ...cardsToDiscard],
+        },
+      };
+      setGameState(stateAfterDiscard);
+      gameEngine.updateGameState(stateAfterDiscard);
+      onComplete();
+      return;
+    }
+
+    // Mark cards as animating
+    const cardIds = cardsToDiscard.map((card) => card.instanceId);
+    setAnimatingCardIds(new Set(cardIds));
+
+    let completedAnimations = 0;
+    const totalCards = cardsToDiscard.length;
+
+    cardsToDiscard.forEach((cardInstance, index) => {
+      const cardElement = handCardElements[index];
+      if (!cardElement) {
+        completedAnimations++;
+        if (completedAnimations === totalCards) {
+          completeDiscardForEndTurn(currentGameState, onComplete);
+        }
+        return;
+      }
+
+      animationLayerRef.current?.animateCardToDiscard(
+        cardInstance,
+        cardElement,
+        discardRef.current!,
+        () => {
+          completedAnimations++;
+          if (completedAnimations === totalCards) {
+            completeDiscardForEndTurn(currentGameState, onComplete);
+          }
+        }
+      );
+    });
+  };
+
+  const completeDiscardForEndTurn = (
+    originalGameState: GameState,
+    onComplete: () => void
+  ) => {
+    // Update game state after discard animation
+    const stateAfterDiscard = {
+      ...originalGameState,
+      piles: {
+        ...originalGameState.piles,
+        hand: [],
+        discard: [
+          ...originalGameState.piles.discard,
+          ...originalGameState.piles.hand,
+        ],
+      },
+    };
+    setGameState(stateAfterDiscard);
+    gameEngine.updateGameState(stateAfterDiscard);
+    setAnimatingCardIds(new Set());
+    onComplete();
   };
 
   const animateCardsToDiscardForNewTurn = (
@@ -734,7 +840,8 @@ function GameBoard({
 
   const animateShuffleAndDrawRemaining = (
     _originalState: GameState,
-    remainingCards: number
+    remainingCards: number,
+    onComplete: () => void
   ) => {
     // Get current game state which includes already drawn cards
     const currentStateWithDrawnCards = gameEngine.getGameState()!;
@@ -753,9 +860,7 @@ function GameBoard({
         gameEngine.updateGameState(stateAfterShuffle);
 
         // Then draw remaining cards - this will add to the existing hand
-        animateDrawFromDeck(stateAfterShuffle, remainingCards, () => {
-          completeEndTurn();
-        });
+        animateDrawFromDeck(stateAfterShuffle, remainingCards, onComplete);
       }
     );
   };

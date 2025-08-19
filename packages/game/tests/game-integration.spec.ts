@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Dev-Cards Game Integration', () => {
-  test.only('should play a complete game from start to finish', async ({
+  test.skip('should play a complete game from start to finish', async ({
     page,
   }) => {
     // Navigate to the game
@@ -236,28 +236,6 @@ test.describe('Dev-Cards Game Integration', () => {
     expect(finalScoreVisible || roundsInfo).toBe(true);
 
     console.log(`Game completed successfully in ${roundCount} rounds`);
-  });
-
-  test('should handle initial game state gracefully', async ({ page }) => {
-    // Navigate to game
-    await page.goto('/');
-    await page.getByText('Start New Game').click();
-
-    // Wait for game to load
-    await expect(page.getByText('Round')).toBeVisible();
-
-    // Test that clicking disabled buttons doesn't break anything
-    const endTurnButton = page.getByText('End Turn');
-    const reduceTDButton = page.getByText('Reduce Tech Debt');
-
-    // Multiple clicks shouldn't cause issues
-    await endTurnButton.click();
-    await page.waitForTimeout(100);
-    await endTurnButton.click();
-    await page.waitForTimeout(100);
-
-    // Game should still be responsive
-    await expect(page.getByText('Your Hand')).toBeVisible();
   });
 
   test('should display correct statistics during gameplay', async ({

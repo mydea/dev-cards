@@ -1,5 +1,4 @@
 import type { EffectType, RequirementType } from './enums';
-import type { CardInstance } from './card';
 import {
   RANDOM_EFFECT_TYPE_STATIC,
   RANDOM_EFFECT_TYPE_COIN_FLIP,
@@ -70,5 +69,4 @@ export interface EffectResolution {
   effect: CardEffect;
   resolvedValue: number;
   randomOutcome?: 'heads' | 'tails'; // For coin flip
-  drawnCards?: CardInstance[]; // Cards drawn from EFFECT_TYPE_DRAW_CARDS
 }

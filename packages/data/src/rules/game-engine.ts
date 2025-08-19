@@ -161,7 +161,7 @@ export class GameEngine {
   processActionWithPredeterminedCoinFlips(
     action: PlayerAction,
     coinFlipResults: Array<{
-      effect: any;
+      effect: CoinFlipEffect;
       result: 'heads' | 'tails';
       resolvedValue: number;
     }>
@@ -462,7 +462,7 @@ export class GameEngine {
   private handlePlayCardWithPredeterminedCoinFlips(
     cardInstanceId: string,
     coinFlipResults: Array<{
-      effect: any;
+      effect: CoinFlipEffect;
       result: 'heads' | 'tails';
       resolvedValue: number;
     }>

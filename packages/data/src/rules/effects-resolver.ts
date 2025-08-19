@@ -108,15 +108,24 @@ export function applyEffectToGameState(
       break;
 
     case EFFECT_TYPE_DRAW_CARDS:
-      // Draw cards from deck to hand
+      // Draw cards from deck to hand (original logic restored for now)
       const cardsToDraw = Math.min(
         resolution.resolvedValue,
         newPiles.deck.length
       );
       const drawnCards = newPiles.deck.splice(0, cardsToDraw);
       newPiles.hand.push(...drawnCards);
-      // Store the drawn cards in the resolution for animation
-      resolution.drawnCards = drawnCards;
+
+      // If we need more cards and there are cards in discard, we'll need to shuffle first
+      if (
+        cardsToDraw < resolution.resolvedValue &&
+        newPiles.discard.length > 0
+      ) {
+        // For now, just draw what we can - shuffling handled separately
+        console.log(
+          `Could only draw ${cardsToDraw} of ${resolution.resolvedValue} requested cards`
+        );
+      }
       break;
 
     default:
