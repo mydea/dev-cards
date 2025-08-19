@@ -48,6 +48,7 @@ Always look at RULES.md for the general game rules, as well as PLAN.md for the d
 - Comprehensive unit tests for game logic
 - Integration tests for game flows
 - When asked to run tests to verify, run `pnpm test:e2e` and check that all tests pass. If not, investigate the playwright tests (possibly using playwright MCP) to figure out what is wrong. No need to pass a custom `--timeout`
+- Do not run `test:e2e` unless explicitly asked for, as it takes too long to wait on it all the time.
 
 ## Cards
 - When adding new cards, make sure they are balanced with existing cards in card-definitions.ts
