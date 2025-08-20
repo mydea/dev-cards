@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import Leaderboard from '../Leaderboard/Leaderboard';
 import styles from './MainMenu.module.css';
 
 interface MainMenuProps {
@@ -6,6 +8,8 @@ interface MainMenuProps {
 }
 
 const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+
   return (
     <div className={styles.menu}>
       <div className={styles.content}>
@@ -114,10 +118,24 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
           </div>
         </div>
 
-        <button className={styles.startButton} onClick={onStartGame}>
-          Start New Game
-        </button>
+        <div className={styles.buttons}>
+          <button className={styles.startButton} onClick={onStartGame}>
+            Start New Game
+          </button>
+          <button 
+            className={styles.leaderboardButton} 
+            onClick={() => setShowLeaderboard(true)}
+          >
+            🏆 View Leaderboard
+          </button>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {showLeaderboard && (
+          <Leaderboard onClose={() => setShowLeaderboard(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

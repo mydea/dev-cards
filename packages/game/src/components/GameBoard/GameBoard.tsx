@@ -20,6 +20,7 @@ import AnimationLayer, { type AnimationLayerRef } from '../UI/AnimationLayer';
 import Pile from '../UI/Pile';
 import CoinFlipOverlay from '../UI/CoinFlipOverlay';
 import Hand from '../Hand/Hand';
+import ScoreSubmissionModal from '../Leaderboard/ScoreSubmissionModal';
 import styles from './GameBoard.module.css';
 
 interface GameBoardProps {
@@ -65,6 +66,7 @@ function GameBoard({
   const [animatingCardIds, setAnimatingCardIds] = useState<Set<string>>(
     new Set()
   );
+  const [showScoreSubmission, setShowScoreSubmission] = useState(false);
 
   // Animation refs
   const animationLayerRef = useRef<AnimationLayerRef>(null);
@@ -341,6 +343,7 @@ function GameBoard({
   };
 
   // Handle animated card drawing from deck to hand
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDrawCardsAnimated = (
     cardsToDraw: CardInstance[],
     onComplete: () => void
@@ -945,7 +948,20 @@ function GameBoard({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 }}
+                  className={styles.gameOverActions}
                 >
+                  {gameOver.won && (
+                    <motion.button
+                      className={styles.submitScoreButton}
+                      onClick={() => setShowScoreSubmission(true)}
+                      type="button"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                    >
+                      🏆 Submit Score
+                    </motion.button>
+                  )}
                   <motion.button
                     className={styles.newGameButton}
                     onClick={handleNewGame}
@@ -984,6 +1000,20 @@ function GameBoard({
           onAllComplete={handleAllCoinFlipsComplete}
           cardInstanceId={coinFlipQueue.cardInstanceId || ''}
         />
+
+        {/* Score submission modal */}
+        <AnimatePresence>
+          {showScoreSubmission && gameOver.won && (
+            <ScoreSubmissionModal
+              gameState={gameState}
+              onClose={() => setShowScoreSubmission(false)}
+              onSuccess={() => {
+                setShowScoreSubmission(false);
+                onReturnToMenu();
+              }}
+            />
+          )}
+        </AnimatePresence>
       </motion.div>
     </AnimationLayer>
   );

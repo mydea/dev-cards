@@ -9,7 +9,7 @@
     "development": {
       "vars": {
         "ENVIRONMENT": "development",
-        "CORS_ORIGIN": "http://localhost:5173",
+        "CORS_ORIGIN": "http://localhost:3000",
       },
     },
     // Production environment configuration
@@ -18,6 +18,13 @@
         "ENVIRONMENT": "production",
         "CORS_ORIGIN": "https://draw-it-play-it-ship-it.pages.dev",
       },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "dev-cards-db",
+          "database_id": "97961d40-c882-419b-950f-88ed1018405d",
+        },
+      ],
     },
   },
 
