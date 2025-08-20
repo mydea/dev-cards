@@ -15,6 +15,8 @@
   border-bottom: 1px solid var(--border-color);
   box-shadow: 0 2px 4px var(--shadow-color);
   z-index: 10;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
 }
 
 .headerLogo {
@@ -321,7 +323,6 @@
   }
 
   .header {
-    flex-direction: column;
     gap: var(--spacing-md);
     padding: var(--spacing-md);
   }
