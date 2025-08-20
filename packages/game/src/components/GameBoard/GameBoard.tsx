@@ -762,6 +762,13 @@ function GameBoard({
     setIsSubmittingScore(true);
     setScoreSubmissionError(null);
 
+    // Extract played card IDs from game history
+    const playedCardIds = history
+      .getEntries()
+      .filter((entry) => entry.action === 'card_played' && entry.cardId)
+      .map((entry) => entry.cardId!)
+      .filter((cardId, index, array) => array.indexOf(cardId) === index); // Remove duplicates
+
     // Prepare score data
     const scoreData: SubmitScoreRequest = {
       player_name: playerName.trim(),
@@ -773,10 +780,10 @@ function GameBoard({
       game_duration_seconds: Math.round(
         (gameState.stats.endTime! - gameState.stats.startTime) / 1000
       ),
-      cards_played: gameState.stats.cardsPlayed
-        ? Object.keys(gameState.stats.cardsPlayed)
-        : [],
+      cards_played: playedCardIds,
     };
+
+    console.log('Submitting score data:', scoreData);
 
     try {
       const response = await apiClient.submitScore(scoreData);
@@ -788,9 +795,12 @@ function GameBoard({
           navigate('/leaderboard');
         }, 2000);
       } else {
-        setScoreSubmissionError(response.error || 'Failed to submit score');
+        // Handle various error response formats
+        const errorMessage = response.error || 'Failed to submit score';
+        setScoreSubmissionError(errorMessage);
       }
     } catch (err) {
+      console.error('Score submission error:', err);
       setScoreSubmissionError('Network error. Please try again.');
     }
 

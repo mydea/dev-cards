@@ -83,6 +83,15 @@ class ApiClient {
       });
 
       const data = await response.json();
+
+      // If the response has validation errors, extract a readable message
+      if (!response.ok && data.error) {
+        return {
+          success: false,
+          error: this.extractErrorMessage(data.error),
+        };
+      }
+
       return data;
     } catch (error) {
       console.error('API request failed:', error);
@@ -91,6 +100,49 @@ class ApiClient {
         error: 'Network error occurred',
       };
     }
+  }
+
+  private extractErrorMessage(error: any): string {
+    // Handle string errors
+    if (typeof error === 'string') {
+      return error;
+    }
+
+    // Handle Zod validation errors with issues array
+    if (error.issues && Array.isArray(error.issues)) {
+      const issues = error.issues;
+      if (issues.length > 0) {
+        // Show multiple validation errors if there are several
+        if (issues.length === 1) {
+          const issue = issues[0];
+          if (issue.path && issue.path.length > 0) {
+            const fieldPath = issue.path.join('.');
+            return `${fieldPath}: ${issue.message}`;
+          }
+          return issue.message;
+        } else {
+          // Multiple issues - show the first few with field paths
+          const errorMessages = issues.slice(0, 3).map((issue: any) => {
+            if (issue.path && issue.path.length > 0) {
+              const fieldPath = issue.path.join('.');
+              return `${fieldPath}: ${issue.message}`;
+            }
+            return issue.message;
+          });
+          const moreCount = issues.length - 3;
+          const suffix = moreCount > 0 ? ` (and ${moreCount} more)` : '';
+          return errorMessages.join('; ') + suffix;
+        }
+      }
+    }
+
+    // Handle objects with message property
+    if (error.message) {
+      return error.message;
+    }
+
+    // Fallback
+    return 'An error occurred';
   }
 
   async submitScore(scoreData: SubmitScoreRequest): Promise<ApiResponse<any>> {
