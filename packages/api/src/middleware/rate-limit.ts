@@ -21,6 +21,8 @@ class SimpleRateLimiter {
 
     if (!record || now > record.resetTime) {
       this.requests.set(key, { count: 1, resetTime: now + this.windowMs });
+      // Clean up old entries when we create new ones
+      this.cleanup();
       return true;
     }
 
@@ -45,14 +47,7 @@ class SimpleRateLimiter {
 const generalLimiter = new SimpleRateLimiter(60, 60000); // 60 requests per minute
 const scoreLimiter = new SimpleRateLimiter(10, 60000); // 10 score submissions per minute
 
-// Cleanup old entries every 5 minutes
-setInterval(
-  () => {
-    generalLimiter.cleanup();
-    scoreLimiter.cleanup();
-  },
-  5 * 60 * 1000
-);
+// Note: Cleanup is performed automatically when checking rate limits
 
 export const rateLimitMiddleware = (type: 'general' | 'score' = 'general') => {
   return createMiddleware<{ Bindings: Bindings }>(async (c, next) => {
