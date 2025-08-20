@@ -281,7 +281,7 @@ function Card({
             alt={card.title}
             onError={(e) => {
               // Fallback to placeholder image if card image fails to load
-              e.currentTarget.src = '/assets/images/icons/card-placeholder.png';
+              e.currentTarget.src = '/assets/images/card-placeholder.png';
               e.currentTarget.onerror = null; // Prevent infinite loop if placeholder also fails
             }}
           />
