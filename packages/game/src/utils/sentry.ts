@@ -7,7 +7,7 @@ Sentry.init({
   sendDefaultPii: true,
 
   // Environment configuration
-  environment: import.meta.env.VITE_ENVIRONMENT || 'development',
+  environment: import.meta.env.PROD ? 'production' : 'development',
 
   integrations: [
     // Browser tracing for performance monitoring
