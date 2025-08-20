@@ -159,3 +159,10 @@ Create images following the following specification. The images are for a card g
 **Visual Elements**: Zone/flow state visualization, noise-canceling headphones, focused developer, concentration symbols
 **Color Palette**: Calm focused blues, zen-like colors, concentration gradients
 **Mood**: Zen-like focus, deep concentration, productivity flow
+
+### 22. Vibe Coding (`vibe-coding.png`)
+
+**Theme**: Relaxed, intuitive coding session with unpredictable outcomes
+**Visual Elements**: Developer in comfortable setting, flowing code streams, musical notes or waves, casual coding environment, dice/coin symbols for randomness
+**Color Palette**: Chill purples and teals, flowing gradients, vibrant but relaxed tones
+**Mood**: Laid-back creativity, go-with-the-flow energy, productive but unpredictable

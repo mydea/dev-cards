@@ -118,7 +118,7 @@ export const CARD_CODE_REVIEW = {
   requirements: [
     {
       type: REQUIREMENT_TYPE_SPEND_PP,
-      value: 10,
+      value: 7,
     },
     {
       type: REQUIREMENT_TYPE_DISCARD_CARDS,
@@ -660,6 +660,42 @@ export const CARD_DEEP_FOCUS_TIME = {
       type: EFFECT_TYPE_ADD_PROGRESS,
       randomType: RANDOM_EFFECT_TYPE_STATIC,
       value: 10,
+    },
+  ],
+} as const satisfies Card;
+
+/**
+ * Vibe Coding - Productive but unpredictable session
+ */
+export const CARD_VIBE_CODING = {
+  id: 'vibe-coding',
+  title: 'Vibe Coding',
+  image: '/assets/images/cards/vibe-coding.png',
+  quote: 'Just feeling the flow... whatever happens, happens',
+  requirements: [
+    {
+      type: REQUIREMENT_TYPE_SPEND_PP,
+      value: 5,
+    },
+  ],
+  effects: [
+    {
+      type: EFFECT_TYPE_ADD_PROGRESS,
+      randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
+      headsValue: 15,
+      tailsValue: 5,
+    },
+    {
+      type: EFFECT_TYPE_ADD_TECHNICAL_DEBT,
+      randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
+      headsValue: 2,
+      tailsValue: 5,
+    },
+    {
+      type: EFFECT_TYPE_ADD_BUGS,
+      randomType: RANDOM_EFFECT_TYPE_COIN_FLIP,
+      headsValue: 1,
+      tailsValue: 2,
     },
   ],
 } as const satisfies Card;
