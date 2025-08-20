@@ -170,6 +170,14 @@
   border: 1px solid var(--color-gray-200);
 }
 
+.sectionHeader {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-600);
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+}
+
 .inputGroup {
   margin-bottom: var(--spacing-md);
 }
@@ -357,5 +365,10 @@
 
   .inputLabel {
     font-size: var(--font-size-base);
+  }
+
+  .sectionHeader {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-sm);
   }
 }

@@ -69,7 +69,6 @@ function GameBoard({
   const [animatingCardIds, setAnimatingCardIds] = useState<Set<string>>(
     new Set()
   );
-  const [showScoreSubmission, setShowScoreSubmission] = useState(false);
 
   // Score submission state
   const navigate = useNavigate();
@@ -734,7 +733,6 @@ function GameBoard({
     setCoinFlipQueue({
       effects: [],
     });
-    setShowScoreSubmission(false);
 
     // Reset score submission state
     setPlayerName('');
@@ -1041,8 +1039,11 @@ function GameBoard({
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.7 }}
                     >
+                      <div className={styles.sectionHeader}>
+                        🏆 Submit to Leaderboard
+                      </div>
                       <label htmlFor="playerName" className={styles.inputLabel}>
-                        Submit to Leaderboard
+                        Player Name
                       </label>
                       <input
                         id="playerName"
