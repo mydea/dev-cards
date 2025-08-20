@@ -14,8 +14,6 @@ dev-cards/
 │   ├── data/           # @dev-cards/data - Shared data definitions
 │   ├── game/           # @dev-cards/game - React SPA game
 │   └── api/            # @dev-cards/api - Cloudflare Worker API
-├── apps/
-│   └── web/            # Main web application (uses @dev-cards/game)
 ├── package.json        # Root workspace config
 ├── pnpm-workspace.yaml
 └── README.md
