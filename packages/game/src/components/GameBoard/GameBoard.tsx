@@ -28,7 +28,6 @@ interface GameBoardProps {
   gameState: GameState;
   gameEngine: GameEngine;
   onReturnToMenu: () => void;
-  onNewGame?: () => void;
 }
 
 interface GameOverState {
@@ -41,7 +40,6 @@ function GameBoard({
   gameState: initialGameState,
   gameEngine,
   onReturnToMenu,
-  onNewGame,
 }: GameBoardProps) {
   const [gameState, setGameState] = useState(initialGameState);
   const [history] = useState<GameHistory>(() => gameEngine.getHistory());
@@ -711,36 +709,6 @@ function GameBoard({
     }
   };
 
-  const handleNewGame = () => {
-    if (onNewGame) {
-      // Use parent's new game handler if provided
-      onNewGame();
-    } else {
-      // Fallback to internal logic
-      const newGameState = gameEngine.createNewGame();
-      setGameState(newGameState);
-    }
-
-    // Reset local state
-    setShowParticles(false);
-    setIsAnimating(false);
-    setAnimatingCardIds(new Set());
-    setGameOver({
-      isGameOver: false,
-      won: false,
-      message: '',
-    });
-    setCoinFlipQueue({
-      effects: [],
-    });
-
-    // Reset score submission state
-    setPlayerName('');
-    setIsSubmittingScore(false);
-    setScoreSubmissionError(null);
-    setScoreSubmitted(false);
-  };
-
   const handleScoreSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -1131,7 +1099,7 @@ function GameBoard({
                 >
                   <motion.button
                     className={styles.newGameButton}
-                    onClick={handleNewGame}
+                    onClick={() => navigate('/new-game')}
                     type="button"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}

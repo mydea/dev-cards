@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { HomePage, GamePage, LeaderboardPage } from './pages';
+import { HomePage, GamePage, LeaderboardPage, NewGamePage } from './pages';
 import ScrollToTop from './components/ScrollToTop';
 import styles from './App.module.css';
 
@@ -12,6 +12,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/game" element={<GamePage />} />
+            <Route path="/new-game" element={<NewGamePage />} />
             <Route path="/leaderboard" element={<LeaderboardPage />} />
           </Routes>
         </main>

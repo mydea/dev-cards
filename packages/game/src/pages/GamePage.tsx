@@ -16,18 +16,12 @@ const GamePage: React.FC = () => {
     navigate('/');
   };
 
-  const handleNewGame = () => {
-    const newGameState = gameEngine.createNewGame();
-    setGameState(newGameState);
-  };
-
   return (
     <div className={styles.gamePage}>
       <GameBoard
         gameState={gameState}
         gameEngine={gameEngine}
         onReturnToMenu={handleReturnToMenu}
-        onNewGame={handleNewGame}
       />
     </div>
   );
