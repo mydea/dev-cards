@@ -18,7 +18,7 @@ import {
 export const CARD_QUICK_BUG_FIX = {
   id: 'quick-bug-fix',
   title: 'Quick Bug Fix',
-  image: '/assets/images/icons/card-placeholder.png',
+  image: '/assets/images/cards/quick-bug-fix.png',
   quote: 'It was just a missing semicolon...',
   requirements: [
     {
@@ -79,7 +79,7 @@ export const CARD_WRITE_UNIT_TESTS = {
 export const CARD_IMPLEMENT_FEATURE = {
   id: 'implement-feature',
   title: 'Implement Feature',
-  image: '/assets/images/icons/card-placeholder.png',
+  image: '/assets/images/cards/implement-feature.png',
   quote: 'Shipping is a feature!',
   requirements: [
     {
@@ -549,7 +549,7 @@ export const CARD_COPY_PASTE_SOLUTION = {
 export const CARD_SKIP_CODE_REVIEW = {
   id: 'skip-code-review',
   title: 'Skip Code Review',
-  image: '/assets/images/icons/card-placeholder.png',
+  image: '/assets/images/cards/skip-review.png',
   quote: 'Trust me, this code is perfect',
   requirements: [
     {
@@ -584,7 +584,7 @@ export const CARD_SKIP_CODE_REVIEW = {
 export const CARD_SETUP_SENTRY = {
   id: 'setup-sentry',
   title: 'Setup Sentry',
-  image: '/assets/images/icons/card-placeholder.png',
+  image: '/assets/images/cards/setup-sentry.png',
   quote: 'Know about bugs before your users do',
   requirements: [
     {
@@ -612,7 +612,7 @@ export const CARD_SETUP_SENTRY = {
 export const CARD_IMPLEMENT_MVP = {
   id: 'implement-mvp',
   title: 'Implement MVP',
-  image: '/assets/images/icons/card-placeholder.png',
+  image: '/assets/images/cards/implement-mvp.png',
   quote: 'Ship the minimum viable product',
   requirements: [
     {
@@ -647,7 +647,7 @@ export const CARD_IMPLEMENT_MVP = {
 export const CARD_DEEP_FOCUS_TIME = {
   id: 'deep-focus-time',
   title: 'Deep Focus Time',
-  image: '/assets/images/icons/card-placeholder.png',
+  image: '/assets/images/cards/deep-focus-time.png',
   quote: 'In the zone, nothing can stop you',
   requirements: [
     {
