@@ -60,7 +60,7 @@
   border-radius: var(--radius-2xl);
   text-align: center;
   box-shadow: 0 20px 40px var(--shadow-color-strong);
-  max-width: 400px;
+  max-width: 500px;
   width: 90%;
 }
 
@@ -109,12 +109,15 @@
 
 .gameOverActions {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
+  flex-direction: row;
+  gap: var(--spacing-sm);
   align-items: center;
+  justify-content: center;
 }
 
-.submitScoreButton, .newGameButton, .menuButton {
+.submitScoreButton,
+.newGameButton,
+.menuButton {
   background: var(--gradient-primary);
   color: var(--text-inverse);
   border: none;
@@ -129,6 +132,12 @@
   box-shadow: 0 4px 12px var(--shadow-color);
 }
 
+.newGameButton,
+.menuButton {
+  padding: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
 .submitScoreButton {
   background: var(--gradient-primary);
   border: 2px solid var(--color-primary-600);
@@ -139,7 +148,9 @@
   background: var(--color-gray-500);
 }
 
-.submitScoreButton:hover, .newGameButton:hover, .menuButton:hover {
+.submitScoreButton:hover,
+.newGameButton:hover,
+.menuButton:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px var(--shadow-color-strong);
 }
@@ -224,8 +235,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .submissionSuccess {
@@ -344,4 +359,3 @@
     font-size: var(--font-size-base);
   }
 }
-
