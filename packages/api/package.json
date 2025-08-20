@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "build": "wrangler deploy --dry-run",
+    "build": "wrangler deploy --dry-run --env=production",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "test": "vitest --run",
