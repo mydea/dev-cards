@@ -73,7 +73,7 @@ export function validateGameState(scoreData: SubmitScore): {
   }
 
   // Minimum reasonable game duration (should take at least some time)
-  const minDuration = scoreData.rounds * 10; // At least 10 seconds per round
+  const minDuration = scoreData.rounds * 1; // At least 1 second per round
   if (scoreData.game_duration_seconds < minDuration) {
     return { valid: false, reason: 'Game completed too quickly' };
   }
