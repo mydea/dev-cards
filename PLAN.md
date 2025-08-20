@@ -333,6 +333,7 @@ This plan provides a comprehensive roadmap for building a polished, engaging car
 
 // TODO: 
 
+- scroll to top on route changes
 - Get rid of inline styles
 - Responsive styling of cards ??
 - Only start timer when first card is played 
