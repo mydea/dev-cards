@@ -38,8 +38,8 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
             <h4>🔄 Game Flow</h4>
             <ol>
               <li>
-                <strong>Start Round:</strong> Gain Productivity Points (PP) equal to (20 - Technical
-                Debt)
+                <strong>Start Round:</strong> Gain Productivity Points (PP)
+                equal to (20 - Technical Debt)
               </li>
               <li>
                 <strong>Play Cards:</strong> Spend PP to play cards from your
