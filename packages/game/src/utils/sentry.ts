@@ -1,16 +1,13 @@
 import * as Sentry from '@sentry/react';
 
 Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN,
+  dsn: 'https://c3f41b332ff3e90d5a937138eb0c72c2@o4504009877553152.ingest.us.sentry.io/4509876437778433',
 
   // Adds request headers and IP for users
   sendDefaultPii: true,
 
   // Environment configuration
   environment: import.meta.env.VITE_ENVIRONMENT || 'development',
-
-  // Release tracking
-  release: import.meta.env.VITE_APP_VERSION,
 
   integrations: [
     // Browser tracing for performance monitoring
