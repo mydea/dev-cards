@@ -156,21 +156,6 @@
   text-align: center;
 }
 
-.resourceIcon[data-type="progress"] {
-  filter: hue-rotate(120deg);
-}
-
-.resourceIcon[data-type="bugs"] {
-  filter: hue-rotate(0deg);
-}
-
-.resourceIcon[data-type="td"] {
-  filter: hue-rotate(45deg);
-}
-
-.resourceIcon[data-type="pp"] {
-  filter: hue-rotate(240deg);
-}
 
 .buttons {
   display: flex;

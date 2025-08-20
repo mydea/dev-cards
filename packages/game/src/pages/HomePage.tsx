@@ -91,7 +91,7 @@ const HomePage: React.FC = () => {
           </div>
           <div className={styles.resource}>
             <span className={styles.resourceIcon} data-type="td">
-              ⚠️
+              ⚡
             </span>
             <div>
               <strong>Technical Debt</strong>
@@ -101,7 +101,7 @@ const HomePage: React.FC = () => {
           </div>
           <div className={styles.resource}>
             <span className={styles.resourceIcon} data-type="pp">
-              ⚡
+              💪
             </span>
             <div>
               <strong>Productivity Points</strong>

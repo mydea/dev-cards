@@ -79,10 +79,10 @@ export function validateGameState(scoreData: SubmitScore): {
   }
 
   // Must have played at least some cards
-  if (scoreData.cards_played.length < scoreData.rounds) {
+  if (scoreData.cards_played.length < 5) {
     return {
       valid: false,
-      reason: 'Not enough cards played for number of rounds',
+      reason: 'Not enough cards played',
     };
   }
 
