@@ -194,7 +194,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose }) => {
                     </div>
                     <div className={styles.rounds}>{entry.rounds}</div>
                     <div className={styles.duration}>
-                      {formatDuration(entry.game_duration_seconds)}
+                      {formatDuration(entry.game_duration_seconds)} min
                     </div>
                     <div className={styles.date}>
                       {formatDate(entry.completed_at)}
