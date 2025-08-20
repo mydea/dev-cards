@@ -117,10 +117,6 @@ function Hand({
                   onCardMount(cardInstance.instanceId, el);
                 }
               }}
-              style={{
-                display: 'inline-block',
-                margin: '4px',
-              }}
             >
               <Card
                 cardInstance={cardInstance}
