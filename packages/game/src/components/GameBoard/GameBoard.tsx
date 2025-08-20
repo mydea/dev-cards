@@ -27,6 +27,7 @@ interface GameBoardProps {
   gameState: GameState;
   gameEngine: GameEngine;
   onReturnToMenu: () => void;
+  onNewGame?: () => void;
 }
 
 interface GameOverState {
@@ -39,6 +40,7 @@ function GameBoard({
   gameState: initialGameState,
   gameEngine,
   onReturnToMenu,
+  onNewGame,
 }: GameBoardProps) {
   const [gameState, setGameState] = useState(initialGameState);
   const [history] = useState<GameHistory>(() => gameEngine.getHistory());
@@ -701,8 +703,16 @@ function GameBoard({
   };
 
   const handleNewGame = () => {
-    const newGameState = gameEngine.createNewGame();
-    setGameState(newGameState);
+    if (onNewGame) {
+      // Use parent's new game handler if provided
+      onNewGame();
+    } else {
+      // Fallback to internal logic
+      const newGameState = gameEngine.createNewGame();
+      setGameState(newGameState);
+    }
+
+    // Reset local state
     setShowParticles(false);
     setIsAnimating(false);
     setAnimatingCardIds(new Set());
@@ -714,6 +724,7 @@ function GameBoard({
     setCoinFlipQueue({
       effects: [],
     });
+    setShowScoreSubmission(false);
   };
 
   // Animation variants

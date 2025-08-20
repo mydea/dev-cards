@@ -329,3 +329,10 @@ packages/api/
 - **Score Integrity**: Multiple validation layers
 
 This plan provides a comprehensive roadmap for building a polished, engaging card game while maintaining good software engineering practices and user experience standards.
+
+
+// TODO: 
+
+- Get rid of inline styles
+- Responsive styling of cards ??
+- Only start timer when first card is played 

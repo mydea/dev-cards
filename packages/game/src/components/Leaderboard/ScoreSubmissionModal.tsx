@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { GameState } from '@dev-cards/data';
 import { apiClient, type SubmitScoreRequest } from '../../services/api';
@@ -15,6 +16,7 @@ const ScoreSubmissionModal: React.FC<ScoreSubmissionModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const navigate = useNavigate();
   const [playerName, setPlayerName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +66,7 @@ const ScoreSubmissionModal: React.FC<ScoreSubmissionModalProps> = ({
         setSuccess(true);
         setTimeout(() => {
           onSuccess();
+          navigate('/leaderboard');
         }, 2000);
       } else {
         setError(response.error || 'Failed to submit score');

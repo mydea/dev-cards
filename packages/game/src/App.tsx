@@ -1,47 +1,27 @@
-import { useState } from 'react';
-import { GameEngine } from '@dev-cards/data';
-import type { GameState } from '@dev-cards/data';
-import GameBoard from './components/GameBoard/GameBoard';
-import MainMenu from './components/UI/MainMenu';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HomePage, GamePage, LeaderboardPage } from './pages';
 import styles from './App.module.css';
 
 function App() {
-  const [gameEngine] = useState(() => new GameEngine());
-  const [gameState, setGameState] = useState<GameState | null>(null);
-  const [currentView, setCurrentView] = useState<'menu' | 'game'>('menu');
-
-  const startNewGame = () => {
-    const newGameState = gameEngine.createNewGame();
-    setGameState(newGameState);
-    setCurrentView('game');
-  };
-
-  const returnToMenu = () => {
-    setCurrentView('menu');
-    setGameState(null);
-  };
-
   return (
-    <div className={styles.app}>
-      <main className={styles.main}>
-        {currentView === 'menu' ? (
-          <MainMenu onStartGame={startNewGame} />
-        ) : (
-          <GameBoard
-            gameState={gameState!}
-            gameEngine={gameEngine}
-            onReturnToMenu={returnToMenu}
-          />
-        )}
-      </main>
+    <Router>
+      <div className={styles.app}>
+        <main className={styles.main}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/game" element={<GamePage />} />
+            <Route path="/leaderboard" element={<LeaderboardPage />} />
+          </Routes>
+        </main>
 
-      <footer className={styles.footer}>
-        <p>
-          Manage your bugs, technical debt, and productivity to complete your
-          project!
-        </p>
-      </footer>
-    </div>
+        <footer className={styles.footer}>
+          <p>
+            Manage your bugs, technical debt, and productivity to complete your
+            project!
+          </p>
+        </footer>
+      </div>
+    </Router>
   );
 }
 
