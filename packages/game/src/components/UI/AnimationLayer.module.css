@@ -1,8 +1,9 @@
 .animationLayer {
   position: relative;
   flex: 1;
-  margin: -0.5rem;
   align-self: stretch;
+  display: flex;
+  align-items: stretch;
 }
 
 .flyingCardsContainer {

@@ -57,7 +57,7 @@ export class GameEngine {
     const initialHand = cardInstances.splice(0, 5);
 
     const initialResources: GameResources = {
-      progress: 0,
+      progress: 99,
       bugs: 0,
       technicalDebt: 0,
       productivityPoints: 20, // Start with full PP

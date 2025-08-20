@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import type {
   GameState,
   GameEngine,
@@ -20,7 +21,7 @@ import AnimationLayer, { type AnimationLayerRef } from '../UI/AnimationLayer';
 import Pile from '../UI/Pile';
 import CoinFlipOverlay from '../UI/CoinFlipOverlay';
 import Hand from '../Hand/Hand';
-import ScoreSubmissionModal from '../Leaderboard/ScoreSubmissionModal';
+import { apiClient, type SubmitScoreRequest } from '../../services/api';
 import styles from './GameBoard.module.css';
 
 interface GameBoardProps {
@@ -69,6 +70,15 @@ function GameBoard({
     new Set()
   );
   const [showScoreSubmission, setShowScoreSubmission] = useState(false);
+
+  // Score submission state
+  const navigate = useNavigate();
+  const [playerName, setPlayerName] = useState('');
+  const [isSubmittingScore, setIsSubmittingScore] = useState(false);
+  const [scoreSubmissionError, setScoreSubmissionError] = useState<
+    string | null
+  >(null);
+  const [scoreSubmitted, setScoreSubmitted] = useState(false);
 
   // Animation refs
   const animationLayerRef = useRef<AnimationLayerRef>(null);
@@ -725,6 +735,68 @@ function GameBoard({
       effects: [],
     });
     setShowScoreSubmission(false);
+
+    // Reset score submission state
+    setPlayerName('');
+    setIsSubmittingScore(false);
+    setScoreSubmissionError(null);
+    setScoreSubmitted(false);
+  };
+
+  const handleScoreSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!playerName.trim()) {
+      setScoreSubmissionError('Please enter a player name');
+      return;
+    }
+
+    if (playerName.trim().length < 2) {
+      setScoreSubmissionError('Player name must be at least 2 characters');
+      return;
+    }
+
+    if (playerName.trim().length > 50) {
+      setScoreSubmissionError('Player name must be 50 characters or less');
+      return;
+    }
+
+    setIsSubmittingScore(true);
+    setScoreSubmissionError(null);
+
+    // Prepare score data
+    const scoreData: SubmitScoreRequest = {
+      player_name: playerName.trim(),
+      score: gameState.stats.finalScore || 0,
+      rounds: gameState.stats.currentRound,
+      final_progress: gameState.resources.progress,
+      final_bugs: gameState.resources.bugs,
+      final_tech_debt: gameState.resources.technicalDebt,
+      game_duration_seconds: Math.round(
+        (gameState.stats.endTime! - gameState.stats.startTime) / 1000
+      ),
+      cards_played: gameState.stats.cardsPlayed
+        ? Object.keys(gameState.stats.cardsPlayed)
+        : [],
+    };
+
+    try {
+      const response = await apiClient.submitScore(scoreData);
+
+      if (response.success) {
+        setScoreSubmitted(true);
+        setShowParticles(true); // Show celebration particles
+        setTimeout(() => {
+          navigate('/leaderboard');
+        }, 2000);
+      } else {
+        setScoreSubmissionError(response.error || 'Failed to submit score');
+      }
+    } catch (err) {
+      setScoreSubmissionError('Network error. Please try again.');
+    }
+
+    setIsSubmittingScore(false);
   };
 
   // Animation variants
@@ -955,28 +1027,97 @@ function GameBoard({
                   </motion.div>
                 )}
 
+                {gameOver.won && !scoreSubmitted && (
+                  <motion.form
+                    className={styles.scoreSubmissionForm}
+                    onSubmit={handleScoreSubmit}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                  >
+                    <motion.div
+                      className={styles.inputGroup}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.7 }}
+                    >
+                      <label htmlFor="playerName" className={styles.inputLabel}>
+                        Submit to Leaderboard
+                      </label>
+                      <input
+                        id="playerName"
+                        type="text"
+                        value={playerName}
+                        onChange={(e) => setPlayerName(e.target.value)}
+                        placeholder="Enter your name"
+                        className={styles.nameInput}
+                        maxLength={50}
+                        disabled={isSubmittingScore}
+                        autoFocus
+                      />
+                      {scoreSubmissionError && (
+                        <motion.div
+                          className={styles.errorMessage}
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                        >
+                          {scoreSubmissionError}
+                        </motion.div>
+                      )}
+                    </motion.div>
+
+                    <motion.div
+                      className={styles.submitActions}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8 }}
+                    >
+                      <motion.button
+                        type="submit"
+                        className={styles.submitScoreButton}
+                        disabled={isSubmittingScore || !playerName.trim()}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 400,
+                          damping: 25,
+                        }}
+                      >
+                        {isSubmittingScore ? (
+                          <>
+                            <span className={styles.spinner}></span>
+                            Submitting...
+                          </>
+                        ) : (
+                          '🏆 Submit Score'
+                        )}
+                      </motion.button>
+                    </motion.div>
+                  </motion.form>
+                )}
+
+                {scoreSubmitted && (
+                  <motion.div
+                    className={styles.submissionSuccess}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 200 }}
+                  >
+                    <div className={styles.successIcon}>🎉</div>
+                    <h3>Score Submitted!</h3>
+                    <p>Redirecting to leaderboard...</p>
+                  </motion.div>
+                )}
+
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
+                  transition={{
+                    delay: gameOver.won && !scoreSubmitted ? 0.9 : 0.6,
+                  }}
                   className={styles.gameOverActions}
                 >
-                  {gameOver.won && (
-                    <motion.button
-                      className={styles.submitScoreButton}
-                      onClick={() => setShowScoreSubmission(true)}
-                      type="button"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 400,
-                        damping: 25,
-                      }}
-                    >
-                      🏆 Submit Score
-                    </motion.button>
-                  )}
                   <motion.button
                     className={styles.newGameButton}
                     onClick={handleNewGame}
@@ -1015,20 +1156,6 @@ function GameBoard({
           onAllComplete={handleAllCoinFlipsComplete}
           cardInstanceId={coinFlipQueue.cardInstanceId || ''}
         />
-
-        {/* Score submission modal */}
-        <AnimatePresence>
-          {showScoreSubmission && gameOver.won && (
-            <ScoreSubmissionModal
-              gameState={gameState}
-              onClose={() => setShowScoreSubmission(false)}
-              onSuccess={() => {
-                setShowScoreSubmission(false);
-                onReturnToMenu();
-              }}
-            />
-          )}
-        </AnimatePresence>
       </motion.div>
     </AnimationLayer>
   );

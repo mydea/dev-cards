@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
+  padding: 0.5rem;
 }
 
 .header {
@@ -55,7 +56,7 @@
 
 .gameOverContent {
   background: var(--surface-card);
-  padding: var(--spacing-3xl);
+  padding: var(--spacing-xl);
   border-radius: var(--radius-2xl);
   text-align: center;
   box-shadow: 0 20px 40px var(--shadow-color-strong);
@@ -106,7 +107,14 @@
   font-weight: var(--font-weight-medium);
 }
 
-.newGameButton, .menuButton {
+.gameOverActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.submitScoreButton, .newGameButton, .menuButton {
   background: var(--gradient-primary);
   color: var(--text-inverse);
   border: none;
@@ -118,15 +126,133 @@
   cursor: pointer;
   transition: all var(--transition-base);
   min-width: 120px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.submitScoreButton {
+  background: var(--gradient-primary);
+  border: 2px solid var(--color-primary-600);
+  box-shadow: 0 4px 16px var(--color-primary-200);
 }
 
 .menuButton {
   background: var(--color-gray-500);
 }
 
-.newGameButton:hover, .menuButton:hover {
+.submitScoreButton:hover, .newGameButton:hover, .menuButton:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px var(--shadow-color-strong);
+  box-shadow: 0 6px 20px var(--shadow-color-strong);
+}
+
+.submitScoreButton:hover {
+  border-color: var(--color-primary-700);
+  box-shadow: 0 6px 20px var(--color-primary-200);
+}
+
+/* Score submission form */
+.scoreSubmissionForm {
+  width: 100%;
+  margin: var(--spacing-lg) 0;
+  padding: var(--spacing-lg);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+}
+
+.inputGroup {
+  margin-bottom: var(--spacing-md);
+}
+
+.inputLabel {
+  display: block;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-md);
+  text-align: center;
+}
+
+.nameInput {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  transition: all var(--transition-fast);
+  background: white;
+  text-align: center;
+  font-weight: var(--font-weight-medium);
+}
+
+.nameInput:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.nameInput:disabled {
+  background: var(--color-gray-100);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  background: var(--color-red-50);
+  color: var(--color-red-700);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-red-200);
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+}
+
+.submitActions {
+  display: flex;
+  justify-content: center;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: var(--spacing-sm);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.submissionSuccess {
+  text-align: center;
+  padding: var(--spacing-lg);
+  background: var(--color-green-50);
+  border: 1px solid var(--color-green-200);
+  border-radius: var(--radius-lg);
+  margin: var(--spacing-lg) 0;
+}
+
+.successIcon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.submissionSuccess h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-green-700);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.submissionSuccess p {
+  color: var(--color-green-600);
+  margin: 0;
+  font-size: var(--font-size-md);
 }
 
 .gameArea {
@@ -203,6 +329,19 @@
 
   .gameOverContent h2 {
     font-size: var(--font-size-2xl);
+  }
+
+  .scoreSubmissionForm {
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+  }
+
+  .nameInput {
+    font-size: var(--font-size-base);
+  }
+
+  .inputLabel {
+    font-size: var(--font-size-base);
   }
 }
 
