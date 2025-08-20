@@ -7,7 +7,7 @@
   "scripts": {
     "build": "wrangler deploy --dry-run --env=production",
     "dev": "wrangler dev --env=development",
-    "deploy": "wrangler deploy --env=production",
+    "deploy:prod": "wrangler deploy --env=production",
     "test": "vitest --run",
     "test:watch": "vitest --watch",
     "type-check": "tsc --noEmit",
