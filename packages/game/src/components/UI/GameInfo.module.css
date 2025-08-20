@@ -68,6 +68,14 @@
 }
 
 /* Responsive design */
+@media (max-width: 1400px) {
+  /* Hide Cards Played and Cards Remaining on smaller screens */
+  .stat:nth-child(3),
+  .stat:nth-child(4) {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .gameInfo {
     gap: var(--spacing-md);
