@@ -1,6 +1,7 @@
 .cardWrapper {
   position: relative;
   display: inline-block;
+  width: 100%;
 }
 
 .card {
@@ -238,14 +239,14 @@
 }
 
 /* Responsive design */
-@media (max-width: 1024px) {
+@media (max-width: 1024px) and (min-width: 480px) {
   .card {
     width: calc(var(--card-width) * 0.9);
     padding: var(--spacing-sm);
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px) and (min-width: 480px) {
   .card {
     width: calc(var(--card-width) * 0.8);
     padding: var(--spacing-sm);
@@ -282,10 +283,10 @@
 
 @media (max-width: 480px) {
   .card {
-    width: calc(var(--card-width) * 0.75);
+    width: 100%;
   }
 
-  .cardTitle {
+  /* .cardTitle {
     font-size: var(--font-size-xs);
   }
 
@@ -303,5 +304,5 @@
     font-size: 0.7rem;
     min-height: 1.5rem;
     padding: var(--spacing-xs) 0;
-  }
+  } */
 }

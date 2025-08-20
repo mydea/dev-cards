@@ -212,7 +212,9 @@
 
 @media (max-width: 480px) {
   .resourceDisplay {
-    gap: var(--spacing-sm);
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
   }
 
   .resource {

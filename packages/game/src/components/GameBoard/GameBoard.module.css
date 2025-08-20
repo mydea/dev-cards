@@ -313,6 +313,7 @@
 @media (max-width: 1500px) {
   .header {
     padding: var(--spacing-sm);
+    justify-content: center;
   }
 }
 
