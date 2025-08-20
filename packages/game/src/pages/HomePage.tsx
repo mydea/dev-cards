@@ -6,14 +6,17 @@ const HomePage: React.FC = () => {
   return (
     <div className={styles.homePage}>
       <div className={styles.content}>
+        {/* 1. Logo */}
+        <div className={styles.logoContainer}>
+          <img
+            src="/assets/images/draw-it-play-it-ship-it.png"
+            alt="Draw It, Play It, Ship It"
+            className={styles.logo}
+          />
+        </div>
+
+        {/* 2. Description */}
         <div className={styles.description}>
-          <div className={styles.logoContainer}>
-            <img
-              src="/assets/images/draw-it-play-it-ship-it.png"
-              alt="Draw It, Play It, Ship It"
-              className={styles.logo}
-            />
-          </div>
           <p>
             A strategic card game about software development. Manage your
             productivity points, avoid bugs, and tackle technical debt to
@@ -21,18 +24,28 @@ const HomePage: React.FC = () => {
           </p>
         </div>
 
-        <div className={styles.howToPlay}>
-          <h3>How to Play:</h3>
-          <div className={styles.ruleSection}>
-            <h4>🎯 Objective</h4>
+        {/* 3. Hero Image | Objective */}
+        <div className={styles.heroObjectiveSection}>
+          <div className={styles.heroImageContainer}>
+            <img
+              src="/assets/images/home-page-hero.png"
+              alt="Draw It, Play It, Ship It - Hero"
+              className={styles.heroImage}
+            />
+          </div>
+          <div className={styles.objectiveCard}>
+            <h3>🎯 Objective</h3>
             <p>
               Complete your software project by reaching 100% Progress with 0
               Bugs in the fewest rounds possible.
             </p>
           </div>
+        </div>
 
-          <div className={styles.ruleSection}>
-            <h4>🔄 Game Flow</h4>
+        {/* 4. Game Flow | Strategy Tips */}
+        <div className={styles.rulesSection}>
+          <div className={styles.ruleCard}>
+            <h3>🔄 Game Flow</h3>
             <ol>
               <li>
                 <strong>Start Round:</strong> Gain Productivity Points (PP)
@@ -53,8 +66,8 @@ const HomePage: React.FC = () => {
             </ol>
           </div>
 
-          <div className={styles.ruleSection}>
-            <h4>💡 Strategy Tips</h4>
+          <div className={styles.ruleCard}>
+            <h3>💡 Strategy Tips</h3>
             <ul>
               <li>Balance progress cards with bug fixes and debt reduction</li>
               <li>Some cards have coin flip effects - risk vs reward!</li>

@@ -20,12 +20,9 @@
   text-align: center;
 }
 
-.description {
-  margin-bottom: var(--spacing-2xl);
-}
-
+/* 1. Logo */
 .logoContainer {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-2xl);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -40,69 +37,120 @@
   display: block;
 }
 
+/* 2. Description */
+.description {
+  margin-bottom: var(--spacing-3xl);
+}
+
 .description p {
-  font-size: var(--font-size-lg);
-  color: var(--text-secondary);
-  line-height: 1.6;
-  max-width: 600px;
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
+  line-height: 1.7;
+  max-width: 800px;
   margin: 0 auto;
+  font-weight: var(--font-weight-medium);
 }
 
-.howToPlay {
+/* 3. Hero Image | Objective Section */
+.heroObjectiveSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-3xl);
+  margin-bottom: var(--spacing-3xl);
+  align-items: center;
+}
+
+.heroImageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.heroImage {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 10px 30px var(--shadow-color);
+  display: block;
+}
+
+.objectiveCard {
+  background: none;
+  padding: var(--spacing-xl) 0;
   text-align: left;
-  margin-bottom: var(--spacing-2xl);
 }
 
-.howToPlay h3 {
+.objectiveCard h3 {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
+  color: var(--color-primary-600);
+  margin-bottom: var(--spacing-lg);
+  text-align: left;
+}
+
+.objectiveCard p {
+  font-size: var(--font-size-xl);
   color: var(--text-primary);
+  line-height: 1.7;
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+/* 4. Rules Section (Game Flow | Strategy Tips) */
+.rulesSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-3xl);
+  margin-bottom: var(--spacing-3xl);
+}
+
+.ruleCard {
+  background: var(--surface-secondary);
+  padding: var(--spacing-2xl);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 4px 15px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.ruleCard h3 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-600);
   margin-bottom: var(--spacing-lg);
   text-align: center;
 }
 
-.ruleSection {
-  margin-bottom: var(--spacing-xl);
-  background: var(--surface-secondary);
-  padding: var(--spacing-lg);
-  border-radius: var(--radius-lg);
-}
-
-.ruleSection h4 {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary-600);
-  margin-bottom: var(--spacing-md);
-}
-
-.ruleSection p,
-.ruleSection li {
+.ruleCard p,
+.ruleCard li {
   color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: var(--spacing-sm);
 }
 
-.ruleSection ol {
+.ruleCard ol {
   counter-reset: step-counter;
   list-style: none;
   padding-left: 0;
 }
 
-.ruleSection ol li {
+.ruleCard ol li {
   counter-increment: step-counter;
   position: relative;
-  padding-left: var(--spacing-lg);
+  padding-left: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
 }
 
-.ruleSection ol li::before {
+.ruleCard ol li::before {
   content: counter(step-counter);
   position: absolute;
   left: 0;
   top: 2px;
   background: var(--color-primary-500);
   color: white;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -111,18 +159,19 @@
   font-weight: var(--font-weight-bold);
 }
 
-.ruleSection ul {
+.ruleCard ul {
   list-style: none;
   padding-left: 0;
 }
 
-.ruleSection ul li {
+.ruleCard ul li {
   position: relative;
-  padding-left: var(--spacing-md);
+  padding-left: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
 }
 
-.ruleSection ul li::before {
-  content: '•';
+.ruleCard ul li::before {
+  content: '✨';
   position: absolute;
   left: 0;
   color: var(--color-primary-500);
@@ -206,6 +255,18 @@
 }
 
 /* Responsive design */
+@media (max-width: 1200px) {
+  .heroObjectiveSection {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2xl);
+  }
+
+  .rulesSection {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2xl);
+  }
+}
+
 @media (max-width: 768px) {
   .homePage {
     padding: var(--spacing-md);
@@ -216,11 +277,24 @@
   }
 
   .logo {
-    max-width: 300px;
+    max-width: 320px;
   }
 
   .description p {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-lg);
+  }
+
+  .heroObjectiveSection {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .rulesSection {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .ruleCard,
+  .objectiveCard {
+    padding: var(--spacing-xl);
   }
 
   .resources {
