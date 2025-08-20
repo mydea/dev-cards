@@ -92,7 +92,7 @@
   content: counter(step-counter);
   position: absolute;
   left: 0;
-  top: var(--spacing-sm);
+  top: 2px;
   background: var(--color-primary-500);
   color: white;
   width: 18px;
