@@ -4,12 +4,20 @@
   "compatibility_date": "2024-12-01",
   "compatibility_flags": ["nodejs_compat"],
 
+  "version_metadata": {
+    "binding": "CF_VERSION_METADATA"
+  },
+
   // Development environment configuration
   "env": {
     "development": {
       "vars": {
         "ENVIRONMENT": "development",
         "CORS_ORIGIN": "http://localhost:3000",
+        "SENTRY_DSN": "https://8d779d98d092fd896b9cff54dd085e15@o4504009877553152.ingest.us.sentry.io/4509876452458496"
+      },
+      "version_metadata": {
+        "binding": "CF_VERSION_METADATA"
       },
       "d1_databases": [
         {
@@ -24,6 +32,10 @@
       "vars": {
         "ENVIRONMENT": "production",
         "CORS_ORIGIN": "https://draw-it-play-it-ship-it.pages.dev",
+        "SENTRY_DSN": "https://8d779d98d092fd896b9cff54dd085e15@o4504009877553152.ingest.us.sentry.io/4509876452458496"
+      },
+      "version_metadata": {
+        "binding": "CF_VERSION_METADATA"
       },
       "d1_databases": [
         {
@@ -34,13 +46,4 @@
       ],
     },
   },
-
-  // D1 Database bindings for development
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "dev-cards-db",
-      "database_id": "97961d40-c882-419b-950f-88ed1018405d",
-    },
-  ],
 }

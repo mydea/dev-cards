@@ -1,8 +1,9 @@
 import { Hono } from 'hono';
 import type { Bindings } from '../types/index.js';
 import { DatabaseError } from '../types/index.js';
-import { Database } from '../db/queries.js';
+
 import { errorResponse, successResponse } from '../utils/index.js';
+import { createInstrumentedDatabase } from '../utils/sentry-db.js';
 
 const leaderboard = new Hono<{ Bindings: Bindings }>();
 
@@ -12,7 +13,7 @@ leaderboard.get('/', async (c) => {
     const limit = Math.min(parseInt(c.req.query('limit') || '100'), 100); // Max 100 entries
     const offset = parseInt(c.req.query('offset') || '0');
 
-    const db = new Database(c.env.DB);
+    const db = createInstrumentedDatabase(c.env.DB);
     const entries = await db.getLeaderboard(limit, offset);
 
     return successResponse({
@@ -37,7 +38,7 @@ leaderboard.get('/player/:name', async (c) => {
     const playerName = decodeURIComponent(c.req.param('name'));
     const limit = Math.min(parseInt(c.req.query('limit') || '50'), 50);
 
-    const db = new Database(c.env.DB);
+    const db = createInstrumentedDatabase(c.env.DB);
 
     const games = await db.getPlayerGames(playerName, limit);
     const stats = await db.getPlayerStats(playerName);
@@ -62,7 +63,7 @@ leaderboard.get('/player/:name', async (c) => {
 // Get leaderboard statistics
 leaderboard.get('/stats', async (c) => {
   try {
-    const db = new Database(c.env.DB);
+    const db = createInstrumentedDatabase(c.env.DB);
 
     const [gameCount, playerCount] = await Promise.all([
       db.getGameCount(),

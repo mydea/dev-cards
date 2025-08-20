@@ -1,8 +1,9 @@
 import { Hono } from 'hono';
 import type { Bindings } from '../types/index.js';
 import { DatabaseError } from '../types/index.js';
-import { Database } from '../db/queries.js';
+
 import { errorResponse, successResponse } from '../utils/index.js';
+import { createInstrumentedDatabase } from '../utils/sentry-db.js';
 
 const players = new Hono<{ Bindings: Bindings }>();
 
@@ -10,7 +11,7 @@ const players = new Hono<{ Bindings: Bindings }>();
 players.get('/:name/stats', async (c) => {
   try {
     const playerName = decodeURIComponent(c.req.param('name'));
-    const db = new Database(c.env.DB);
+    const db = createInstrumentedDatabase(c.env.DB);
 
     const stats = await db.getPlayerStats(playerName);
     if (!stats) {
@@ -31,7 +32,7 @@ players.get('/:name/games', async (c) => {
   try {
     const playerName = decodeURIComponent(c.req.param('name'));
     const limit = parseInt(c.req.query('limit') || '50');
-    const db = new Database(c.env.DB);
+    const db = createInstrumentedDatabase(c.env.DB);
 
     const games = await db.getPlayerGames(playerName, limit);
     return successResponse(games);

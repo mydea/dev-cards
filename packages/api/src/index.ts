@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
+import * as Sentry from '@sentry/cloudflare';
 import type { Bindings } from './types/index.js';
 import { rateLimitMiddleware } from './middleware/rate-limit.js';
 import { players } from './routes/players.js';
@@ -17,7 +18,7 @@ app.use('*', async (c, next) => {
   const corsMiddlewareHandler = cors({
     origin: c.env.CORS_ORIGIN,
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
+    allowHeaders: ['Content-Type', 'Authorization', 'Sentry-Trace', 'Baggage'],
     maxAge: 86400,
   });
   return corsMiddlewareHandler(c, next);
@@ -45,10 +46,22 @@ app.notFound((_c) => {
   return errorResponse('Not found', 404);
 });
 
-// Error handler
-app.onError((err, _c) => {
-  console.error('API Error:', err);
-  return errorResponse('Internal server error', 500);
-});
+// Wrap with Sentry for monitoring
+export default Sentry.withSentry((env: Bindings) => {
+  const { id: versionId } = env.CF_VERSION_METADATA;
 
-export default app;
+  return {
+    dsn: env.SENTRY_DSN,
+    release: versionId,
+    environment: env.ENVIRONMENT,
+
+    // Adds request headers and IP for users
+    sendDefaultPii: true,
+
+    // Enable logs to be sent to Sentry
+    enableLogs: true,
+
+    // Set tracesSampleRate to capture performance data
+    tracesSampleRate: 1,
+  };
+}, app);

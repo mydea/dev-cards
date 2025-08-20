@@ -7,6 +7,8 @@ export type Bindings = {
   RATE_LIMITER: DurableObjectNamespace;
   ENVIRONMENT: string;
   CORS_ORIGIN: string;
+  SENTRY_DSN: string;
+  CF_VERSION_METADATA: { id: string };
 };
 
 // Game/Score schemas

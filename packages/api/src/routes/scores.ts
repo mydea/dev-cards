@@ -6,13 +6,14 @@ import {
   ValidationError,
   DatabaseError,
 } from '../types/index.js';
-import { Database } from '../db/queries.js';
+
 import {
   errorResponse,
   successResponse,
   validateGameState,
 } from '../utils/index.js';
 import { rateLimitMiddleware } from '../middleware/rate-limit.js';
+import { createInstrumentedDatabase } from '../utils/sentry-db.js';
 
 const scores = new Hono<{ Bindings: Bindings }>();
 
@@ -24,7 +25,7 @@ scores.post(
   async (c) => {
     try {
       const scoreData = c.req.valid('json');
-      const db = new Database(c.env.DB);
+      const db = createInstrumentedDatabase(c.env.DB);
 
       // Basic player name validation (name should not be empty after trimming)
       const trimmedPlayerName = scoreData.player_name.trim();
