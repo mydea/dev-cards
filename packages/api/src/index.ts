@@ -33,12 +33,12 @@ app.route('/api/scores', scores);
 app.route('/api/leaderboard', leaderboard);
 
 // 404 handler
-app.notFound((c) => {
+app.notFound((_c) => {
   return errorResponse('Not found', 404);
 });
 
 // Error handler
-app.onError((err, c) => {
+app.onError((err, _c) => {
   console.error('API Error:', err);
   return errorResponse('Internal server error', 500);
 });

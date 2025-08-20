@@ -1,4 +1,9 @@
-import type { Bindings, Game, LeaderboardEntry, PlayerStats, SubmitScore } from '../types/index.js';
+import type {
+  Game,
+  LeaderboardEntry,
+  PlayerStats,
+  SubmitScore,
+} from '../types/index.js';
 import { DatabaseError } from '../types/index.js';
 import { generateId, generateGameStateHash } from '../utils/index.js';
 
@@ -18,17 +23,30 @@ export class Database {
 
     try {
       // Insert the game
-      await this.db.prepare(`
+      await this.db
+        .prepare(
+          `
         INSERT INTO games (
           id, player_name, score, rounds, final_progress, final_bugs, 
           final_tech_debt, game_duration_seconds, completed_at, 
           game_state_hash, cards_played
         ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
-      `).bind(
-        gameId, scoreData.player_name, scoreData.score, scoreData.rounds,
-        scoreData.final_progress, scoreData.final_bugs, scoreData.final_tech_debt,
-        scoreData.game_duration_seconds, now, gameStateHash, cardsPlayedJson
-      ).run();
+      `
+        )
+        .bind(
+          gameId,
+          scoreData.player_name,
+          scoreData.score,
+          scoreData.rounds,
+          scoreData.final_progress,
+          scoreData.final_bugs,
+          scoreData.final_tech_debt,
+          scoreData.game_duration_seconds,
+          now,
+          gameStateHash,
+          cardsPlayedJson
+        )
+        .run();
 
       return {
         id: gameId,
@@ -49,12 +67,20 @@ export class Database {
   }
 
   // Leaderboard operations
-  async getLeaderboard(limit: number = 100, offset: number = 0): Promise<LeaderboardEntry[]> {
+  async getLeaderboard(
+    limit: number = 100,
+    offset: number = 0
+  ): Promise<LeaderboardEntry[]> {
     try {
-      const results = await this.db.prepare(`
+      const results = await this.db
+        .prepare(
+          `
         SELECT * FROM leaderboard
         LIMIT ?1 OFFSET ?2
-      `).bind(limit, offset).all();
+      `
+        )
+        .bind(limit, offset)
+        .all();
 
       return results.results as LeaderboardEntry[];
     } catch (error) {
@@ -62,9 +88,14 @@ export class Database {
     }
   }
 
-  async getPlayerGames(playerName: string, limit: number = 50): Promise<LeaderboardEntry[]> {
+  async getPlayerGames(
+    playerName: string,
+    limit: number = 50
+  ): Promise<LeaderboardEntry[]> {
     try {
-      const results = await this.db.prepare(`
+      const results = await this.db
+        .prepare(
+          `
         SELECT 
           g.id as game_id,
           g.player_name,
@@ -85,7 +116,10 @@ export class Database {
         WHERE g.player_name = ?1
         ORDER BY g.score DESC, g.completed_at ASC
         LIMIT ?2
-      `).bind(playerName, limit).all();
+      `
+        )
+        .bind(playerName, limit)
+        .all();
 
       return results.results as LeaderboardEntry[];
     } catch (error) {
@@ -95,9 +129,14 @@ export class Database {
 
   async getPlayerStats(playerName: string): Promise<PlayerStats | null> {
     try {
-      const result = await this.db.prepare(`
+      const result = await this.db
+        .prepare(
+          `
         SELECT * FROM player_stats WHERE player_name = ?1
-      `).bind(playerName).first();
+      `
+        )
+        .bind(playerName)
+        .first();
 
       return result as PlayerStats | null;
     } catch (error) {
@@ -108,9 +147,13 @@ export class Database {
   // Admin/utility operations
   async getGameCount(): Promise<number> {
     try {
-      const result = await this.db.prepare(`
+      const result = await this.db
+        .prepare(
+          `
         SELECT COUNT(*) as count FROM games
-      `).first();
+      `
+        )
+        .first();
 
       return (result as any)?.count || 0;
     } catch (error) {
@@ -120,9 +163,13 @@ export class Database {
 
   async getPlayerCount(): Promise<number> {
     try {
-      const result = await this.db.prepare(`
+      const result = await this.db
+        .prepare(
+          `
         SELECT COUNT(DISTINCT player_name) as count FROM games
-      `).first();
+      `
+        )
+        .first();
 
       return (result as any)?.count || 0;
     } catch (error) {

@@ -11,7 +11,14 @@ export type Bindings = {
 
 // Game/Score schemas
 export const SubmitScoreSchema = z.object({
-  player_name: z.string().min(1).max(50).regex(/^[a-zA-Z0-9_\-\s]+$/, 'Player name can only contain letters, numbers, underscores, hyphens, and spaces'),
+  player_name: z
+    .string()
+    .min(1)
+    .max(50)
+    .regex(
+      /^[a-zA-Z0-9_\-\s]+$/,
+      'Player name can only contain letters, numbers, underscores, hyphens, and spaces'
+    ),
   score: z.number().int().min(0).max(10000), // Reasonable max score
   rounds: z.number().int().min(1).max(100), // Reasonable max rounds
   final_progress: z.number().int().min(0).max(100),

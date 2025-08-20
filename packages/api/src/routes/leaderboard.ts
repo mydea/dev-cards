@@ -11,10 +11,10 @@ leaderboard.get('/', async (c) => {
   try {
     const limit = Math.min(parseInt(c.req.query('limit') || '100'), 100); // Max 100 entries
     const offset = parseInt(c.req.query('offset') || '0');
-    
+
     const db = new Database(c.env.DB);
     const entries = await db.getLeaderboard(limit, offset);
-    
+
     return successResponse({
       entries,
       pagination: {
@@ -32,23 +32,23 @@ leaderboard.get('/', async (c) => {
 });
 
 // Get leaderboard for a specific player
-leaderboard.get('/player/:id', async (c) => {
+leaderboard.get('/player/:name', async (c) => {
   try {
-    const playerId = c.req.param('id');
+    const playerName = decodeURIComponent(c.req.param('name'));
     const limit = Math.min(parseInt(c.req.query('limit') || '50'), 50);
-    
+
     const db = new Database(c.env.DB);
-    
-    // Check if player exists
-    const player = await db.getPlayer(playerId);
-    if (!player) {
+
+    const games = await db.getPlayerGames(playerName, limit);
+    const stats = await db.getPlayerStats(playerName);
+
+    if (!stats) {
       return errorResponse('Player not found', 404);
     }
-    
-    const games = await db.getPlayerGames(playerId, limit);
-    
+
     return successResponse({
-      player,
+      player_name: playerName,
+      stats,
       games,
     });
   } catch (error) {
@@ -63,12 +63,12 @@ leaderboard.get('/player/:id', async (c) => {
 leaderboard.get('/stats', async (c) => {
   try {
     const db = new Database(c.env.DB);
-    
+
     const [gameCount, playerCount] = await Promise.all([
       db.getGameCount(),
       db.getPlayerCount(),
     ]);
-    
+
     return successResponse({
       total_games: gameCount,
       total_players: playerCount,

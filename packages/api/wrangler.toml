@@ -5,17 +5,11 @@ compatibility_flags = ["nodejs_compat"]
 
 # Development environment
 [env.development]
-vars = { 
-  ENVIRONMENT = "development",
-  CORS_ORIGIN = "http://localhost:5173"
-}
+vars = { ENVIRONMENT = "development", CORS_ORIGIN = "http://localhost:5173" }
 
 # Production environment
 [env.production]
-vars = { 
-  ENVIRONMENT = "production",
-  CORS_ORIGIN = "https://draw-it-play-it-ship-it.pages.dev"
-}
+vars = { ENVIRONMENT = "production", CORS_ORIGIN = "https://draw-it-play-it-ship-it.pages.dev" }
 
 # D1 Database bindings
 [[d1_databases]]
