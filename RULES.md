@@ -1,6 +1,6 @@
-# Rules of dev-cards
+# Rules of Draw It, Play It, Ship It
 
-dev-cards is a single-player card game that can be played in the browser.
+Draw It, Play It, Ship It is a single-player card game that can be played in the browser.
 
 ## Goal
 

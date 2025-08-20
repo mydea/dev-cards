@@ -1,8 +1,8 @@
-# Dev-Cards Implementation Plan
+# Draw It, Play It, Ship It - Implementation Plan
 
 ## Project Overview
 
-Dev-cards is a single-player browser-based card game where players manage development resources (Productivity Points, Technical Debt, Bugs) to complete a project. The goal is to reach 100% progress with no bugs in the fewest rounds possible.
+Draw It, Play It, Ship It is a single-player browser-based card game where players manage development resources (Productivity Points, Technical Debt, Bugs) to complete a project. The goal is to reach 100% progress with no bugs in the fewest rounds possible.
 
 ## Architecture
 

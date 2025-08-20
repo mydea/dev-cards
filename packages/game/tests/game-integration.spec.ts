@@ -1,12 +1,14 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Dev-Cards Game Integration', () => {
+test.describe('Draw It, Play It, Ship It - Game Integration', () => {
   test('should play a complete game from start to finish', async ({ page }) => {
     // Navigate to the game
     await page.goto('/');
 
     // Wait for the main menu to load
-    await expect(page.getByText('Welcome to Dev-Cards!')).toBeVisible();
+    await expect(
+      page.getByText('Welcome to Draw It, Play It, Ship It!')
+    ).toBeVisible();
 
     // Start a new game
     await page.getByText('Start New Game').click();

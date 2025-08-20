@@ -1,7 +1,7 @@
 {
   "name": "@dev-cards/api",
   "version": "1.0.0",
-  "description": "Cloudflare Worker API for dev-cards leaderboard",
+  "description": "Cloudflare Worker API for Draw It, Play It, Ship It leaderboard",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {

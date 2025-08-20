@@ -1,4 +1,4 @@
-# Card Image Specifications for dev-cards
+# Card Image Specifications for Draw It, Play It, Ship It
 
 Create images following the following specification. The images are for a card game. The art style should be consistent.
 

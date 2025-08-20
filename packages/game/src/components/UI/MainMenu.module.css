@@ -4,7 +4,7 @@
   justify-content: center;
   min-height: 60vh;
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
 }
 
 .content {
@@ -201,6 +201,10 @@
   .content {
     padding: var(--spacing-xl);
     margin: var(--spacing-md);
+  }
+
+  .logo {
+    max-width: 250px;
   }
 
   .description h2 {

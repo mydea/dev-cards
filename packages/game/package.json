@@ -1,7 +1,7 @@
 {
   "name": "@dev-cards/game",
   "version": "1.0.0",
-  "description": "React-based card game UI for dev-cards",
+  "description": "React-based card game UI for Draw It, Play It, Ship It",
   "type": "module",
   "scripts": {
     "build": "vite build",

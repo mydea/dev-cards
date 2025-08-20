@@ -10,7 +10,13 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
     <div className={styles.menu}>
       <div className={styles.content}>
         <div className={styles.description}>
-          <h2>Welcome to Dev-Cards!</h2>
+          <div className={styles.logoContainer}>
+            <img
+              src="/assets/images/draw-it-play-it-ship-it.png"
+              alt="Draw It, Play It, Ship It"
+              className={styles.logo}
+            />
+          </div>
           <p>
             A strategic card game about software development. Manage your
             productivity points, avoid bugs, and tackle technical debt to
@@ -32,7 +38,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
             <h4>🔄 Game Flow</h4>
             <ol>
               <li>
-                <strong>Start Round:</strong> Gain PP equal to (20 - Technical
+                <strong>Start Round:</strong> Gain Productivity Points (PP) equal to (20 - Technical
                 Debt)
               </li>
               <li>

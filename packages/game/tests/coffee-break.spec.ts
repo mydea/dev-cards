@@ -8,7 +8,9 @@ test.describe('Coffee Break Card Test', () => {
     await page.goto('/');
 
     // Wait for the main menu to load
-    await expect(page.getByText('Welcome to Dev-Cards!')).toBeVisible();
+    await expect(
+      page.getByText('Welcome to Draw It, Play It, Ship It!')
+    ).toBeVisible();
 
     // Start a new game
     await page.getByText('Start New Game').click();

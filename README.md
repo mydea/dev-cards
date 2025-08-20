@@ -1,4 +1,4 @@
-# Dev-Cards
+# Draw It, Play It, Ship It
 
 A single-player browser-based card game where you manage development resources (Productivity Points, Technical Debt, Bugs) to complete a project in the fewest rounds possible.
 

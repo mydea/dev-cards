@@ -1,7 +1,7 @@
 {
   "name": "@dev-cards/data",
   "version": "1.0.0",
-  "description": "Shared data definitions and game logic for dev-cards",
+  "description": "Shared data definitions and game logic for Draw It, Play It, Ship It",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
