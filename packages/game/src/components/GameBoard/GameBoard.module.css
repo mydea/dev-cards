@@ -308,6 +308,12 @@
 }
 
 /* Responsive design */
+@media (max-width: 1500px) {
+  .header {
+    padding: var(--spacing-sm);
+  }
+}
+
 @media (max-width: 1024px) {
   .gameBoard {
     height: auto;

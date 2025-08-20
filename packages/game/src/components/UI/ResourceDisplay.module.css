@@ -97,68 +97,85 @@
   transition: width var(--transition-slow);
 }
 
-.progressFill[data-type="debt"] {
+.progressFill[data-type='debt'] {
   background: var(--color-warning-500);
 }
 
 /* Resource type specific styling */
-.resource[data-type="progress"] {
-  background: linear-gradient(135deg, var(--color-secondary-50) 0%, var(--color-secondary-100) 100%);
+.resource[data-type='progress'] {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary-50) 0%,
+    var(--color-secondary-100) 100%
+  );
   border-color: var(--color-secondary-200);
 }
 
-.resource[data-type="bugs"] {
-  background: linear-gradient(135deg, var(--color-danger-50) 0%, var(--color-danger-100) 100%);
+.resource[data-type='bugs'] {
+  background: linear-gradient(
+    135deg,
+    var(--color-danger-50) 0%,
+    var(--color-danger-100) 100%
+  );
   border-color: var(--color-danger-200);
 }
 
-.resource[data-type="technical-debt"] {
-  background: linear-gradient(135deg, var(--color-warning-50) 0%, var(--color-warning-100) 100%);
+.resource[data-type='technical-debt'] {
+  background: linear-gradient(
+    135deg,
+    var(--color-warning-50) 0%,
+    var(--color-warning-100) 100%
+  );
   border-color: var(--color-warning-200);
 }
 
-.resource[data-type="productivity"] {
-  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
+.resource[data-type='productivity'] {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-50) 0%,
+    var(--color-primary-100) 100%
+  );
   border-color: var(--color-primary-200);
 }
 
 /* Value level colors */
-.resourceValue[data-level="none"] {
+.resourceValue[data-level='none'] {
   color: var(--color-gray-600);
 }
 
-.resourceValue[data-level="very-low"] {
+.resourceValue[data-level='very-low'] {
   color: var(--color-danger-600);
 }
 
-.resourceValue[data-level="low"] {
+.resourceValue[data-level='low'] {
   color: var(--color-warning-600);
 }
 
-.resourceValue[data-level="medium"] {
+.resourceValue[data-level='medium'] {
   color: var(--color-primary-600);
 }
 
-.resourceValue[data-level="high"] {
+.resourceValue[data-level='high'] {
   color: var(--color-secondary-600);
 }
 
 /* Override high level color for bugs and technical debt to be red */
-.resource[data-type="bugs"] .resourceValue[data-level="high"] {
+.resource[data-type='bugs'] .resourceValue[data-level='high'] {
   color: var(--color-danger-600);
 }
 
-.resource[data-type="technical-debt"] .resourceValue[data-level="high"] {
+.resource[data-type='technical-debt'] .resourceValue[data-level='high'] {
   color: var(--color-danger-600);
 }
 
-.resourceValue[data-level="critical"] {
+.resourceValue[data-level='critical'] {
   color: var(--color-danger-700);
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -167,6 +184,12 @@
 }
 
 /* Responsive design */
+@media (max-width: 1500px) {
+  .resourceDisplay {
+    gap: var(--spacing-sm);
+  }
+}
+
 @media (max-width: 768px) {
   .resourceDisplay {
     gap: var(--spacing-md);
@@ -203,4 +226,3 @@
     align-items: center;
   }
 }
-
