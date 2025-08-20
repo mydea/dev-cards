@@ -5,7 +5,7 @@ import {
   GAME_PHASE_PLANNING,
   GAME_END_STATE_WON,
 } from '../types';
-import { cloneGameState } from '../utils/deep-clone';
+import { cloneGameState, calculateScore } from '../utils';
 
 describe('GameEngine', () => {
   it('should create a new game with correct initial state', () => {
@@ -121,7 +121,7 @@ describe('GameEngine', () => {
     const engine = new GameEngine();
     engine.createNewGame();
 
-    const saveState = engine.getSaveState();
+    const saveState = engine.getSaveState()!;
 
     expect(saveState).toBeDefined();
     expect(saveState.gameState).toBeDefined();
@@ -144,8 +144,8 @@ describe('GameEngine', () => {
       perfectState.stats.endTime = Date.now();
       perfectState.endState = GAME_END_STATE_WON;
 
-      // Test using the public testing method
-      const score = engine.calculateScoreForTesting(perfectState);
+      // Test using the exported scoring function
+      const score = calculateScore(perfectState);
 
       // Should get 700 (rounds) + 200 (cards) + 100 (time) = 1000
       expect(score).toBe(1000);
@@ -165,14 +165,13 @@ describe('GameEngine', () => {
       averageState.stats.endTime = Date.now();
       averageState.endState = GAME_END_STATE_WON;
 
-      const score = engine.calculateScoreForTesting(averageState);
+      const score = calculateScore(averageState);
 
       // Round score: 700 - ((25-10)/(50-10)) * 700 = 700 - (15/40) * 700 = 437.5
       // Card score: 200 - ((20-10)/(25-10)) * 200 = 200 - (10/15) * 200 = 66.7
       // Time score: 100 - ((120-30)/(300-30)) * 100 = 100 - (90/270) * 100 = 66.7
       // Total: ~437 + 67 + 67 = ~571
-      expect(score).toBeGreaterThan(550);
-      expect(score).toBeLessThan(590);
+      expect(score).toBeCloseTo(571);
     });
 
     it('should give zero score for poor performance', () => {
@@ -189,7 +188,7 @@ describe('GameEngine', () => {
       poorState.stats.endTime = Date.now();
       poorState.endState = GAME_END_STATE_WON;
 
-      const score = engine.calculateScoreForTesting(poorState);
+      const score = calculateScore(poorState);
 
       // All components should be 0
       expect(score).toBe(0);
@@ -208,7 +207,7 @@ describe('GameEngine', () => {
       boundaryState.stats.endTime = Date.now();
       boundaryState.endState = GAME_END_STATE_WON;
 
-      const score = engine.calculateScoreForTesting(boundaryState);
+      const score = calculateScore(boundaryState);
       expect(score).toBe(1000);
     });
 
@@ -225,7 +224,7 @@ describe('GameEngine', () => {
       boundaryState.stats.endTime = Date.now();
       boundaryState.endState = GAME_END_STATE_WON;
 
-      const score = engine.calculateScoreForTesting(boundaryState);
+      const score = calculateScore(boundaryState);
       expect(score).toBe(0);
     });
 
@@ -242,14 +241,13 @@ describe('GameEngine', () => {
       edgeState.stats.endTime = Date.now();
       edgeState.endState = GAME_END_STATE_WON;
 
-      const score = engine.calculateScoreForTesting(edgeState);
+      const score = calculateScore(edgeState);
 
       // Round score: 700 - ((40-10)/(50-10)) * 700 = 175
       // Card score: 200 - ((15-10)/(25-10)) * 200 = 133.3
       // Time score: 100 (10 seconds < 30)
       // Total: ~175 + 133 + 100 = ~408
-      expect(score).toBeGreaterThan(400);
-      expect(score).toBeLessThan(420);
+      expect(score).toBeCloseTo(408);
     });
 
     it('should return 0 score for lost games', () => {
@@ -265,7 +263,7 @@ describe('GameEngine', () => {
       lostState.stats.endTime = Date.now();
       lostState.endState = 'LOST_NO_CARDS' as any; // Lost state
 
-      const score = engine.calculateScoreForTesting(lostState);
+      const score = calculateScore(lostState);
       expect(score).toBe(0);
     });
 
@@ -282,7 +280,7 @@ describe('GameEngine', () => {
       roundsOnlyState.stats.endTime = Date.now();
       roundsOnlyState.endState = GAME_END_STATE_WON;
 
-      const roundsScore = engine.calculateScoreForTesting(roundsOnlyState);
+      const roundsScore = calculateScore(roundsOnlyState);
       // 700 - ((15-10)/(50-10)) * 700 = 700 - (5/40) * 700 = 612.5
       expect(roundsScore).toBe(613); // Rounded
 
@@ -296,7 +294,7 @@ describe('GameEngine', () => {
       cardsOnlyState.stats.endTime = Date.now();
       cardsOnlyState.endState = GAME_END_STATE_WON;
 
-      const cardsScore = engine.calculateScoreForTesting(cardsOnlyState);
+      const cardsScore = calculateScore(cardsOnlyState);
       // 200 - ((12-10)/(25-10)) * 200 = 200 - (2/15) * 200 = 173.3
       expect(cardsScore).toBe(173); // Rounded
 
@@ -310,7 +308,7 @@ describe('GameEngine', () => {
       timeOnlyState.stats.endTime = Date.now();
       timeOnlyState.endState = GAME_END_STATE_WON;
 
-      const timeScore = engine.calculateScoreForTesting(timeOnlyState);
+      const timeScore = calculateScore(timeOnlyState);
       // 100 - ((60-30)/(300-30)) * 100 = 100 - (30/270) * 100 = 88.9
       expect(timeScore).toBe(89); // Rounded
     });
@@ -328,7 +326,7 @@ describe('GameEngine', () => {
       justOverState.stats.endTime = Date.now();
       justOverState.endState = GAME_END_STATE_WON;
 
-      const score = engine.calculateScoreForTesting(justOverState);
+      const score = calculateScore(justOverState);
       // Round: 700 - ((11-10)/(50-10)) * 700 = 682.5
       // Card: 200 - ((11-10)/(25-10)) * 200 = 186.7
       // Time: 100 - ((31-30)/(300-30)) * 100 = 99.6
