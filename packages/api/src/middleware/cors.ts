@@ -8,6 +8,7 @@ export const corsMiddleware = createMiddleware<{ Bindings: Bindings }>(
 
     // Set CORS headers
     if (origin === allowedOrigin || c.env.ENVIRONMENT === 'development') {
+      console.log('adding allowed origin');
       c.header('Access-Control-Allow-Origin', origin || allowedOrigin);
       c.header(
         'Access-Control-Allow-Methods',

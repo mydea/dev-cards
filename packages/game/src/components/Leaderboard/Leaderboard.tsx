@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { apiClient, type LeaderboardEntry, type LeaderboardStatsResponse } from '../../services/api';
+import {
+  apiClient,
+  type LeaderboardEntry,
+  type LeaderboardStatsResponse,
+} from '../../services/api';
 import styles from './Leaderboard.module.css';
 
 interface LeaderboardProps {
@@ -22,15 +26,15 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose }) => {
   const loadLeaderboard = async () => {
     setLoading(true);
     setError(null);
-    
+
     const response = await apiClient.getLeaderboard(50, 0);
-    
+
     if (response.success && response.data) {
       setEntries(response.data.entries);
     } else {
       setError(response.error || 'Failed to load leaderboard');
     }
-    
+
     setLoading(false);
   };
 
@@ -53,10 +57,14 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose }) => {
 
   const getRankMedal = (rank: number) => {
     switch (rank) {
-      case 1: return '🥇';
-      case 2: return '🥈';
-      case 3: return '🥉';
-      default: return `#${rank}`;
+      case 1:
+        return '🥇';
+      case 2:
+        return '🥈';
+      case 3:
+        return '🥉';
+      default:
+        return `#${rank}`;
     }
   };
 
@@ -154,7 +162,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose }) => {
                 <div className={styles.duration}>Time</div>
                 <div className={styles.date}>Date</div>
               </div>
-              
+
               <div className={styles.tableBody}>
                 {entries.map((entry, index) => (
                   <motion.div
@@ -163,15 +171,23 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose }) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    onClick={() => setSelectedPlayer(
-                      selectedPlayer === entry.player_name ? null : entry.player_name
-                    )}
+                    onClick={() =>
+                      setSelectedPlayer(
+                        selectedPlayer === entry.player_name
+                          ? null
+                          : entry.player_name
+                      )
+                    }
                   >
                     <div className={styles.rank}>
-                      <span className={styles.medal}>{getRankMedal(entry.rank)}</span>
+                      <span className={styles.medal}>
+                        {getRankMedal(entry.rank)}
+                      </span>
                     </div>
                     <div className={styles.player}>
-                      <span className={styles.playerName}>{entry.player_name}</span>
+                      <span className={styles.playerName}>
+                        {entry.player_name}
+                      </span>
                     </div>
                     <div className={styles.score}>
                       <span className={styles.scoreValue}>{entry.score}</span>

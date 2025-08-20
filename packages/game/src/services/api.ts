@@ -1,8 +1,9 @@
 // API client for Draw It, Play It, Ship It leaderboard
 
-const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-  ? 'http://localhost:8787/api'
-  : 'https://dev-cards-api-production.francesconovy.workers.dev/api';
+const API_BASE_URL =
+  typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:8787/api'
+    : 'https://dev-cards-api-production.francesconovy.workers.dev/api';
 
 export interface SubmitScoreRequest {
   player_name: string;
@@ -110,8 +111,12 @@ class ApiClient {
     return this.request(`/leaderboard?${params}`);
   }
 
-  async getPlayerData(playerName: string): Promise<ApiResponse<PlayerResponse>> {
-    return this.request(`/leaderboard/player/${encodeURIComponent(playerName)}`);
+  async getPlayerData(
+    playerName: string
+  ): Promise<ApiResponse<PlayerResponse>> {
+    return this.request(
+      `/leaderboard/player/${encodeURIComponent(playerName)}`
+    );
   }
 
   async getPlayerStats(playerName: string): Promise<ApiResponse<PlayerStats>> {

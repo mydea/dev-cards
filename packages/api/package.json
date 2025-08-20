@@ -6,7 +6,7 @@
   "main": "src/index.ts",
   "scripts": {
     "build": "wrangler deploy --dry-run --env=production",
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --env=development",
     "deploy": "wrangler deploy",
     "test": "vitest --run",
     "test:watch": "vitest --watch",

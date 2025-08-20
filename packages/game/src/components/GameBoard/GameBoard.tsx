@@ -343,7 +343,7 @@ function GameBoard({
   };
 
   // Handle animated card drawing from deck to hand
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // @ts-ignore - Function will be used for future animation improvements
   const handleDrawCardsAnimated = (
     cardsToDraw: CardInstance[],
     onComplete: () => void
@@ -957,7 +957,11 @@ function GameBoard({
                       type="button"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 400,
+                        damping: 25,
+                      }}
                     >
                       🏆 Submit Score
                     </motion.button>

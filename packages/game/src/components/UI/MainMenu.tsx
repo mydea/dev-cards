@@ -122,8 +122,8 @@ const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
           <button className={styles.startButton} onClick={onStartGame}>
             Start New Game
           </button>
-          <button 
-            className={styles.leaderboardButton} 
+          <button
+            className={styles.leaderboardButton}
             onClick={() => setShowLeaderboard(true)}
           >
             🏆 View Leaderboard

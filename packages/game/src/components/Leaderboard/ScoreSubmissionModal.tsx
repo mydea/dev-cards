@@ -22,7 +22,7 @@ const ScoreSubmissionModal: React.FC<ScoreSubmissionModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!playerName.trim()) {
       setError('Please enter a player name');
       return;
@@ -52,13 +52,14 @@ const ScoreSubmissionModal: React.FC<ScoreSubmissionModalProps> = ({
       game_duration_seconds: Math.round(
         (gameState.stats.endTime! - gameState.stats.startTime) / 1000
       ),
-      cards_played: gameState.stats.cardsPlayed ? 
-        Object.keys(gameState.stats.cardsPlayed) : [],
+      cards_played: gameState.stats.cardsPlayed
+        ? Object.keys(gameState.stats.cardsPlayed)
+        : [],
     };
 
     try {
       const response = await apiClient.submitScore(scoreData);
-      
+
       if (response.success) {
         setSuccess(true);
         setTimeout(() => {
@@ -149,7 +150,10 @@ const ScoreSubmissionModal: React.FC<ScoreSubmissionModalProps> = ({
               <span>🃏 Cards Played:</span> {gameState.stats.cardsPlayed}
             </div>
             <div className={styles.scoreStat}>
-              <span>⏱️ Time:</span> {formatDuration(gameState.stats.endTime! - gameState.stats.startTime)}
+              <span>⏱️ Time:</span>{' '}
+              {formatDuration(
+                gameState.stats.endTime! - gameState.stats.startTime
+              )}
             </div>
             <div className={styles.scoreStat}>
               <span>📈 Progress:</span> {gameState.resources.progress}%
