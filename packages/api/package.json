@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "build": "wrangler build",
+    "build": "wrangler deploy --dry-run",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "test": "vitest --run",
@@ -22,10 +22,10 @@
     "zod": "^3.22.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240620.0",
-    "typescript": "^5.0.0",
-    "vitest": "^1.0.0",
-    "wrangler": "^3.60.0"
+    "@cloudflare/workers-types": "^4.20241218.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0",
+    "wrangler": "^4.31.0"
   },
   "volta": {
     "extends": "../../package.json"

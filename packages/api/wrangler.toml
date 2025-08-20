@@ -1,14 +1,21 @@
 name = "dev-cards-api"
 main = "src/index.ts"
-compatibility_date = "2024-01-01"
+compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Environment variables
+# Development environment
 [env.development]
-vars = { ENVIRONMENT = "development" }
+vars = { 
+  ENVIRONMENT = "development",
+  CORS_ORIGIN = "http://localhost:5173"
+}
 
+# Production environment
 [env.production]
-vars = { ENVIRONMENT = "production" }
+vars = { 
+  ENVIRONMENT = "production",
+  CORS_ORIGIN = "https://draw-it-play-it-ship-it.pages.dev"
+}
 
 # D1 Database bindings
 [[d1_databases]]
@@ -16,26 +23,23 @@ binding = "DB"
 database_name = "dev-cards-db"
 database_id = ""
 
-[[d1_databases.env.production]]
-binding = "DB"
-database_name = "dev-cards-db-prod"
-database_id = ""
+# Production D1 database override
+[env.production.d1_databases]
+DB = { database_name = "dev-cards-db-prod", database_id = "" }
 
-# CORS settings
-[env.development.vars]
-CORS_ORIGIN = "http://localhost:5173"
+# Rate limiting with Durable Objects (optional for future use)
+# [durable_objects]
+# bindings = [
+#   { name = "RATE_LIMITER", class_name = "RateLimiter", script_name = "rate-limiter" }
+# ]
 
-[env.production.vars]
-CORS_ORIGIN = "https://draw-it-play-it-ship-it.pages.dev"
+# KV namespace for caching (optional for future use)
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = ""
+# preview_id = ""
 
-# Rate limiting
-[durable_objects]
-bindings = [
-  { name = "RATE_LIMITER", class_name = "RateLimiter" }
-]
-
-# KV namespace for caching
-[[kv_namespaces]]
-binding = "CACHE"
-id = ""
-preview_id = ""
+# Assets for static files (if needed)
+# [assets]
+# directory = "./public"
+# binding = "ASSETS"
