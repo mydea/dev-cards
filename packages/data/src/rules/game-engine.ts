@@ -122,6 +122,13 @@ export class GameEngine {
   }
 
   /**
+   * Public method to calculate score for testing purposes
+   */
+  public calculateScoreForTesting(gameState: GameState): number {
+    return this.calculateScore(gameState);
+  }
+
+  /**
    * Processes a player action and returns the result
    */
   processAction(action: PlayerAction): ActionResult {
