@@ -1,10 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HomePage, GamePage, LeaderboardPage } from './pages';
+import ScrollToTop from './components/ScrollToTop';
 import styles from './App.module.css';
 
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <div className={styles.app}>
         <main className={styles.main}>
           <Routes>
