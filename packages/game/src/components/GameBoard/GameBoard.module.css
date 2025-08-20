@@ -295,7 +295,6 @@
 }
 
 .handArea {
-  flex: 1;
   display: flex;
   justify-content: center;
   min-height: 500px;
