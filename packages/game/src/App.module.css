@@ -7,8 +7,6 @@
   font-family: var(--font-family-base);
 }
 
-
-
 .main {
   flex: 1;
   display: flex;
@@ -97,10 +95,6 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .main {
-    padding: 1rem;
-  }
-
   .errorContent {
     padding: var(--spacing-xl);
   }
@@ -119,4 +113,3 @@
     max-width: 200px;
   }
 }
-
