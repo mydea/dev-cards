@@ -750,6 +750,13 @@ function GameBoard({
       >
         <motion.div className={styles.header} variants={sectionVariants}>
           <GameInfo gameState={gameState} onReturnToMenu={onReturnToMenu} />
+          <div className={styles.headerLogo}>
+            <img
+              src="/assets/images/draw-it-play-it-ship-it-long.png"
+              alt="Draw It, Play It, Ship It"
+              className={styles.logo}
+            />
+          </div>
           <ResourceDisplay gameState={gameState} />
         </motion.div>
 
