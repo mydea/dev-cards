@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@dev-cards/data": "workspace:*",
+    "@hono/zod-validator": "^0.2.0",
     "hono": "^4.0.0",
     "zod": "^3.22.0"
   },
