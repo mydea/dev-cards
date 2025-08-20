@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import type { Bindings } from './types/index.js';
-import { corsMiddleware } from './middleware/cors.js';
 import { rateLimitMiddleware } from './middleware/rate-limit.js';
 import { players } from './routes/players.js';
 import { scores } from './routes/scores.js';
@@ -13,7 +13,15 @@ const app = new Hono<{ Bindings: Bindings }>();
 
 // Global middleware
 app.use('*', logger());
-app.use('*', corsMiddleware);
+app.use('*', async (c, next) => {
+  const corsMiddlewareHandler = cors({
+    origin: c.env.CORS_ORIGIN,
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+    maxAge: 86400,
+  });
+  return corsMiddlewareHandler(c, next);
+});
 app.use('*', prettyJSON());
 app.use('/api/*', rateLimitMiddleware('general'));
 
