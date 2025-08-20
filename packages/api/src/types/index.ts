@@ -9,23 +9,9 @@ export type Bindings = {
   CORS_ORIGIN: string;
 };
 
-// Player schemas
-export const CreatePlayerSchema = z.object({
-  username: z.string().min(1).max(50).regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, underscores, and hyphens'),
-});
-
-export const PlayerSchema = z.object({
-  id: z.string(),
-  username: z.string(),
-  created_at: z.string(),
-  updated_at: z.string(),
-  total_games: z.number(),
-  best_score: z.number(),
-});
-
 // Game/Score schemas
 export const SubmitScoreSchema = z.object({
-  player_id: z.string().uuid(),
+  player_name: z.string().min(1).max(50).regex(/^[a-zA-Z0-9_\-\s]+$/, 'Player name can only contain letters, numbers, underscores, hyphens, and spaces'),
   score: z.number().int().min(0).max(10000), // Reasonable max score
   rounds: z.number().int().min(1).max(100), // Reasonable max rounds
   final_progress: z.number().int().min(0).max(100),
@@ -37,7 +23,7 @@ export const SubmitScoreSchema = z.object({
 
 export const GameSchema = z.object({
   id: z.string(),
-  player_id: z.string(),
+  player_name: z.string(),
   score: z.number(),
   rounds: z.number(),
   final_progress: z.number(),
@@ -52,8 +38,7 @@ export const GameSchema = z.object({
 // Leaderboard schemas
 export const LeaderboardEntrySchema = z.object({
   game_id: z.string(),
-  player_id: z.string(),
-  username: z.string(),
+  player_name: z.string(),
   score: z.number(),
   rounds: z.number(),
   final_progress: z.number(),
@@ -65,11 +50,11 @@ export const LeaderboardEntrySchema = z.object({
 });
 
 export const PlayerStatsSchema = z.object({
-  id: z.string(),
-  username: z.string(),
+  player_name: z.string(),
   total_games: z.number(),
   best_score: z.number(),
-  created_at: z.string(),
+  first_game: z.string(),
+  latest_game: z.string(),
   avg_score: z.number(),
   avg_rounds: z.number(),
   best_rounds: z.number(),
@@ -85,8 +70,6 @@ export const ApiResponseSchema = z.object({
 });
 
 // Types
-export type CreatePlayer = z.infer<typeof CreatePlayerSchema>;
-export type Player = z.infer<typeof PlayerSchema>;
 export type SubmitScore = z.infer<typeof SubmitScoreSchema>;
 export type Game = z.infer<typeof GameSchema>;
 export type LeaderboardEntry = z.infer<typeof LeaderboardEntrySchema>;
