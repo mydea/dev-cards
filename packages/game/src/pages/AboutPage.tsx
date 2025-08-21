@@ -95,6 +95,16 @@ const AboutPage: React.FC = () => {
                   <strong>📋 Rules:</strong> Written with Gemini
                 </div>
               </div>
+              <div className={styles.githubLink}>
+                <a
+                  href="https://github.com/mydea/draw-it-play-it-ship-it"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.githubButton}
+                >
+                  📁 View Source Code on GitHub
+                </a>
+              </div>
             </div>
           </section>
 

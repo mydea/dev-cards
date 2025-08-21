@@ -1,20 +1,22 @@
 .aboutPage {
   min-height: 100vh;
-  background: var(--gradient-background);
+  background: var(--gradient-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  max-width: 100%;
+  width: 1400px;
+  flex: 1;
 }
 
 .content {
-  max-width: 1200px;
   width: 100%;
   background: var(--surface-card);
   border-radius: var(--radius-3xl);
-  padding: var(--spacing-4xl);
+  padding: var(--spacing-3xl);
   box-shadow: var(--shadow-2xl);
-  border: 1px solid var(--border-color);
+  text-align: center;
 }
 
 /* Header */
@@ -140,6 +142,33 @@
   color: var(--color-primary-600);
 }
 
+.githubLink {
+  margin-top: var(--spacing-xl);
+  text-align: center;
+}
+
+.githubButton {
+  background: #24292e;
+  color: white;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  min-width: 200px;
+}
+
+.githubButton:hover {
+  background: #1b1f23;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
 /* Tech Stack */
 .techStack {
   display: grid;
@@ -218,10 +247,13 @@
 @media (max-width: 768px) {
   .aboutPage {
     padding: var(--spacing-md);
+    align-items: flex-start;
+    padding-top: var(--spacing-xl);
   }
 
   .content {
-    padding: var(--spacing-2xl);
+    padding: var(--spacing-xl);
+    margin: 0;
   }
 
   .logo {
