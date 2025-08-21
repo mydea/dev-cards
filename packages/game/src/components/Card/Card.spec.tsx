@@ -185,95 +185,75 @@ describe('Card', () => {
     });
 
     it('should format ADD_TECH_DEBT effects correctly', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          effects: [
-            {
-              type: 'ADD_TECH_DEBT',
-              value: 5,
-              randomType: 'STATIC',
-            },
-          ],
+      const cardInstance = createCardWithEffects([
+        {
+          type: 'ADD_TECH_DEBT',
+          value: 5,
+          randomType: 'STATIC',
         },
-      });
+      ]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(screen.getByText('+5 technical debt')).toBeInTheDocument();
     });
 
     it('should format REMOVE_TECH_DEBT effects correctly', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          effects: [
-            {
-              type: 'REMOVE_TECH_DEBT',
-              value: 4,
-              randomType: 'STATIC',
-            },
-          ],
+      const cardInstance = createCardWithEffects([
+        {
+          type: 'REMOVE_TECH_DEBT',
+          value: 4,
+          randomType: 'STATIC',
         },
-      });
+      ]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(screen.getByText('-4 technical debt')).toBeInTheDocument();
     });
 
     it('should format ADD_PP effects correctly', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          effects: [
-            {
-              type: 'ADD_PP',
-              value: 8,
-              randomType: 'STATIC',
-            },
-          ],
+      const cardInstance = createCardWithEffects([
+        {
+          type: 'ADD_PP',
+          value: 8,
+          randomType: 'STATIC',
         },
-      });
+      ]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(screen.getByText('+8 productivity points')).toBeInTheDocument();
     });
 
     it('should format REMOVE_PP effects correctly', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          effects: [
-            {
-              type: 'REMOVE_PP',
-              value: 3,
-              randomType: 'STATIC',
-            },
-          ],
+      const cardInstance = createCardWithEffects([
+        {
+          type: 'REMOVE_PP',
+          value: 3,
+          randomType: 'STATIC',
         },
-      });
+      ]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(screen.getByText('-3 productivity points')).toBeInTheDocument();
     });
 
     it('should format multiple effects correctly', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          effects: [
-            {
-              type: 'ADD_PROGRESS',
-              value: 10,
-              randomType: 'STATIC',
-            },
-            {
-              type: 'ADD_BUGS',
-              value: 1,
-              randomType: 'STATIC',
-            },
-            {
-              type: 'REMOVE_TECH_DEBT',
-              value: 2,
-              randomType: 'STATIC',
-            },
-          ],
+      const cardInstance = createCardWithEffects([
+        {
+          type: 'ADD_PROGRESS',
+          value: 10,
+          randomType: 'STATIC',
         },
-      });
+        {
+          type: 'ADD_BUGS',
+          value: 1,
+          randomType: 'STATIC',
+        },
+        {
+          type: 'REMOVE_TECH_DEBT',
+          value: 2,
+          randomType: 'STATIC',
+        },
+      ]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(screen.getByText('+10% progress')).toBeInTheDocument();
@@ -282,22 +262,18 @@ describe('Card', () => {
     });
 
     it('should handle singular forms for effects', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          effects: [
-            {
-              type: 'ADD_BUGS',
-              value: 1,
-              randomType: 'STATIC',
-            },
-            {
-              type: 'ADD_PP',
-              value: 1,
-              randomType: 'STATIC',
-            },
-          ],
+      const cardInstance = createCardWithEffects([
+        {
+          type: 'ADD_BUGS',
+          value: 1,
+          randomType: 'STATIC',
         },
-      });
+        {
+          type: 'ADD_PP',
+          value: 1,
+          randomType: 'STATIC',
+        },
+      ]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(screen.getByText('+1 bug')).toBeInTheDocument();
@@ -479,9 +455,7 @@ describe('Card', () => {
       ];
 
       categories.forEach((category) => {
-        const cardInstance = createMockCardInstance({
-          card: { category },
-        });
+        const cardInstance = createCardWithCategory(category);
 
         const { container } = render(<Card cardInstance={cardInstance} />);
         const cardElement = container.firstChild as HTMLElement;
