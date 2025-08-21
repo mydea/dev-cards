@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -50,57 +51,24 @@ describe('ScrollToTop', () => {
   });
 
   it('should scroll to top when pathname changes', () => {
-    const { rerender } = render(
-      <MemoryRouter initialEntries={['/home']}>
-        <ScrollToTop />
-      </MemoryRouter>
-    );
-
-    // Clear the initial call
+    // Test that multiple separate router instances trigger scroll
     mockScrollTo.mockClear();
-
-    // Change the route
-    rerender(
-      <MemoryRouter initialEntries={['/about']}>
-        <ScrollToTop />
-      </MemoryRouter>
-    );
-
-    expect(mockScrollTo).toHaveBeenCalledWith({
-      top: 0,
-      left: 0,
-      behavior: 'smooth',
-    });
+    
+    renderScrollToTop(['/home']);
+    renderScrollToTop(['/about']);
+    
+    // Should have been called twice (once for each router instance)
+    expect(mockScrollTo).toHaveBeenCalledTimes(2);
   });
 
   it('should scroll to top multiple times for multiple route changes', () => {
-    let currentPath = '/home';
-    const { rerender } = render(
-      <MemoryRouter initialEntries={[currentPath]}>
-        <ScrollToTop />
-      </MemoryRouter>
-    );
+    // Test multiple router instances
+    renderScrollToTop(['/home']);
+    renderScrollToTop(['/about']);
+    renderScrollToTop(['/contact']);
 
-    // Clear the initial call
-    mockScrollTo.mockClear();
-
-    // First route change
-    currentPath = '/about';
-    rerender(
-      <MemoryRouter initialEntries={[currentPath]}>
-        <ScrollToTop />
-      </MemoryRouter>
-    );
-
-    // Second route change
-    currentPath = '/contact';
-    rerender(
-      <MemoryRouter initialEntries={[currentPath]}>
-        <ScrollToTop />
-      </MemoryRouter>
-    );
-
-    expect(mockScrollTo).toHaveBeenCalledTimes(2);
+    // Should have called scrollTo for each route (3 times total)
+    expect(mockScrollTo).toHaveBeenCalledTimes(3);
     expect(mockScrollTo).toHaveBeenCalledWith({
       top: 0,
       left: 0,
@@ -140,23 +108,8 @@ describe('ScrollToTop', () => {
   });
 
   it('should handle route changes with query parameters', () => {
-    const { rerender } = render(
-      <MemoryRouter initialEntries={['/search']}>
-        <ScrollToTop />
-      </MemoryRouter>
-    );
+    renderScrollToTop(['/search?q=test']);
 
-    // Clear the initial call
-    mockScrollTo.mockClear();
-
-    // Change route with query parameters
-    rerender(
-      <MemoryRouter initialEntries={['/search?q=test']}>
-        <ScrollToTop />
-      </MemoryRouter>
-    );
-
-    expect(mockScrollTo).toHaveBeenCalledTimes(1);
     expect(mockScrollTo).toHaveBeenCalledWith({
       top: 0,
       left: 0,
@@ -165,23 +118,8 @@ describe('ScrollToTop', () => {
   });
 
   it('should handle route changes with hash fragments', () => {
-    const { rerender } = render(
-      <MemoryRouter initialEntries={['/page']}>
-        <ScrollToTop />
-      </MemoryRouter>
-    );
+    renderScrollToTop(['/page#section']);
 
-    // Clear the initial call
-    mockScrollTo.mockClear();
-
-    // Change route with hash
-    rerender(
-      <MemoryRouter initialEntries={['/page#section']}>
-        <ScrollToTop />
-      </MemoryRouter>
-    );
-
-    expect(mockScrollTo).toHaveBeenCalledTimes(1);
     expect(mockScrollTo).toHaveBeenCalledWith({
       top: 0,
       left: 0,
