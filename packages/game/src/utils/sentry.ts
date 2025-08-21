@@ -20,6 +20,11 @@ Sentry.init({
     Sentry.feedbackIntegration({
       colorScheme: 'system',
     }),
+
+    // We want to capture all failed HTTP requests
+    Sentry.httpClientIntegration({
+      failedRequestStatusCodes: [[400, 599]],
+    }),
   ],
 
   // Enable logs to be sent to Sentry
