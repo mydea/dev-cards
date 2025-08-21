@@ -231,7 +231,7 @@ describe('Main App', () => {
         ...mockEnv,
         CF_VERSION_METADATA: { id: 'version-123' },
       };
-      
+
       expect(testEnv.CF_VERSION_METADATA.id).toBe('version-123');
     });
 
@@ -242,7 +242,7 @@ describe('Main App', () => {
         ...mockEnv,
         ENVIRONMENT: 'production',
       };
-      
+
       expect(testEnv.ENVIRONMENT).toBe('production');
     });
   });

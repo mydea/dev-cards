@@ -49,7 +49,10 @@ const createCardWithCategory = (category: string): CardInstance => ({
   },
 });
 
-const createCardWithCost = (cost: number, requirements: any[] = []): CardInstance => ({
+const createCardWithCost = (
+  cost: number,
+  requirements: any[] = []
+): CardInstance => ({
   ...createMockCardInstance(),
   card: {
     ...createMockCardInstance().card,
@@ -470,7 +473,7 @@ describe('Card', () => {
       const cardInstance = createCardWithEffects([]);
 
       const { container } = render(<Card cardInstance={cardInstance} />);
-      
+
       // Card with no effects should render without content in effects section
       const effectsSection = container.querySelector('[class*="cardEffects"]');
       expect(effectsSection).toBeInTheDocument();
@@ -484,14 +487,18 @@ describe('Card', () => {
     });
 
     it('should handle cards with high cost', () => {
-      const cardInstance = createCardWithCost(99, [{ type: 'SPEND_PP', value: 99 }]);
+      const cardInstance = createCardWithCost(99, [
+        { type: 'SPEND_PP', value: 99 },
+      ]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(screen.getByText('99 PP')).toBeInTheDocument();
     });
 
     it('should handle long card names gracefully', () => {
-      const cardInstance = createCardWithName('This is a very long card name that might cause layout issues');
+      const cardInstance = createCardWithName(
+        'This is a very long card name that might cause layout issues'
+      );
 
       // Should render without crashing
       expect(() => {
@@ -500,7 +507,9 @@ describe('Card', () => {
     });
 
     it('should handle long descriptions gracefully', () => {
-      const cardInstance = createCardWithDescription('This is a very long description that explains in great detail what this card does and how it affects the game state when played by the user during their turn.');
+      const cardInstance = createCardWithDescription(
+        'This is a very long description that explains in great detail what this card does and how it affects the game state when played by the user during their turn.'
+      );
 
       // Should render without crashing
       expect(() => {
