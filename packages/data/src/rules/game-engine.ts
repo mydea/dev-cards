@@ -143,20 +143,6 @@ export class GameEngine {
         case 'END_TURN':
           return this.handleEndTurn();
 
-        case 'START_NEW_GAME':
-          const newGame = this.createNewGame(action.config);
-          return {
-            success: true,
-            newState: newGame,
-          };
-
-        case 'LOAD_GAME':
-          this.gameState = action.saveState.gameState;
-          return {
-            success: true,
-            newState: this.gameState,
-          };
-
         default:
           return {
             success: false,
@@ -202,20 +188,6 @@ export class GameEngine {
 
         case 'END_TURN':
           return this.handleEndTurn();
-
-        case 'START_NEW_GAME':
-          const newGame = this.createNewGame(action.config);
-          return {
-            success: true,
-            newState: newGame,
-          };
-
-        case 'LOAD_GAME':
-          this.gameState = action.saveState.gameState;
-          return {
-            success: true,
-            newState: this.gameState,
-          };
 
         default:
           return {
@@ -866,22 +838,5 @@ export class GameEngine {
     if (!this.gameState) return false;
 
     return this.gameState.endState !== GAME_END_STATE_IN_PROGRESS;
-  }
-
-  /**
-   * Gets a serializable save state
-   */
-  getSaveState(): {
-    gameState: GameState;
-    savedAt: number;
-    version: string;
-  } | null {
-    if (!this.gameState) return null;
-
-    return {
-      gameState: this.gameState,
-      savedAt: Date.now(),
-      version: '1.0.0',
-    };
   }
 }

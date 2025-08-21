@@ -19,10 +19,3 @@ export function createCardInstance(
     },
   };
 }
-
-/**
- * Creates multiple card instances from a card definition
- */
-export function createCardInstances(card: Card, count: number): CardInstance[] {
-  return Array.from({ length: count }, () => createCardInstance(card));
-}

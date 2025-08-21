@@ -117,18 +117,6 @@ describe('GameEngine', () => {
     }
   });
 
-  it('should create save state', () => {
-    const engine = new GameEngine();
-    engine.createNewGame();
-
-    const saveState = engine.getSaveState()!;
-
-    expect(saveState).toBeDefined();
-    expect(saveState.gameState).toBeDefined();
-    expect(saveState.savedAt).toBeDefined();
-    expect(saveState.version).toBe('1.0.0');
-  });
-
   describe('Scoring System', () => {
     it('should calculate perfect score (1000 points)', () => {
       const engine = new GameEngine();

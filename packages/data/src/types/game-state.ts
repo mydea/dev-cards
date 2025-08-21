@@ -133,28 +133,12 @@ export interface GameConfig {
 }
 
 /**
- * Serializable save state for persistence
- */
-export interface SaveState {
-  /** Game state */
-  gameState: GameState;
-
-  /** Save timestamp */
-  savedAt: number;
-
-  /** Save version for compatibility */
-  version: string;
-}
-
-/**
  * Player action types
  */
 export type PlayerAction =
   | { type: 'PLAY_CARD'; cardInstanceId: string }
   | { type: 'DISCARD_ALL_FOR_TD_REDUCTION' }
-  | { type: 'END_TURN' }
-  | { type: 'START_NEW_GAME'; config?: GameConfig }
-  | { type: 'LOAD_GAME'; saveState: SaveState };
+  | { type: 'END_TURN' };
 
 /**
  * Game action result
