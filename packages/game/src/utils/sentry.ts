@@ -14,7 +14,9 @@ Sentry.init({
     Sentry.browserTracingIntegration(),
 
     // Session replay for debugging
-    Sentry.replayIntegration(),
+    Sentry.replayIntegration({
+      maskAllText: false,
+    }),
 
     // User feedback integration
     Sentry.feedbackIntegration({
