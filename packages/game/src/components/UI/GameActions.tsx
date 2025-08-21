@@ -58,7 +58,7 @@ function GameActions({
         </button>
 
         <AnimatePresence>
-          {showTooltip && (
+          {showTooltip && !disabled && (
             <div className={styles.tooltipContainer}>
               <motion.div
                 className={styles.tooltip}
