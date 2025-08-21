@@ -128,9 +128,14 @@ const HomePage: React.FC = () => {
           <Link to="/game" className={styles.startButton}>
             Start New Game
           </Link>
-          <Link to="/leaderboard" className={styles.leaderboardButton}>
-            🏆 View Leaderboard
-          </Link>
+          <div className={styles.secondaryButtons}>
+            <Link to="/leaderboard" className={styles.leaderboardButton}>
+              🏆 View Leaderboard
+            </Link>
+            <Link to="/about" className={styles.aboutButton}>
+              ℹ️ About
+            </Link>
+          </div>
         </div>
       </div>
     </div>

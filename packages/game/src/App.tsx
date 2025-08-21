@@ -1,6 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
-import { HomePage, GamePage, LeaderboardPage, NewGamePage } from './pages';
+import {
+  HomePage,
+  GamePage,
+  LeaderboardPage,
+  NewGamePage,
+  AboutPage,
+} from './pages';
 import ScrollToTop from './components/ScrollToTop';
 import styles from './App.module.css';
 
@@ -16,6 +22,7 @@ function App() {
               <Route path="/game" element={<GamePage />} />
               <Route path="/new-game" element={<NewGamePage />} />
               <Route path="/leaderboard" element={<LeaderboardPage />} />
+              <Route path="/about" element={<AboutPage />} />
             </Routes>
           </main>
 
