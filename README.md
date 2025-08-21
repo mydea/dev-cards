@@ -16,11 +16,11 @@ This is a pnpm workspace with multiple packages:
 # Install dependencies
 pnpm install
 
-# Run all packages in development mode
-pnpm dev
-
 # Build all packages
 pnpm build
+
+# Run game & API in dev mode
+pnpm dev
 
 # Run tests
 pnpm test
@@ -32,9 +32,9 @@ Each package has its own scripts that can be run individually:
 
 ```bash
 # Run specific package
-pnpm --filter @dev-cards/data dev
-pnpm --filter @dev-cards/game dev
-pnpm --filter @dev-cards/api dev
+pnpm --filter @dev-cards/data test
+pnpm --filter @dev-cards/game test
+pnpm --filter @dev-cards/api test
 ```
 
 ## Game Rules
