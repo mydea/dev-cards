@@ -96,16 +96,6 @@ function GameBoard({
     });
   };
 
-  const handleCardUnmount = (cardId: string) => {
-    setCardElements((prev) => {
-      // Only update if the element actually exists
-      if (!(cardId in prev)) return prev;
-      const newElements = { ...prev };
-      delete newElements[cardId];
-      return newElements;
-    });
-  };
-
   // Check for game over conditions whenever game state changes
   useEffect(() => {
     const hasWon = checkWinCondition(gameState);
@@ -751,8 +741,6 @@ function GameBoard({
       cards_played: playedCardIds,
     };
 
-    console.log('Submitting score data:', scoreData);
-
     try {
       const response = await apiClient.submitScore(scoreData);
 
@@ -861,7 +849,6 @@ function GameBoard({
               )}
               onPlayCard={handlePlayCardWithAnimation}
               onCardMount={handleCardMount}
-              onCardUnmount={handleCardUnmount}
               animatingCardIds={animatingCardIds}
               gameState={gameState}
               disabled={

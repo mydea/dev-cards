@@ -9,7 +9,6 @@ interface HandProps {
   cards: CardInstance[];
   onPlayCard: (cardInstanceId: string, cardElement: HTMLElement) => void;
   onCardMount?: (cardId: string, element: HTMLElement) => void;
-  onCardUnmount?: (cardId: string) => void;
   animatingCardIds?: Set<string>;
   gameState: GameState;
   disabled?: boolean;
@@ -19,7 +18,6 @@ function Hand({
   cards,
   onPlayCard,
   onCardMount,
-  onCardUnmount: _onCardUnmount,
   animatingCardIds = new Set(),
   gameState,
   disabled = false,
