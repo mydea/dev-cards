@@ -11,8 +11,10 @@ vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
-const createMockCardInstance = (overrides: any = {}): CardInstance => {
-  const baseCard = {
+// Create base mock card instance
+const createMockCardInstance = (): CardInstance => ({
+  id: 'card-123',
+  card: {
     id: 'test-card',
     name: 'Test Card',
     description: 'A test card for unit testing',
@@ -27,26 +29,50 @@ const createMockCardInstance = (overrides: any = {}): CardInstance => {
         randomType: 'STATIC',
       },
     ],
-  };
+  },
+});
 
-  return {
-    id: 'card-123',
-    card: {
-      ...baseCard,
-      ...overrides.card,
-      // Ensure critical arrays always exist even after override
-      requirements:
-        overrides.card?.requirements !== undefined
-          ? overrides.card.requirements
-          : baseCard.requirements,
-      effects:
-        overrides.card?.effects !== undefined
-          ? overrides.card.effects
-          : baseCard.effects,
-    },
-    ...overrides,
-  };
-};
+// Helper functions for specific card types
+const createCardWithEffects = (effects: any[]): CardInstance => ({
+  ...createMockCardInstance(),
+  card: {
+    ...createMockCardInstance().card,
+    effects,
+  },
+});
+
+const createCardWithCategory = (category: string): CardInstance => ({
+  ...createMockCardInstance(),
+  card: {
+    ...createMockCardInstance().card,
+    category,
+  },
+});
+
+const createCardWithCost = (cost: number, requirements: any[] = []): CardInstance => ({
+  ...createMockCardInstance(),
+  card: {
+    ...createMockCardInstance().card,
+    cost,
+    requirements,
+  },
+});
+
+const createCardWithName = (name: string): CardInstance => ({
+  ...createMockCardInstance(),
+  card: {
+    ...createMockCardInstance().card,
+    name,
+  },
+});
+
+const createCardWithDescription = (description: string): CardInstance => ({
+  ...createMockCardInstance(),
+  card: {
+    ...createMockCardInstance().card,
+    description,
+  },
+});
 
 describe('Card', () => {
   const mockOnClick = vi.fn();
@@ -89,34 +115,26 @@ describe('Card', () => {
 
   describe('Effect formatting', () => {
     it('should format static ADD_PROGRESS effect correctly', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          effects: [
-            {
-              type: 'ADD_PROGRESS',
-              value: 15,
-              randomType: 'STATIC',
-            },
-          ],
+      const cardInstance = createCardWithEffects([
+        {
+          type: 'ADD_PROGRESS',
+          value: 15,
+          randomType: 'STATIC',
         },
-      });
+      ]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(screen.getByText('+15% progress')).toBeInTheDocument();
     });
 
     it('should format coin flip ADD_PROGRESS effect correctly', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          effects: [
-            {
-              type: 'ADD_PROGRESS',
-              value: 20,
-              randomType: 'COIN_FLIP',
-            },
-          ],
+      const cardInstance = createCardWithEffects([
+        {
+          type: 'ADD_PROGRESS',
+          value: 20,
+          randomType: 'COIN_FLIP',
         },
-      });
+      ]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(
@@ -125,18 +143,14 @@ describe('Card', () => {
     });
 
     it('should format random range ADD_PROGRESS effect correctly', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          effects: [
-            {
-              type: 'ADD_PROGRESS',
-              randomType: 'RANDOM_RANGE',
-              minValue: 5,
-              maxValue: 15,
-            },
-          ],
+      const cardInstance = createCardWithEffects([
+        {
+          type: 'ADD_PROGRESS',
+          randomType: 'RANDOM_RANGE',
+          minValue: 5,
+          maxValue: 15,
         },
-      });
+      ]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(
@@ -145,34 +159,26 @@ describe('Card', () => {
     });
 
     it('should format ADD_BUGS effects correctly', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          effects: [
-            {
-              type: 'ADD_BUGS',
-              value: 3,
-              randomType: 'STATIC',
-            },
-          ],
+      const cardInstance = createCardWithEffects([
+        {
+          type: 'ADD_BUGS',
+          value: 3,
+          randomType: 'STATIC',
         },
-      });
+      ]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(screen.getByText('+3 bugs')).toBeInTheDocument();
     });
 
     it('should format REMOVE_BUGS effects correctly', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          effects: [
-            {
-              type: 'REMOVE_BUGS',
-              value: 2,
-              randomType: 'STATIC',
-            },
-          ],
+      const cardInstance = createCardWithEffects([
+        {
+          type: 'REMOVE_BUGS',
+          value: 2,
+          randomType: 'STATIC',
         },
-      });
+      ]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(screen.getByText('-2 bugs')).toBeInTheDocument();
@@ -489,11 +495,7 @@ describe('Card', () => {
 
   describe('Edge cases', () => {
     it('should handle cards with no effects', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          effects: [],
-        },
-      });
+      const cardInstance = createCardWithEffects([]);
 
       expect(() => {
         render(<Card cardInstance={cardInstance} />);
@@ -503,34 +505,21 @@ describe('Card', () => {
     });
 
     it('should handle cards with zero cost', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          cost: 0,
-        },
-      });
+      const cardInstance = createCardWithCost(0);
 
       render(<Card cardInstance={cardInstance} />);
       expect(screen.getByText('Free')).toBeInTheDocument(); // Zero cost shows as "Free"
     });
 
     it('should handle cards with high cost', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          cost: 99,
-          requirements: [{ type: 'SPEND_PP', value: 99 }], // Add requirements so cost displays
-        },
-      });
+      const cardInstance = createCardWithCost(99, [{ type: 'SPEND_PP', value: 99 }]);
 
       render(<Card cardInstance={cardInstance} />);
       expect(screen.getByText('99 PP')).toBeInTheDocument();
     });
 
     it('should handle long card names gracefully', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          name: 'This is a very long card name that might cause layout issues',
-        },
-      });
+      const cardInstance = createCardWithName('This is a very long card name that might cause layout issues');
 
       // Should render without crashing
       expect(() => {
@@ -539,12 +528,7 @@ describe('Card', () => {
     });
 
     it('should handle long descriptions gracefully', () => {
-      const cardInstance = createMockCardInstance({
-        card: {
-          description:
-            'This is a very long description that explains in great detail what this card does and how it affects the game state when played by the user during their turn.',
-        },
-      });
+      const cardInstance = createCardWithDescription('This is a very long description that explains in great detail what this card does and how it affects the game state when played by the user during their turn.');
 
       // Should render without crashing
       expect(() => {
