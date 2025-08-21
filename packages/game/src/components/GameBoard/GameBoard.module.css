@@ -299,7 +299,7 @@
 .handArea {
   display: flex;
   justify-content: center;
-  min-height: 500px;
+  min-height: calc(var(--card-height) + 140px);
 }
 
 .actions {
