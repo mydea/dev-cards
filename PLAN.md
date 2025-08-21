@@ -329,19 +329,3 @@ packages/api/
 - **Score Integrity**: Multiple validation layers
 
 This plan provides a comprehensive roadmap for building a polished, engaging card game while maintaining good software engineering practices and user experience standards.
-
-// TODO:
-
-- Only start timer when first card is played
-
-Song text:
-
-Bugs appearing left and right
-Coding through the endless night
-Productivity's your fuel
-Time to show them who can rule!
-
-Draw it! Play it! Ship it!
-Feel that coding spirit!
-Build it up and tear it down
-You're the best dev in this town!
