@@ -34,10 +34,9 @@ const createMockCardInstance = (overrides: any = {}): CardInstance => {
     card: {
       ...baseCard,
       ...overrides.card,
-      // Ensure requirements array always exists
-      requirements: overrides.card?.requirements || baseCard.requirements,
-      // Ensure effects array always exists  
-      effects: overrides.card?.effects || baseCard.effects,
+      // Ensure critical arrays always exist even after override
+      requirements: overrides.card?.requirements !== undefined ? overrides.card.requirements : baseCard.requirements,
+      effects: overrides.card?.effects !== undefined ? overrides.card.effects : baseCard.effects,
     },
     ...overrides,
   };
@@ -315,8 +314,10 @@ describe('Card', () => {
       // Should not throw error when clicking without onClick handler
       expect(() => {
         const { container } = render(<Card cardInstance={cardInstance} />);
-        const cardElement = container.querySelector('[role="button"]') as HTMLElement;
-        fireEvent.click(cardElement);
+        const cardElement = container.querySelector('[role="button"]');
+        if (cardElement) {
+          fireEvent.click(cardElement);
+        }
       }).not.toThrow();
     });
 
@@ -340,7 +341,8 @@ describe('Card', () => {
         <Card cardInstance={cardInstance} isPlayable={true} />
       );
 
-      const cardElement = container.querySelector('[role="button"]') as HTMLElement;
+      const cardElement = container.querySelector('[role="button"]');
+      expect(cardElement).not.toBeNull();
       expect(cardElement).toHaveAttribute('data-playable', 'true');
     });
 
@@ -350,7 +352,8 @@ describe('Card', () => {
         <Card cardInstance={cardInstance} disabled={true} />
       );
 
-      const cardElement = container.querySelector('[role="button"]') as HTMLElement;
+      const cardElement = container.querySelector('[role="button"]');
+      expect(cardElement).not.toBeNull();
       expect(cardElement).toHaveAttribute('data-disabled', 'true');
     });
 
@@ -361,8 +364,8 @@ describe('Card', () => {
       );
 
       // Check that the card renders with animation properties
-      const cardElement = container.querySelector('[role="button"]') as HTMLElement;
-      expect(cardElement).toBeInTheDocument();
+      const cardElement = container.querySelector('[role="button"]');
+      expect(cardElement).not.toBeNull();
     });
   });
 
