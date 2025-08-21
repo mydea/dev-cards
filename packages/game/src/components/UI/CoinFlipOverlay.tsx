@@ -88,7 +88,7 @@ interface CoinFlipOverlayProps {
   cardInstanceId: string;
 }
 
-const COIN_FLIP_DURATION = 3000;
+const COIN_FLIP_DURATION = 1000;
 const RESULT_DISPLAY_DURATION = 3000;
 
 function CoinFlipOverlay({ queue, onAllComplete }: CoinFlipOverlayProps) {
@@ -205,14 +205,14 @@ function CoinFlipOverlay({ queue, onAllComplete }: CoinFlipOverlayProps) {
                     // Tails = odd number of 180° rotations (180°, 540°, 900°)
                     rotateY:
                       currentEffect.result === 'heads'
-                        ? [0, 360 * 3, 720 * 3]
-                        : [0, 360 * 3, 900 * 3],
+                        ? [0, 360 * 2, 720 * 2]
+                        : [0, 360 * 2, 900 * 2],
                     scale: [1, 1.2, 1],
                   }
                 : {
                     // When not flipping, immediately snap to final result
                     rotateY:
-                      currentEffect.result === 'heads' ? 720 * 3 : 900 * 3,
+                      currentEffect.result === 'heads' ? 720 * 2 : 900 * 2,
                     scale: 1,
                   }
             }
