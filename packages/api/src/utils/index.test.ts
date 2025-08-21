@@ -13,18 +13,18 @@ describe('Utils', () => {
   describe('generateId', () => {
     it('should generate a valid UUID format', () => {
       const id = generateId();
-      
+
       // UUID v4 format: 8-4-4-4-12 characters
       const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-      
+
       expect(id).toMatch(uuidRegex);
     });
 
     it('should generate unique IDs', () => {
       const id1 = generateId();
       const id2 = generateId();
-      
+
       expect(id1).not.toBe(id2);
     });
 
@@ -33,13 +33,13 @@ describe('Utils', () => {
       const originalCrypto = global.crypto;
       // @ts-ignore
       global.crypto = undefined;
-      
+
       const id = generateId();
       const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-      
+
       expect(id).toMatch(uuidRegex);
-      
+
       // Restore crypto
       global.crypto = originalCrypto;
     });
@@ -60,7 +60,7 @@ describe('Utils', () => {
     it('should generate a consistent hash for the same data', () => {
       const hash1 = generateGameStateHash(mockScoreData);
       const hash2 = generateGameStateHash(mockScoreData);
-      
+
       expect(hash1).toBe(hash2);
     });
 
@@ -70,7 +70,7 @@ describe('Utils', () => {
         ...mockScoreData,
         score: 2000,
       });
-      
+
       expect(hash1).not.toBe(hash2);
     });
 
@@ -83,10 +83,10 @@ describe('Utils', () => {
         ...mockScoreData,
         cards_played: ['card1', 'card2', 'card3'],
       };
-      
+
       const hash1 = generateGameStateHash(data1);
       const hash2 = generateGameStateHash(data2);
-      
+
       expect(hash1).toBe(hash2);
     });
   });
@@ -105,7 +105,7 @@ describe('Utils', () => {
 
     it('should validate a correct game state', () => {
       const result = validateGameState(validScoreData);
-      
+
       expect(result.valid).toBe(true);
       expect(result.reason).toBeUndefined();
     });
@@ -115,7 +115,7 @@ describe('Utils', () => {
         ...validScoreData,
         final_progress: 85,
       });
-      
+
       expect(result.valid).toBe(false);
       expect(result.reason).toBe('Game must be completed (100% progress)');
     });
@@ -125,7 +125,7 @@ describe('Utils', () => {
         ...validScoreData,
         final_bugs: 3,
       });
-      
+
       expect(result.valid).toBe(false);
       expect(result.reason).toBe('Game cannot end with bugs');
     });
@@ -136,7 +136,7 @@ describe('Utils', () => {
         score: 10000,
         rounds: 50,
       });
-      
+
       expect(result.valid).toBe(false);
       expect(result.reason).toBe('Score too high for number of rounds');
     });
@@ -147,7 +147,7 @@ describe('Utils', () => {
         game_duration_seconds: 5,
         rounds: 20,
       });
-      
+
       expect(result.valid).toBe(false);
       expect(result.reason).toBe('Game completed too quickly');
     });
@@ -157,7 +157,7 @@ describe('Utils', () => {
         ...validScoreData,
         cards_played: ['card1', 'card2'],
       });
-      
+
       expect(result.valid).toBe(false);
       expect(result.reason).toBe('Not enough cards played');
     });
@@ -166,21 +166,21 @@ describe('Utils', () => {
   describe('errorResponse', () => {
     it('should create a proper error response with default status', () => {
       const response = errorResponse('Test error');
-      
+
       expect(response.status).toBe(400);
       expect(response.headers.get('Content-Type')).toBe('application/json');
     });
 
     it('should create a proper error response with custom status', () => {
       const response = errorResponse('Not found', 404);
-      
+
       expect(response.status).toBe(404);
     });
 
     it('should format the response body correctly', async () => {
       const response = errorResponse('Test error', 500);
       const body = await response.json();
-      
+
       expect(body).toEqual({
         success: false,
         error: 'Test error',
@@ -192,7 +192,7 @@ describe('Utils', () => {
     it('should create a proper success response', () => {
       const data = { test: 'value' };
       const response = successResponse(data);
-      
+
       expect(response.status).toBe(200);
       expect(response.headers.get('Content-Type')).toBe('application/json');
     });
@@ -201,7 +201,7 @@ describe('Utils', () => {
       const data = { test: 'value' };
       const response = successResponse(data);
       const body = await response.json();
-      
+
       expect(body).toEqual({
         success: true,
         data,
@@ -214,7 +214,7 @@ describe('Utils', () => {
       const message = 'Operation successful';
       const response = successResponse(data, message);
       const body = await response.json();
-      
+
       expect(body).toEqual({
         success: true,
         data,
@@ -230,7 +230,7 @@ describe('Utils', () => {
           'CF-Connecting-IP': '192.168.1.1',
         },
       });
-      
+
       const ip = getClientIP(request);
       expect(ip).toBe('192.168.1.1');
     });
@@ -241,7 +241,7 @@ describe('Utils', () => {
           'X-Forwarded-For': '10.0.0.1, 192.168.1.1',
         },
       });
-      
+
       const ip = getClientIP(request);
       expect(ip).toBe('10.0.0.1');
     });
@@ -252,7 +252,7 @@ describe('Utils', () => {
           'X-Real-IP': '172.16.0.1',
         },
       });
-      
+
       const ip = getClientIP(request);
       expect(ip).toBe('172.16.0.1');
     });
@@ -265,14 +265,14 @@ describe('Utils', () => {
           'X-Real-IP': '172.16.0.1',
         },
       });
-      
+
       const ip = getClientIP(request);
       expect(ip).toBe('192.168.1.1');
     });
 
     it('should return fallback IP when no headers are present', () => {
       const request = new Request('https://example.com');
-      
+
       const ip = getClientIP(request);
       expect(ip).toBe('0.0.0.0');
     });
@@ -283,7 +283,7 @@ describe('Utils', () => {
           'X-Forwarded-For': '  10.0.0.1  ,  192.168.1.1  ,  172.16.0.1  ',
         },
       });
-      
+
       const ip = getClientIP(request);
       expect(ip).toBe('10.0.0.1');
     });

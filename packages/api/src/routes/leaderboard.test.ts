@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Hono } from 'hono';
 import { leaderboard } from './leaderboard.js';
-import type { Bindings, LeaderboardEntry, PlayerStats } from '../types/index.js';
+import type {
+  Bindings,
+  LeaderboardEntry,
+  PlayerStats,
+} from '../types/index.js';
 
 // Mock the utils and database
 vi.mock('../utils/index.js', () => ({
@@ -46,7 +50,7 @@ describe('Leaderboard Routes', () => {
       getGameCount: vi.fn(),
       getPlayerCount: vi.fn(),
     };
-    
+
     vi.mocked(createInstrumentedDatabase).mockReturnValue(mockDatabase);
     vi.clearAllMocks();
   });
@@ -80,24 +84,30 @@ describe('Leaderboard Routes', () => {
     ];
 
     it('should return leaderboard with default parameters', async () => {
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: {
-          entries: mockLeaderboardEntries,
-          pagination: {
-            limit: 100,
-            offset: 0,
-            hasMore: false,
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            entries: mockLeaderboardEntries,
+            pagination: {
+              limit: 100,
+              offset: 0,
+              hasMore: false,
+            },
           },
-        },
-      }));
+        })
+      );
 
       mockDatabase.getLeaderboard.mockResolvedValue(mockLeaderboardEntries);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(createInstrumentedDatabase).toHaveBeenCalledWith(mockEnv.DB);
       expect(mockDatabase.getLeaderboard).toHaveBeenCalledWith(100, 0);
@@ -113,24 +123,30 @@ describe('Leaderboard Routes', () => {
 
     it('should return leaderboard with custom limit and offset', async () => {
       const limitedEntries = mockLeaderboardEntries.slice(0, 1);
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: {
-          entries: limitedEntries,
-          pagination: {
-            limit: 50,
-            offset: 25,
-            hasMore: false,
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            entries: limitedEntries,
+            pagination: {
+              limit: 50,
+              offset: 25,
+              hasMore: false,
+            },
           },
-        },
-      }));
+        })
+      );
 
       mockDatabase.getLeaderboard.mockResolvedValue(limitedEntries);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/?limit=50&offset=25', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/?limit=50&offset=25',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(mockDatabase.getLeaderboard).toHaveBeenCalledWith(50, 25);
       expect(successResponse).toHaveBeenCalledWith({
@@ -147,45 +163,57 @@ describe('Leaderboard Routes', () => {
       mockDatabase.getLeaderboard.mockResolvedValue([]);
       vi.mocked(successResponse).mockReturnValue(new Response('{}'));
 
-      const response = await app.request('/?limit=200', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/?limit=200',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(mockDatabase.getLeaderboard).toHaveBeenCalledWith(100, 0);
     });
 
     it('should indicate hasMore when results equal limit', async () => {
-      const fullPageEntries = Array(50).fill(null).map((_, i) => ({
-        game_id: `game${i}`,
-        player_name: `Player${i}`,
-        score: 1000 - i,
-        rounds: 15,
-        final_progress: 100,
-        final_bugs: 0,
-        final_tech_debt: 0,
-        game_duration_seconds: 300,
-        completed_at: '2023-01-01T00:00:00Z',
-        rank: i + 1,
-      }));
+      const fullPageEntries = Array(50)
+        .fill(null)
+        .map((_, i) => ({
+          game_id: `game${i}`,
+          player_name: `Player${i}`,
+          score: 1000 - i,
+          rounds: 15,
+          final_progress: 100,
+          final_bugs: 0,
+          final_tech_debt: 0,
+          game_duration_seconds: 300,
+          completed_at: '2023-01-01T00:00:00Z',
+          rank: i + 1,
+        }));
 
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: {
-          entries: fullPageEntries,
-          pagination: {
-            limit: 50,
-            offset: 0,
-            hasMore: true,
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            entries: fullPageEntries,
+            pagination: {
+              limit: 50,
+              offset: 0,
+              hasMore: true,
+            },
           },
-        },
-      }));
+        })
+      );
 
       mockDatabase.getLeaderboard.mockResolvedValue(fullPageEntries);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/?limit=50', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/?limit=50',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(successResponse).toHaveBeenCalledWith({
         entries: fullPageEntries,
@@ -198,17 +226,26 @@ describe('Leaderboard Routes', () => {
     });
 
     it('should handle database errors', async () => {
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Internal server error',
-      }), { status: 500 });
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Internal server error',
+        }),
+        { status: 500 }
+      );
 
-      mockDatabase.getLeaderboard.mockRejectedValue(new Error('Database failed'));
+      mockDatabase.getLeaderboard.mockRejectedValue(
+        new Error('Database failed')
+      );
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(errorResponse).toHaveBeenCalledWith('Internal server error', 500);
     });
@@ -243,24 +280,33 @@ describe('Leaderboard Routes', () => {
     ];
 
     it('should return player leaderboard data', async () => {
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: {
-          player_name: 'TestPlayer',
-          stats: mockPlayerStats,
-          games: mockPlayerGames,
-        },
-      }));
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            player_name: 'TestPlayer',
+            stats: mockPlayerStats,
+            games: mockPlayerGames,
+          },
+        })
+      );
 
       mockDatabase.getPlayerGames.mockResolvedValue(mockPlayerGames);
       mockDatabase.getPlayerStats.mockResolvedValue(mockPlayerStats);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/player/TestPlayer', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/player/TestPlayer',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
-      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith('TestPlayer', 50);
+      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith(
+        'TestPlayer',
+        50
+      );
       expect(mockDatabase.getPlayerStats).toHaveBeenCalledWith('TestPlayer');
       expect(successResponse).toHaveBeenCalledWith({
         player_name: 'TestPlayer',
@@ -270,63 +316,91 @@ describe('Leaderboard Routes', () => {
     });
 
     it('should handle URL encoded player names', async () => {
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: {
-          player_name: 'Player Name',
-          stats: { ...mockPlayerStats, player_name: 'Player Name' },
-          games: [],
-        },
-      }));
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            player_name: 'Player Name',
+            stats: { ...mockPlayerStats, player_name: 'Player Name' },
+            games: [],
+          },
+        })
+      );
 
       mockDatabase.getPlayerGames.mockResolvedValue([]);
-      mockDatabase.getPlayerStats.mockResolvedValue({ ...mockPlayerStats, player_name: 'Player Name' });
+      mockDatabase.getPlayerStats.mockResolvedValue({
+        ...mockPlayerStats,
+        player_name: 'Player Name',
+      });
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/player/Player%20Name', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/player/Player%20Name',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
-      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith('Player Name', 50);
+      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith(
+        'Player Name',
+        50
+      );
       expect(mockDatabase.getPlayerStats).toHaveBeenCalledWith('Player Name');
     });
 
     it('should return 404 when player does not exist', async () => {
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Player not found',
-      }), { status: 404 });
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Player not found',
+        }),
+        { status: 404 }
+      );
 
       mockDatabase.getPlayerGames.mockResolvedValue([]);
       mockDatabase.getPlayerStats.mockResolvedValue(null);
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/player/NonexistentPlayer', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/player/NonexistentPlayer',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(errorResponse).toHaveBeenCalledWith('Player not found', 404);
     });
 
     it('should use custom limit parameter', async () => {
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: {
-          player_name: 'TestPlayer',
-          stats: mockPlayerStats,
-          games: mockPlayerGames,
-        },
-      }));
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            player_name: 'TestPlayer',
+            stats: mockPlayerStats,
+            games: mockPlayerGames,
+          },
+        })
+      );
 
       mockDatabase.getPlayerGames.mockResolvedValue(mockPlayerGames);
       mockDatabase.getPlayerStats.mockResolvedValue(mockPlayerStats);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/player/TestPlayer?limit=25', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/player/TestPlayer?limit=25',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
-      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith('TestPlayer', 25);
+      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith(
+        'TestPlayer',
+        25
+      );
     });
 
     it('should enforce maximum limit of 50', async () => {
@@ -334,25 +408,41 @@ describe('Leaderboard Routes', () => {
       mockDatabase.getPlayerStats.mockResolvedValue(mockPlayerStats);
       vi.mocked(successResponse).mockReturnValue(new Response('{}'));
 
-      const response = await app.request('/player/TestPlayer?limit=100', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/player/TestPlayer?limit=100',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
-      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith('TestPlayer', 50);
+      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith(
+        'TestPlayer',
+        50
+      );
     });
 
     it('should handle database errors', async () => {
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Internal server error',
-      }), { status: 500 });
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Internal server error',
+        }),
+        { status: 500 }
+      );
 
-      mockDatabase.getPlayerGames.mockRejectedValue(new Error('Database failed'));
+      mockDatabase.getPlayerGames.mockRejectedValue(
+        new Error('Database failed')
+      );
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/player/TestPlayer', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/player/TestPlayer',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(errorResponse).toHaveBeenCalledWith('Internal server error', 500);
     });
@@ -360,21 +450,27 @@ describe('Leaderboard Routes', () => {
 
   describe('GET /stats', () => {
     it('should return global statistics', async () => {
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: {
-          total_games: 1500,
-          total_players: 250,
-        },
-      }));
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            total_games: 1500,
+            total_players: 250,
+          },
+        })
+      );
 
       mockDatabase.getGameCount.mockResolvedValue(1500);
       mockDatabase.getPlayerCount.mockResolvedValue(250);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/stats', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/stats',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(mockDatabase.getGameCount).toHaveBeenCalled();
       expect(mockDatabase.getPlayerCount).toHaveBeenCalled();
@@ -385,34 +481,50 @@ describe('Leaderboard Routes', () => {
     });
 
     it('should handle database errors', async () => {
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Internal server error',
-      }), { status: 500 });
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Internal server error',
+        }),
+        { status: 500 }
+      );
 
       mockDatabase.getGameCount.mockRejectedValue(new Error('Database failed'));
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/stats', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/stats',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(errorResponse).toHaveBeenCalledWith('Internal server error', 500);
     });
 
     it('should handle partial database failures', async () => {
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Internal server error',
-      }), { status: 500 });
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Internal server error',
+        }),
+        { status: 500 }
+      );
 
       mockDatabase.getGameCount.mockResolvedValue(1500);
-      mockDatabase.getPlayerCount.mockRejectedValue(new Error('Player count failed'));
+      mockDatabase.getPlayerCount.mockRejectedValue(
+        new Error('Player count failed')
+      );
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/stats', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/stats',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(errorResponse).toHaveBeenCalledWith('Internal server error', 500);
     });
@@ -421,20 +533,32 @@ describe('Leaderboard Routes', () => {
   describe('Error handling', () => {
     it('should handle DatabaseError specifically', async () => {
       const { DatabaseError } = await import('../types/index.js');
-      
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Database connection failed',
-      }), { status: 400 });
 
-      mockDatabase.getLeaderboard.mockRejectedValue(new DatabaseError('Database connection failed'));
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Database connection failed',
+        }),
+        { status: 400 }
+      );
+
+      mockDatabase.getLeaderboard.mockRejectedValue(
+        new DatabaseError('Database connection failed')
+      );
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
-      expect(errorResponse).toHaveBeenCalledWith('Database connection failed', 400);
+      expect(errorResponse).toHaveBeenCalledWith(
+        'Database connection failed',
+        400
+      );
     });
   });
 });

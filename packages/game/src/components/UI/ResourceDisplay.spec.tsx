@@ -6,35 +6,42 @@ import type { GameState } from '@dev-cards/data';
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, animate, initial, exit, transition, ...props }: any) => <div {...props}>{children}</div>,
-    span: ({ children, animate, initial, exit, transition, ...props }: any) => <span {...props}>{children}</span>,
+    div: ({ children, animate, initial, exit, transition, ...props }: any) => (
+      <div {...props}>{children}</div>
+    ),
+    span: ({ children, animate, initial, exit, transition, ...props }: any) => (
+      <span {...props}>{children}</span>
+    ),
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
-const createMockGameState = (resources: Partial<GameState['resources']> = {}): GameState => ({
-  resources: {
-    progress: 50,
-    bugs: 2,
-    technicalDebt: 10,
-    productivityPoints: 8,
-    ...resources,
-  },
-  stats: {
-    round: 5,
-    startTime: Date.now(),
-    endTime: null,
-  },
-  piles: {
-    graveyard: [],
-    hand: [],
-    deck: [],
-    discard: [],
-  },
-  phase: 'PLANNING',
-  isGameOver: false,
-  difficulty: 'NORMAL',
-} as GameState);
+const createMockGameState = (
+  resources: Partial<GameState['resources']> = {}
+): GameState =>
+  ({
+    resources: {
+      progress: 50,
+      bugs: 2,
+      technicalDebt: 10,
+      productivityPoints: 8,
+      ...resources,
+    },
+    stats: {
+      round: 5,
+      startTime: Date.now(),
+      endTime: null,
+    },
+    piles: {
+      graveyard: [],
+      hand: [],
+      deck: [],
+      discard: [],
+    },
+    phase: 'PLANNING',
+    isGameOver: false,
+    difficulty: 'NORMAL',
+  }) as GameState;
 
 describe('ResourceDisplay', () => {
   beforeEach(() => {
@@ -55,8 +62,8 @@ describe('ResourceDisplay', () => {
       expect(screen.getByText('75%')).toBeInTheDocument(); // progress
       expect(screen.getByText('3')).toBeInTheDocument(); // bugs
       // Technical debt shows as "15/20" split across elements
-      const techDebtElements = screen.getAllByText((content, element) => 
-        element?.textContent?.includes('/20') || false
+      const techDebtElements = screen.getAllByText(
+        (content, element) => element?.textContent?.includes('/20') || false
       );
       expect(techDebtElements.length).toBeGreaterThan(0);
       expect(screen.getByText('12')).toBeInTheDocument(); // productivity points
@@ -89,8 +96,8 @@ describe('ResourceDisplay', () => {
       expect(screen.getByText('100%')).toBeInTheDocument();
       expect(screen.getByText('99')).toBeInTheDocument();
       // Technical debt shows as "100/20" split across elements
-      const techDebtElements = screen.getAllByText((content, element) => 
-        element?.textContent?.includes('/20') || false
+      const techDebtElements = screen.getAllByText(
+        (content, element) => element?.textContent?.includes('/20') || false
       );
       expect(techDebtElements.length).toBeGreaterThan(0);
       expect(screen.getByText('50')).toBeInTheDocument();
@@ -134,7 +141,9 @@ describe('ResourceDisplay', () => {
   describe('Change detection and animations', () => {
     it('should detect progress increase', () => {
       const initialGameState = createMockGameState({ progress: 50 });
-      const { rerender } = render(<ResourceDisplay gameState={initialGameState} />);
+      const { rerender } = render(
+        <ResourceDisplay gameState={initialGameState} />
+      );
 
       expect(screen.getByText('50%')).toBeInTheDocument();
 
@@ -146,7 +155,9 @@ describe('ResourceDisplay', () => {
 
     it('should detect progress decrease', () => {
       const initialGameState = createMockGameState({ progress: 80 });
-      const { rerender } = render(<ResourceDisplay gameState={initialGameState} />);
+      const { rerender } = render(
+        <ResourceDisplay gameState={initialGameState} />
+      );
 
       const updatedGameState = createMockGameState({ progress: 65 });
       rerender(<ResourceDisplay gameState={updatedGameState} />);
@@ -156,7 +167,9 @@ describe('ResourceDisplay', () => {
 
     it('should detect bugs increase', () => {
       const initialGameState = createMockGameState({ bugs: 2 });
-      const { rerender } = render(<ResourceDisplay gameState={initialGameState} />);
+      const { rerender } = render(
+        <ResourceDisplay gameState={initialGameState} />
+      );
 
       const updatedGameState = createMockGameState({ bugs: 5 });
       rerender(<ResourceDisplay gameState={updatedGameState} />);
@@ -166,7 +179,9 @@ describe('ResourceDisplay', () => {
 
     it('should detect bugs decrease', () => {
       const initialGameState = createMockGameState({ bugs: 5 });
-      const { rerender } = render(<ResourceDisplay gameState={initialGameState} />);
+      const { rerender } = render(
+        <ResourceDisplay gameState={initialGameState} />
+      );
 
       const updatedGameState = createMockGameState({ bugs: 2 });
       rerender(<ResourceDisplay gameState={updatedGameState} />);
@@ -176,21 +191,25 @@ describe('ResourceDisplay', () => {
 
     it('should detect technical debt changes', () => {
       const initialGameState = createMockGameState({ technicalDebt: 10 });
-      const { rerender } = render(<ResourceDisplay gameState={initialGameState} />);
+      const { rerender } = render(
+        <ResourceDisplay gameState={initialGameState} />
+      );
 
       const updatedGameState = createMockGameState({ technicalDebt: 15 });
       rerender(<ResourceDisplay gameState={updatedGameState} />);
 
       // Technical debt shows as "15/20" split across elements
-      const techDebtElements = screen.getAllByText((content, element) => 
-        element?.textContent?.includes('/20') || false
+      const techDebtElements = screen.getAllByText(
+        (content, element) => element?.textContent?.includes('/20') || false
       );
       expect(techDebtElements.length).toBeGreaterThan(0);
     });
 
     it('should detect productivity points changes', () => {
       const initialGameState = createMockGameState({ productivityPoints: 8 });
-      const { rerender } = render(<ResourceDisplay gameState={initialGameState} />);
+      const { rerender } = render(
+        <ResourceDisplay gameState={initialGameState} />
+      );
 
       const updatedGameState = createMockGameState({ productivityPoints: 12 });
       rerender(<ResourceDisplay gameState={updatedGameState} />);
@@ -207,7 +226,9 @@ describe('ResourceDisplay', () => {
         technicalDebt: 5,
         productivityPoints: 3,
       });
-      const { rerender } = render(<ResourceDisplay gameState={initialGameState} />);
+      const { rerender } = render(
+        <ResourceDisplay gameState={initialGameState} />
+      );
 
       const updatedGameState = createMockGameState({
         progress: 50,
@@ -220,8 +241,8 @@ describe('ResourceDisplay', () => {
       expect(screen.getByText('50%')).toBeInTheDocument();
       expect(screen.getByText('3')).toBeInTheDocument();
       // Check for tech debt value that might be split across elements
-      const techDebtElements = screen.getAllByText((content, element) => 
-        element?.textContent?.includes('/20') || false
+      const techDebtElements = screen.getAllByText(
+        (content, element) => element?.textContent?.includes('/20') || false
       );
       expect(techDebtElements.length).toBeGreaterThan(0);
       expect(screen.getByText('6')).toBeInTheDocument();
@@ -234,11 +255,13 @@ describe('ResourceDisplay', () => {
         technicalDebt: 12,
         productivityPoints: 8,
       });
-      const { rerender } = render(<ResourceDisplay gameState={initialGameState} />);
+      const { rerender } = render(
+        <ResourceDisplay gameState={initialGameState} />
+      );
 
       const updatedGameState = createMockGameState({
         progress: 60, // +20
-        bugs: 2,     // -3
+        bugs: 2, // -3
         technicalDebt: 15, // +3
         productivityPoints: 5, // -3
       });
@@ -247,8 +270,8 @@ describe('ResourceDisplay', () => {
       expect(screen.getByText('60%')).toBeInTheDocument();
       expect(screen.getByText('2')).toBeInTheDocument();
       // Technical debt shows as "15/20" split across elements
-      const techDebtElements = screen.getAllByText((content, element) => 
-        element?.textContent?.includes('/20') || false
+      const techDebtElements = screen.getAllByText(
+        (content, element) => element?.textContent?.includes('/20') || false
       );
       expect(techDebtElements.length).toBeGreaterThan(0);
       expect(screen.getByText('5')).toBeInTheDocument();
@@ -269,9 +292,9 @@ describe('ResourceDisplay', () => {
 
       expect(screen.getByText('-5%')).toBeInTheDocument();
       expect(screen.getByText('-1')).toBeInTheDocument();
-      // Technical debt shows as "-2/20" split across elements  
-      const techDebtElements = screen.getAllByText((content, element) => 
-        element?.textContent?.includes('/20') || false
+      // Technical debt shows as "-2/20" split across elements
+      const techDebtElements = screen.getAllByText(
+        (content, element) => element?.textContent?.includes('/20') || false
       );
       expect(techDebtElements.length).toBeGreaterThan(0);
       expect(screen.getByText('-3')).toBeInTheDocument();
@@ -290,8 +313,8 @@ describe('ResourceDisplay', () => {
       expect(screen.getByText('999%')).toBeInTheDocument();
       expect(screen.getByText('100')).toBeInTheDocument();
       // Technical debt shows as "200/20" split across elements
-      const techDebtElements = screen.getAllByText((content, element) => 
-        element?.textContent?.includes('/20') || false
+      const techDebtElements = screen.getAllByText(
+        (content, element) => element?.textContent?.includes('/20') || false
       );
       expect(techDebtElements.length).toBeGreaterThan(0);
       expect(screen.getByText('150')).toBeInTheDocument();
@@ -315,8 +338,8 @@ describe('ResourceDisplay', () => {
       expect(screen.getByText('50%')).toBeInTheDocument();
       expect(screen.getByText('2')).toBeInTheDocument();
       // Technical debt shows as "10/20" split across elements
-      const techDebtElements = screen.getAllByText((content, element) => 
-        element?.textContent?.includes('/20') || false
+      const techDebtElements = screen.getAllByText(
+        (content, element) => element?.textContent?.includes('/20') || false
       );
       expect(techDebtElements.length).toBeGreaterThan(0);
       expect(screen.getByText('8')).toBeInTheDocument();
@@ -342,8 +365,8 @@ describe('ResourceDisplay', () => {
       expect(screen.getByText('75%')).toBeInTheDocument();
       expect(screen.getByText('1')).toBeInTheDocument();
       // Technical debt shows as "5/20" split across elements
-      const techDebtElements = screen.getAllByText((content, element) => 
-        element?.textContent?.includes('/20') || false
+      const techDebtElements = screen.getAllByText(
+        (content, element) => element?.textContent?.includes('/20') || false
       );
       expect(techDebtElements.length).toBeGreaterThan(0);
       expect(screen.getByText('10')).toBeInTheDocument();

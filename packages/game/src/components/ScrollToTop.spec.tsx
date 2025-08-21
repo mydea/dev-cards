@@ -53,10 +53,10 @@ describe('ScrollToTop', () => {
   it('should scroll to top when pathname changes', () => {
     // Test that multiple separate router instances trigger scroll
     mockScrollTo.mockClear();
-    
+
     renderScrollToTop(['/home']);
     renderScrollToTop(['/about']);
-    
+
     // Should have been called twice (once for each router instance)
     expect(mockScrollTo).toHaveBeenCalledTimes(2);
   });

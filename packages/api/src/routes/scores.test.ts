@@ -35,7 +35,11 @@ vi.mock('@hono/zod-validator', () => ({
   }),
 }));
 
-import { errorResponse, successResponse, validateGameState } from '../utils/index.js';
+import {
+  errorResponse,
+  successResponse,
+  validateGameState,
+} from '../utils/index.js';
 import { createInstrumentedDatabase } from '../utils/sentry-db.js';
 
 // Create a test app
@@ -64,7 +68,7 @@ describe('Scores Routes', () => {
     mockDatabase = {
       submitScore: vi.fn(),
     };
-    
+
     vi.mocked(createInstrumentedDatabase).mockReturnValue(mockDatabase);
     vi.clearAllMocks();
   });
@@ -96,33 +100,45 @@ describe('Scores Routes', () => {
         cards_played: JSON.stringify(validScoreData.cards_played),
       };
 
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: mockGame,
-        message: 'Score submitted successfully',
-      }));
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: mockGame,
+          message: 'Score submitted successfully',
+        })
+      );
 
       vi.mocked(validateGameState).mockReturnValue({ valid: true });
       mockDatabase.submitScore.mockResolvedValue(mockGame);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(validScoreData),
-      }, mockEnv);
+      const response = await app.request(
+        '/',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(validScoreData),
+        },
+        mockEnv
+      );
 
       expect(createInstrumentedDatabase).toHaveBeenCalledWith(mockEnv.DB);
       expect(validateGameState).toHaveBeenCalledWith(validScoreData);
       expect(mockDatabase.submitScore).toHaveBeenCalledWith(validScoreData);
-      expect(successResponse).toHaveBeenCalledWith(mockGame, 'Score submitted successfully');
+      expect(successResponse).toHaveBeenCalledWith(
+        mockGame,
+        'Score submitted successfully'
+      );
     });
 
     it('should reject empty player names', async () => {
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Player name cannot be empty',
-      }), { status: 400 });
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Player name cannot be empty',
+        }),
+        { status: 400 }
+      );
 
       // Override the mocked validator to return empty name
       const mockReq = {
@@ -146,20 +162,30 @@ describe('Scores Routes', () => {
         return successResponse({});
       });
 
-      const response = await testApp.request('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...validScoreData, player_name: '   ' }),
-      }, mockEnv);
+      const response = await testApp.request(
+        '/',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...validScoreData, player_name: '   ' }),
+        },
+        mockEnv
+      );
 
-      expect(errorResponse).toHaveBeenCalledWith('Player name cannot be empty', 400);
+      expect(errorResponse).toHaveBeenCalledWith(
+        'Player name cannot be empty',
+        400
+      );
     });
 
     it('should reject invalid game state', async () => {
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Invalid game state: Game must be completed',
-      }), { status: 400 });
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Invalid game state: Game must be completed',
+        }),
+        { status: 400 }
+      );
 
       vi.mocked(validateGameState).mockReturnValue({
         valid: false,
@@ -167,93 +193,139 @@ describe('Scores Routes', () => {
       });
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(validScoreData),
-      }, mockEnv);
+      const response = await app.request(
+        '/',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(validScoreData),
+        },
+        mockEnv
+      );
 
       expect(validateGameState).toHaveBeenCalledWith(validScoreData);
-      expect(errorResponse).toHaveBeenCalledWith('Invalid game state: Game must be completed', 400);
+      expect(errorResponse).toHaveBeenCalledWith(
+        'Invalid game state: Game must be completed',
+        400
+      );
     });
 
     it('should handle ValidationError from database', async () => {
       const { ValidationError } = await import('../types/index.js');
-      
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Validation failed',
-      }), { status: 400 });
+
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Validation failed',
+        }),
+        { status: 400 }
+      );
 
       vi.mocked(validateGameState).mockReturnValue({ valid: true });
-      mockDatabase.submitScore.mockRejectedValue(new ValidationError('Validation failed'));
+      mockDatabase.submitScore.mockRejectedValue(
+        new ValidationError('Validation failed')
+      );
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(validScoreData),
-      }, mockEnv);
+      const response = await app.request(
+        '/',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(validScoreData),
+        },
+        mockEnv
+      );
 
       expect(errorResponse).toHaveBeenCalledWith('Validation failed', 400);
     });
 
     it('should handle DatabaseError from database', async () => {
       const { DatabaseError } = await import('../types/index.js');
-      
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Database operation failed',
-      }), { status: 400 });
+
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Database operation failed',
+        }),
+        { status: 400 }
+      );
 
       vi.mocked(validateGameState).mockReturnValue({ valid: true });
-      mockDatabase.submitScore.mockRejectedValue(new DatabaseError('Database operation failed'));
+      mockDatabase.submitScore.mockRejectedValue(
+        new DatabaseError('Database operation failed')
+      );
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(validScoreData),
-      }, mockEnv);
+      const response = await app.request(
+        '/',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(validScoreData),
+        },
+        mockEnv
+      );
 
-      expect(errorResponse).toHaveBeenCalledWith('Database operation failed', 400);
+      expect(errorResponse).toHaveBeenCalledWith(
+        'Database operation failed',
+        400
+      );
     });
 
     it('should handle unexpected errors', async () => {
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Internal server error',
-      }), { status: 500 });
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Internal server error',
+        }),
+        { status: 500 }
+      );
 
       vi.mocked(validateGameState).mockReturnValue({ valid: true });
       mockDatabase.submitScore.mockRejectedValue(new Error('Unexpected error'));
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
       // Mock console.error to avoid noise in tests
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
-      const response = await app.request('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(validScoreData),
-      }, mockEnv);
+      const response = await app.request(
+        '/',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(validScoreData),
+        },
+        mockEnv
+      );
 
       expect(errorResponse).toHaveBeenCalledWith('Internal server error', 500);
-      expect(consoleSpy).toHaveBeenCalledWith('Score submission error:', expect.any(Error));
-      
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Score submission error:',
+        expect.any(Error)
+      );
+
       consoleSpy.mockRestore();
     });
   });
 
   describe('Rate limiting', () => {
     it('should apply rate limiting middleware', async () => {
-      const { rateLimitMiddleware } = await import('../middleware/rate-limit.js');
-      
-      const response = await app.request('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      }, mockEnv);
+      const { rateLimitMiddleware } = await import(
+        '../middleware/rate-limit.js'
+      );
+
+      const response = await app.request(
+        '/',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        },
+        mockEnv
+      );
 
       expect(rateLimitMiddleware).toHaveBeenCalledWith('score');
     });
@@ -263,12 +335,16 @@ describe('Scores Routes', () => {
     it('should validate request body with zod schema', async () => {
       const { zValidator } = await import('@hono/zod-validator');
       const { SubmitScoreSchema } = await import('../types/index.js');
-      
-      const response = await app.request('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      }, mockEnv);
+
+      const response = await app.request(
+        '/',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        },
+        mockEnv
+      );
 
       expect(zValidator).toHaveBeenCalledWith('json', SubmitScoreSchema);
     });

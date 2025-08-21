@@ -33,7 +33,7 @@ describe('Rate Limiting Middleware', () => {
     it('should allow requests within the limit', async () => {
       const app = createTestApp('general');
       const mockIP = '192.168.1.1';
-      
+
       vi.mocked(getClientIP).mockReturnValue(mockIP);
 
       // Make requests within the limit (60 requests per minute)
@@ -41,7 +41,7 @@ describe('Rate Limiting Middleware', () => {
         const response = await app.request('/', {
           method: 'GET',
         });
-        
+
         expect(response.status).toBe(200);
         const body = await response.json();
         expect(body).toEqual({ success: true });
@@ -69,7 +69,7 @@ describe('Rate Limiting Middleware', () => {
 
       // The 61st request should be blocked
       const response = await app.request('/', { method: 'GET' });
-      
+
       expect(response.status).toBe(429);
       expect(errorResponse).toHaveBeenCalledWith(
         'Rate limit exceeded. Too many general requests.',
@@ -80,7 +80,7 @@ describe('Rate Limiting Middleware', () => {
     it('should reset the limit after the time window', async () => {
       const app = createTestApp('general');
       const mockIP = '192.168.1.1';
-      
+
       vi.mocked(getClientIP).mockReturnValue(mockIP);
 
       // Make 60 requests (the limit)
@@ -129,7 +129,7 @@ describe('Rate Limiting Middleware', () => {
     it('should allow score requests within the limit', async () => {
       const app = createTestApp('score');
       const mockIP = '192.168.1.1';
-      
+
       vi.mocked(getClientIP).mockReturnValue(mockIP);
 
       // Make requests within the limit (10 requests per minute)
@@ -160,7 +160,7 @@ describe('Rate Limiting Middleware', () => {
 
       // The 11th request should be blocked
       const response = await app.request('/', { method: 'GET' });
-      
+
       expect(response.status).toBe(429);
       expect(errorResponse).toHaveBeenCalledWith(
         'Rate limit exceeded. Too many score requests.',
@@ -172,7 +172,7 @@ describe('Rate Limiting Middleware', () => {
       const generalApp = createTestApp('general');
       const scoreApp = createTestApp('score');
       const mockIP = '192.168.1.1';
-      
+
       vi.mocked(getClientIP).mockReturnValue(mockIP);
 
       // General rate limiter allows 60 requests
@@ -193,7 +193,7 @@ describe('Rate Limiting Middleware', () => {
     it('should clean up expired entries when checking limits', async () => {
       const app = createTestApp('general');
       const mockIP = '192.168.1.1';
-      
+
       vi.mocked(getClientIP).mockReturnValue(mockIP);
 
       // Make some requests
@@ -220,7 +220,7 @@ describe('Rate Limiting Middleware', () => {
     it('should handle requests at exactly the time window boundary', async () => {
       const app = createTestApp('general');
       const mockIP = '192.168.1.1';
-      
+
       vi.mocked(getClientIP).mockReturnValue(mockIP);
 
       // Make first request
@@ -238,20 +238,20 @@ describe('Rate Limiting Middleware', () => {
     it('should handle concurrent requests from the same IP', async () => {
       const app = createTestApp('score');
       const mockIP = '192.168.1.1';
-      
+
       vi.mocked(getClientIP).mockReturnValue(mockIP);
 
       // Make concurrent requests
-      const promises = Array(15).fill(null).map(() => 
-        app.request('/', { method: 'GET' })
-      );
+      const promises = Array(15)
+        .fill(null)
+        .map(() => app.request('/', { method: 'GET' }));
 
       const responses = await Promise.all(promises);
-      
+
       // Should have some successful responses (up to limit)
-      const successCount = responses.filter(r => r.status === 200).length;
-      const rateLimitedCount = responses.filter(r => r.status === 429).length;
-      
+      const successCount = responses.filter((r) => r.status === 200).length;
+      const rateLimitedCount = responses.filter((r) => r.status === 429).length;
+
       expect(successCount).toBe(10); // Score limit
       expect(rateLimitedCount).toBe(5); // Remaining requests
     });

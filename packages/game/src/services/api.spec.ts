@@ -139,7 +139,8 @@ describe('ApiClient', () => {
 
       expect(result).toEqual({
         success: false,
-        error: 'player_name: Required; score: Expected number, received string; rounds: Number must be greater than 0 (and 1 more)',
+        error:
+          'player_name: Required; score: Expected number, received string; rounds: Number must be greater than 0 (and 1 more)',
       });
     });
 
@@ -186,7 +187,9 @@ describe('ApiClient', () => {
     it('should handle network failures', async () => {
       mockFetch.mockRejectedValue(new Error('Network error'));
 
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       const result = await apiClient.submitScore({
         player_name: 'Test',
@@ -204,7 +207,10 @@ describe('ApiClient', () => {
         error: 'Network error occurred',
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('API request failed:', expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'API request failed:',
+        expect.any(Error)
+      );
       consoleSpy.mockRestore();
     });
 
@@ -213,7 +219,9 @@ describe('ApiClient', () => {
         throw new TypeError('Failed to fetch');
       });
 
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       const result = await apiClient.getLeaderboard();
 

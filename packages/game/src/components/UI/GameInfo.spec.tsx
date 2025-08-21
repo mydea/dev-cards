@@ -17,35 +17,34 @@ Object.defineProperty(Date, 'now', {
   writable: true,
 });
 
-const createMockGameState = (overrides: Partial<GameState> = {}): GameState => ({
-  resources: {
-    progress: 75,
-    bugs: 1,
-    technicalDebt: 8,
-    productivityPoints: 12,
-  },
-  stats: {
-    round: 10,
-    startTime: 1000000000, // Fixed timestamp for testing
-    endTime: null,
-  },
-  piles: {
-    graveyard: [
-      { id: 'card1', card: { id: 'test1', name: 'Card 1' } as any },
-      { id: 'card2', card: { id: 'test2', name: 'Card 2' } as any },
-      { id: 'card3', card: { id: 'test3', name: 'Card 3' } as any },
-    ],
-    hand: [
-      { id: 'hand1', card: { id: 'hand1', name: 'Hand Card' } as any },
-    ],
-    deck: [],
-    discard: [], // Add missing discard pile
-  },
-  phase: 'ACTION',
-  isGameOver: false,
-  difficulty: 'NORMAL',
-  ...overrides,
-} as GameState);
+const createMockGameState = (overrides: Partial<GameState> = {}): GameState =>
+  ({
+    resources: {
+      progress: 75,
+      bugs: 1,
+      technicalDebt: 8,
+      productivityPoints: 12,
+    },
+    stats: {
+      round: 10,
+      startTime: 1000000000, // Fixed timestamp for testing
+      endTime: null,
+    },
+    piles: {
+      graveyard: [
+        { id: 'card1', card: { id: 'test1', name: 'Card 1' } as any },
+        { id: 'card2', card: { id: 'test2', name: 'Card 2' } as any },
+        { id: 'card3', card: { id: 'test3', name: 'Card 3' } as any },
+      ],
+      hand: [{ id: 'hand1', card: { id: 'hand1', name: 'Hand Card' } as any }],
+      deck: [],
+      discard: [], // Add missing discard pile
+    },
+    phase: 'ACTION',
+    isGameOver: false,
+    difficulty: 'NORMAL',
+    ...overrides,
+  }) as GameState;
 
 describe('GameInfo', () => {
   const mockOnReturnToMenu = vi.fn();
@@ -66,7 +65,9 @@ describe('GameInfo', () => {
 
   it('should render game information correctly', () => {
     const gameState = createMockGameState();
-    render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
+    render(
+      <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+    );
 
     expect(screen.getByText('Round')).toBeInTheDocument();
     // Round value might not be displaying correctly in mock
@@ -83,9 +84,11 @@ describe('GameInfo', () => {
       const baseTime = 1000000000;
       mockDateNow.mockReturnValue(baseTime + 75000); // 1 minute 15 seconds later
       vi.setSystemTime(baseTime + 75000);
-      
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('1:15')).toBeInTheDocument();
     });
 
@@ -94,9 +97,11 @@ describe('GameInfo', () => {
       const baseTime = 1000000000;
       mockDateNow.mockReturnValue(baseTime + 45000); // 45 seconds later
       vi.setSystemTime(baseTime + 45000);
-      
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('0:45')).toBeInTheDocument();
     });
 
@@ -105,9 +110,11 @@ describe('GameInfo', () => {
       const baseTime = 1000000000;
       mockDateNow.mockReturnValue(baseTime + 5000); // 5 seconds later
       vi.setSystemTime(baseTime + 5000);
-      
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('0:05')).toBeInTheDocument();
     });
 
@@ -116,9 +123,11 @@ describe('GameInfo', () => {
       const baseTime = 1000000000;
       mockDateNow.mockReturnValue(baseTime); // Same as start time
       vi.setSystemTime(baseTime);
-      
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('0:00')).toBeInTheDocument();
     });
 
@@ -127,9 +136,11 @@ describe('GameInfo', () => {
       const baseTime = 1000000000;
       mockDateNow.mockReturnValue(baseTime + 3675000); // 1 hour, 1 minute, 15 seconds later
       vi.setSystemTime(baseTime + 3675000);
-      
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('61:15')).toBeInTheDocument(); // Shows as minutes:seconds
     });
   });
@@ -143,9 +154,11 @@ describe('GameInfo', () => {
           endTime: 1000000000 + 180000, // 3 minutes later
         },
       });
-      
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('3:00')).toBeInTheDocument();
     });
 
@@ -157,17 +170,19 @@ describe('GameInfo', () => {
           endTime: 1000000000 + 180000, // 3 minutes
         },
       });
-      
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('3:00')).toBeInTheDocument();
-      
+
       // Advance time and trigger re-render
       act(() => {
         mockDateNow.mockReturnValue(1000000000 + 360000); // 6 minutes later
         vi.advanceTimersByTime(1000);
       });
-      
+
       // Time should still show 3:00 (game ended time)
       expect(screen.getByText('3:00')).toBeInTheDocument();
     });
@@ -189,9 +204,11 @@ describe('GameInfo', () => {
           discard: [],
         },
       });
-      
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('Cards Played')).toBeInTheDocument();
       expect(screen.getByText('5')).toBeInTheDocument();
     });
@@ -209,9 +226,11 @@ describe('GameInfo', () => {
           discard: [],
         },
       });
-      
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('Cards Played')).toBeInTheDocument();
       expect(screen.getByText('Cards Remaining')).toBeInTheDocument();
       expect(screen.getByText('3')).toBeInTheDocument();
@@ -226,9 +245,11 @@ describe('GameInfo', () => {
           discard: [],
         },
       });
-      
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('Cards Played')).toBeInTheDocument();
       expect(screen.getByText('Cards Remaining')).toBeInTheDocument();
       // Should have values of 1 for both
@@ -245,9 +266,11 @@ describe('GameInfo', () => {
           discard: [],
         },
       });
-      
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('Cards Played')).toBeInTheDocument();
       expect(screen.getByText('Cards Remaining')).toBeInTheDocument();
       // Should have values of 0 for both
@@ -259,18 +282,22 @@ describe('GameInfo', () => {
   describe('End game functionality', () => {
     it('should show end game button', () => {
       const gameState = createMockGameState();
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('End Game')).toBeInTheDocument();
     });
 
     it('should show confirmation dialog when end game is clicked', () => {
       mockConfirm.mockReturnValue(false);
       const gameState = createMockGameState();
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       fireEvent.click(screen.getByText('End Game'));
-      
+
       expect(mockConfirm).toHaveBeenCalledWith(
         'Are you sure you want to end the current game?\n\nThis will discard all your current progress and return to the main menu.'
       );
@@ -280,10 +307,12 @@ describe('GameInfo', () => {
     it('should call onReturnToMenu when user confirms end game', () => {
       mockConfirm.mockReturnValue(true);
       const gameState = createMockGameState();
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       fireEvent.click(screen.getByText('End Game'));
-      
+
       expect(mockConfirm).toHaveBeenCalled();
       expect(mockOnReturnToMenu).toHaveBeenCalledTimes(1);
     });
@@ -291,10 +320,12 @@ describe('GameInfo', () => {
     it('should not call onReturnToMenu when user cancels end game', () => {
       mockConfirm.mockReturnValue(false);
       const gameState = createMockGameState();
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       fireEvent.click(screen.getByText('End Game'));
-      
+
       expect(mockConfirm).toHaveBeenCalled();
       expect(mockOnReturnToMenu).not.toHaveBeenCalled();
     });
@@ -306,18 +337,20 @@ describe('GameInfo', () => {
       const baseTime = 1000000000;
       mockDateNow.mockReturnValue(baseTime + 300000); // 5 minutes
       vi.setSystemTime(baseTime + 300000);
-      
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('5:00')).toBeInTheDocument();
-      
+
       // Advance time by 1 second
       act(() => {
         mockDateNow.mockReturnValue(baseTime + 301000);
         vi.setSystemTime(baseTime + 301000);
         vi.advanceTimersByTime(1000);
       });
-      
+
       // Time should advance by 1 second
       expect(screen.getByText(/5:0[1-2]$/)).toBeInTheDocument();
     });
@@ -330,33 +363,43 @@ describe('GameInfo', () => {
           endTime: 1000000000 + 180000,
         },
       });
-      
-      const { rerender } = render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+
+      const { rerender } = render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('3:00')).toBeInTheDocument();
-      
+
       // Advance timers - time should not change since game has ended
       act(() => {
         vi.advanceTimersByTime(5000);
       });
-      
+
       expect(screen.getByText('3:00')).toBeInTheDocument();
     });
   });
 
   describe('Round display', () => {
     it('should display current round correctly', () => {
-      const gameState = createMockGameState({ stats: { round: 1, startTime: 1000000000, endTime: null } });
-      render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+      const gameState = createMockGameState({
+        stats: { round: 1, startTime: 1000000000, endTime: null },
+      });
+      render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('Round')).toBeInTheDocument();
       expect(screen.getByText('1')).toBeInTheDocument();
     });
 
     it('should handle large round numbers', () => {
-      const gameState = createMockGameState({ stats: { round: 999, startTime: 1000000000, endTime: null } });
-      const { container } = render(<GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />);
-      
+      const gameState = createMockGameState({
+        stats: { round: 999, startTime: 1000000000, endTime: null },
+      });
+      const { container } = render(
+        <GameInfo gameState={gameState} onReturnToMenu={mockOnReturnToMenu} />
+      );
+
       expect(screen.getByText('Round')).toBeInTheDocument();
       // Check for round value in stats
       const allText = container.textContent || '';

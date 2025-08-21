@@ -43,7 +43,7 @@ describe('Players Routes', () => {
       getPlayerStats: vi.fn(),
       getPlayerGames: vi.fn(),
     };
-    
+
     vi.mocked(createInstrumentedDatabase).mockReturnValue(mockDatabase);
     vi.clearAllMocks();
   });
@@ -62,17 +62,23 @@ describe('Players Routes', () => {
         avg_duration: 300,
       };
 
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: mockStats,
-      }));
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: mockStats,
+        })
+      );
 
       mockDatabase.getPlayerStats.mockResolvedValue(mockStats);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/TestPlayer/stats', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/TestPlayer/stats',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(createInstrumentedDatabase).toHaveBeenCalledWith(mockEnv.DB);
       expect(mockDatabase.getPlayerStats).toHaveBeenCalledWith('TestPlayer');
@@ -80,19 +86,28 @@ describe('Players Routes', () => {
     });
 
     it('should return 404 when player does not exist', async () => {
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Player not found',
-      }), { status: 404 });
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Player not found',
+        }),
+        { status: 404 }
+      );
 
       mockDatabase.getPlayerStats.mockResolvedValue(null);
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/NonexistentPlayer/stats', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/NonexistentPlayer/stats',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
-      expect(mockDatabase.getPlayerStats).toHaveBeenCalledWith('NonexistentPlayer');
+      expect(mockDatabase.getPlayerStats).toHaveBeenCalledWith(
+        'NonexistentPlayer'
+      );
       expect(errorResponse).toHaveBeenCalledWith('Player not found', 404);
     });
 
@@ -109,33 +124,48 @@ describe('Players Routes', () => {
         avg_duration: 400,
       };
 
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: mockStats,
-      }));
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: mockStats,
+        })
+      );
 
       mockDatabase.getPlayerStats.mockResolvedValue(mockStats);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/Player%20Name/stats', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/Player%20Name/stats',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(mockDatabase.getPlayerStats).toHaveBeenCalledWith('Player Name');
     });
 
     it('should handle database errors', async () => {
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Database connection failed',
-      }), { status: 400 });
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Database connection failed',
+        }),
+        { status: 400 }
+      );
 
-      mockDatabase.getPlayerStats.mockRejectedValue(new Error('Database connection failed'));
+      mockDatabase.getPlayerStats.mockRejectedValue(
+        new Error('Database connection failed')
+      );
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/TestPlayer/stats', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/TestPlayer/stats',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(errorResponse).toHaveBeenCalledWith('Internal server error', 500);
     });
@@ -158,87 +188,132 @@ describe('Players Routes', () => {
         },
       ];
 
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: mockGames,
-      }));
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: mockGames,
+        })
+      );
 
       mockDatabase.getPlayerGames.mockResolvedValue(mockGames);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/TestPlayer/games', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/TestPlayer/games',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
-      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith('TestPlayer', 50);
+      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith(
+        'TestPlayer',
+        50
+      );
       expect(successResponse).toHaveBeenCalledWith(mockGames);
     });
 
     it('should return player games with custom limit', async () => {
       const mockGames: any[] = [];
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: mockGames,
-      }));
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: mockGames,
+        })
+      );
 
       mockDatabase.getPlayerGames.mockResolvedValue(mockGames);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/TestPlayer/games?limit=25', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/TestPlayer/games?limit=25',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
-      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith('TestPlayer', 25);
+      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith(
+        'TestPlayer',
+        25
+      );
       expect(successResponse).toHaveBeenCalledWith(mockGames);
     });
 
     it('should handle invalid limit parameter', async () => {
       const mockGames: any[] = [];
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: mockGames,
-      }));
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: mockGames,
+        })
+      );
 
       mockDatabase.getPlayerGames.mockResolvedValue(mockGames);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/TestPlayer/games?limit=invalid', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/TestPlayer/games?limit=invalid',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       // Should use default limit when invalid
-      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith('TestPlayer', 50);
+      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith(
+        'TestPlayer',
+        50
+      );
     });
 
     it('should handle URL encoded player names', async () => {
       const mockGames: any[] = [];
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: mockGames,
-      }));
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: mockGames,
+        })
+      );
 
       mockDatabase.getPlayerGames.mockResolvedValue(mockGames);
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/Player%20Name/games', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/Player%20Name/games',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
-      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith('Player Name', 50);
+      expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith(
+        'Player Name',
+        50
+      );
     });
 
     it('should handle database errors', async () => {
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Database query failed',
-      }), { status: 400 });
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Database query failed',
+        }),
+        { status: 400 }
+      );
 
-      mockDatabase.getPlayerGames.mockRejectedValue(new Error('Database query failed'));
+      mockDatabase.getPlayerGames.mockRejectedValue(
+        new Error('Database query failed')
+      );
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/TestPlayer/games', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/TestPlayer/games',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(errorResponse).toHaveBeenCalledWith('Internal server error', 500);
     });
@@ -247,20 +322,32 @@ describe('Players Routes', () => {
   describe('Error handling', () => {
     it('should handle DatabaseError specifically', async () => {
       const { DatabaseError } = await import('../types/index.js');
-      
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Database connection failed',
-      }), { status: 400 });
 
-      mockDatabase.getPlayerStats.mockRejectedValue(new DatabaseError('Database connection failed'));
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Database connection failed',
+        }),
+        { status: 400 }
+      );
+
+      mockDatabase.getPlayerStats.mockRejectedValue(
+        new DatabaseError('Database connection failed')
+      );
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/TestPlayer/stats', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/TestPlayer/stats',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
-      expect(errorResponse).toHaveBeenCalledWith('Database connection failed', 400);
+      expect(errorResponse).toHaveBeenCalledWith(
+        'Database connection failed',
+        400
+      );
     });
   });
 });

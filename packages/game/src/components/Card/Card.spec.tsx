@@ -35,8 +35,14 @@ const createMockCardInstance = (overrides: any = {}): CardInstance => {
       ...baseCard,
       ...overrides.card,
       // Ensure critical arrays always exist even after override
-      requirements: overrides.card?.requirements !== undefined ? overrides.card.requirements : baseCard.requirements,
-      effects: overrides.card?.effects !== undefined ? overrides.card.effects : baseCard.effects,
+      requirements:
+        overrides.card?.requirements !== undefined
+          ? overrides.card.requirements
+          : baseCard.requirements,
+      effects:
+        overrides.card?.effects !== undefined
+          ? overrides.card.effects
+          : baseCard.effects,
     },
     ...overrides,
   };
@@ -70,7 +76,7 @@ describe('Card', () => {
     it('should apply custom styles when provided', () => {
       const cardInstance = createMockCardInstance();
       const customStyle = { backgroundColor: 'red', margin: '10px' };
-      
+
       const { container } = render(
         <Card cardInstance={cardInstance} style={customStyle} />
       );
@@ -113,7 +119,9 @@ describe('Card', () => {
       });
 
       render(<Card cardInstance={cardInstance} />);
-      expect(screen.getByText('Coin flip: +20% progress or nothing')).toBeInTheDocument();
+      expect(
+        screen.getByText('Coin flip: +20% progress or nothing')
+      ).toBeInTheDocument();
     });
 
     it('should format random range ADD_PROGRESS effect correctly', () => {
@@ -131,7 +139,9 @@ describe('Card', () => {
       });
 
       render(<Card cardInstance={cardInstance} />);
-      expect(screen.getByText('Random +5% to +15% progress')).toBeInTheDocument();
+      expect(
+        screen.getByText('Random +5% to +15% progress')
+      ).toBeInTheDocument();
     });
 
     it('should format ADD_BUGS effects correctly', () => {
@@ -292,25 +302,37 @@ describe('Card', () => {
   describe('Click handling', () => {
     it('should call onClick when card is clicked and not disabled', () => {
       const cardInstance = createMockCardInstance();
-      const { container } = render(<Card cardInstance={cardInstance} onClick={mockOnClick} />);
+      const { container } = render(
+        <Card cardInstance={cardInstance} onClick={mockOnClick} />
+      );
 
-      const cardElement = container.querySelector('[role="button"]') as HTMLElement;
+      const cardElement = container.querySelector(
+        '[role="button"]'
+      ) as HTMLElement;
       fireEvent.click(cardElement);
       expect(mockOnClick).toHaveBeenCalledTimes(1);
     });
 
     it('should not call onClick when card is disabled', () => {
       const cardInstance = createMockCardInstance();
-      const { container } = render(<Card cardInstance={cardInstance} onClick={mockOnClick} disabled={true} />);
+      const { container } = render(
+        <Card
+          cardInstance={cardInstance}
+          onClick={mockOnClick}
+          disabled={true}
+        />
+      );
 
-      const cardElement = container.querySelector('[role="button"]') as HTMLElement;
+      const cardElement = container.querySelector(
+        '[role="button"]'
+      ) as HTMLElement;
       fireEvent.click(cardElement);
       expect(mockOnClick).not.toHaveBeenCalled();
     });
 
     it('should not call onClick when onClick is not provided', () => {
       const cardInstance = createMockCardInstance();
-      
+
       // Should not throw error when clicking without onClick handler
       expect(() => {
         const { container } = render(<Card cardInstance={cardInstance} />);
@@ -323,12 +345,16 @@ describe('Card', () => {
 
     it('should pass mouse event to onClick handler', () => {
       const cardInstance = createMockCardInstance();
-      const { container } = render(<Card cardInstance={cardInstance} onClick={mockOnClick} />);
+      const { container } = render(
+        <Card cardInstance={cardInstance} onClick={mockOnClick} />
+      );
 
-      const cardElement = container.querySelector('[role="button"]') as HTMLElement;
+      const cardElement = container.querySelector(
+        '[role="button"]'
+      ) as HTMLElement;
       fireEvent.click(cardElement);
       expect(mockOnClick).toHaveBeenCalledWith(expect.any(Object));
-      
+
       const event = mockOnClick.mock.calls[0][0];
       expect(event.type).toBe('click');
     });
@@ -373,43 +399,51 @@ describe('Card', () => {
     it('should show tooltip on hover when validation error exists', () => {
       const cardInstance = createMockCardInstance();
       const { container } = render(
-        <Card 
-          cardInstance={cardInstance} 
+        <Card
+          cardInstance={cardInstance}
           validationError="Not enough resources to play this card"
         />
       );
 
       const cardElement = container.querySelector('[role="button"]');
-      
+
       // Initially tooltip should not be visible
-      expect(screen.queryByText('Not enough resources to play this card')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Not enough resources to play this card')
+      ).not.toBeInTheDocument();
 
       // Hover over card
       if (cardElement) {
         fireEvent.mouseEnter(cardElement);
-        expect(screen.getByText('Not enough resources to play this card')).toBeInTheDocument();
+        expect(
+          screen.getByText('Not enough resources to play this card')
+        ).toBeInTheDocument();
       }
     });
 
     it('should hide tooltip on mouse leave', () => {
       const cardInstance = createMockCardInstance();
       const { container } = render(
-        <Card 
-          cardInstance={cardInstance} 
+        <Card
+          cardInstance={cardInstance}
           validationError="Not enough resources to play this card"
         />
       );
 
       const cardElement = container.querySelector('[role="button"]');
-      
+
       if (cardElement) {
         // Show tooltip
         fireEvent.mouseEnter(cardElement);
-        expect(screen.getByText('Not enough resources to play this card')).toBeInTheDocument();
+        expect(
+          screen.getByText('Not enough resources to play this card')
+        ).toBeInTheDocument();
 
         // Hide tooltip
         fireEvent.mouseLeave(cardElement);
-        expect(screen.queryByText('Not enough resources to play this card')).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('Not enough resources to play this card')
+        ).not.toBeInTheDocument();
       }
     });
 
@@ -418,7 +452,7 @@ describe('Card', () => {
       const { container } = render(<Card cardInstance={cardInstance} />);
 
       const cardElement = container.querySelector('[role="button"]');
-      
+
       if (cardElement) {
         fireEvent.mouseEnter(cardElement);
         // Should not find any tooltip-like text
@@ -430,17 +464,25 @@ describe('Card', () => {
 
   describe('Card categories and visual styling', () => {
     it('should render cards with different categories', () => {
-      const categories = ['FEATURE', 'BUG_FIX', 'REFACTOR', 'TESTING', 'DOCUMENTATION'];
-      
-      categories.forEach(category => {
+      const categories = [
+        'FEATURE',
+        'BUG_FIX',
+        'REFACTOR',
+        'TESTING',
+        'DOCUMENTATION',
+      ];
+
+      categories.forEach((category) => {
         const cardInstance = createMockCardInstance({
-          card: { category }
+          card: { category },
         });
-        
+
         const { container } = render(<Card cardInstance={cardInstance} />);
         const cardElement = container.firstChild as HTMLElement;
-        
-        expect(cardElement).toHaveClass(category.toLowerCase().replace('_', '-'));
+
+        expect(cardElement).toHaveClass(
+          category.toLowerCase().replace('_', '-')
+        );
       });
     });
   });
@@ -456,7 +498,7 @@ describe('Card', () => {
       expect(() => {
         render(<Card cardInstance={cardInstance} />);
       }).not.toThrow();
-      
+
       expect(screen.getByText('+10% progress')).toBeInTheDocument();
     });
 
@@ -499,11 +541,12 @@ describe('Card', () => {
     it('should handle long descriptions gracefully', () => {
       const cardInstance = createMockCardInstance({
         card: {
-          description: 'This is a very long description that explains in great detail what this card does and how it affects the game state when played by the user during their turn.',
+          description:
+            'This is a very long description that explains in great detail what this card does and how it affects the game state when played by the user during their turn.',
         },
       });
 
-      // Should render without crashing  
+      // Should render without crashing
       expect(() => {
         render(<Card cardInstance={cardInstance} />);
       }).not.toThrow();

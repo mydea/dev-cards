@@ -1,7 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Database } from './queries.js';
 import { DatabaseError } from '../types/index.js';
-import type { SubmitScore, LeaderboardEntry, PlayerStats, Game } from '../types/index.js';
+import type {
+  SubmitScore,
+  LeaderboardEntry,
+  PlayerStats,
+  Game,
+} from '../types/index.js';
 
 // Mock the utils to avoid actual UUID generation in tests
 vi.mock('../utils/index.js', () => ({
@@ -89,9 +94,13 @@ describe('Database', () => {
     });
 
     it('should handle database errors during score submission', async () => {
-      mockPreparedStatement.run.mockRejectedValue(new Error('Database connection failed'));
+      mockPreparedStatement.run.mockRejectedValue(
+        new Error('Database connection failed')
+      );
 
-      await expect(database.submitScore(mockScoreData)).rejects.toThrow(DatabaseError);
+      await expect(database.submitScore(mockScoreData)).rejects.toThrow(
+        DatabaseError
+      );
       await expect(database.submitScore(mockScoreData)).rejects.toThrow(
         'Failed to submit score: Error: Database connection failed'
       );
@@ -197,9 +206,13 @@ describe('Database', () => {
     });
 
     it('should handle database errors during player games retrieval', async () => {
-      mockPreparedStatement.all.mockRejectedValue(new Error('Player query failed'));
+      mockPreparedStatement.all.mockRejectedValue(
+        new Error('Player query failed')
+      );
 
-      await expect(database.getPlayerGames('TestPlayer')).rejects.toThrow(DatabaseError);
+      await expect(database.getPlayerGames('TestPlayer')).rejects.toThrow(
+        DatabaseError
+      );
       await expect(database.getPlayerGames('TestPlayer')).rejects.toThrow(
         'Failed to get player games: Error: Player query failed'
       );
@@ -240,9 +253,13 @@ describe('Database', () => {
     });
 
     it('should handle database errors during player stats retrieval', async () => {
-      mockPreparedStatement.first.mockRejectedValue(new Error('Stats query failed'));
+      mockPreparedStatement.first.mockRejectedValue(
+        new Error('Stats query failed')
+      );
 
-      await expect(database.getPlayerStats('TestPlayer')).rejects.toThrow(DatabaseError);
+      await expect(database.getPlayerStats('TestPlayer')).rejects.toThrow(
+        DatabaseError
+      );
       await expect(database.getPlayerStats('TestPlayer')).rejects.toThrow(
         'Failed to get player stats: Error: Stats query failed'
       );
@@ -270,7 +287,9 @@ describe('Database', () => {
     });
 
     it('should handle database errors during game count retrieval', async () => {
-      mockPreparedStatement.first.mockRejectedValue(new Error('Count query failed'));
+      mockPreparedStatement.first.mockRejectedValue(
+        new Error('Count query failed')
+      );
 
       await expect(database.getGameCount()).rejects.toThrow(DatabaseError);
       await expect(database.getGameCount()).rejects.toThrow(
@@ -286,7 +305,9 @@ describe('Database', () => {
       const result = await database.getPlayerCount();
 
       expect(mockDB.prepare).toHaveBeenCalledWith(
-        expect.stringContaining('SELECT COUNT(DISTINCT player_name) as count FROM games')
+        expect.stringContaining(
+          'SELECT COUNT(DISTINCT player_name) as count FROM games'
+        )
       );
       expect(result).toBe(75);
     });
@@ -300,7 +321,9 @@ describe('Database', () => {
     });
 
     it('should handle database errors during player count retrieval', async () => {
-      mockPreparedStatement.first.mockRejectedValue(new Error('Player count query failed'));
+      mockPreparedStatement.first.mockRejectedValue(
+        new Error('Player count query failed')
+      );
 
       await expect(database.getPlayerCount()).rejects.toThrow(DatabaseError);
       await expect(database.getPlayerCount()).rejects.toThrow(

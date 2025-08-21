@@ -52,21 +52,27 @@ describe('Main App', () => {
   describe('Health check endpoint', () => {
     it('should respond to root path with service info', async () => {
       const { successResponse } = await import('./utils/index.js');
-      const mockSuccessResponse = new Response(JSON.stringify({
-        success: true,
-        data: {
-          service: 'Draw It, Play It, Ship It API',
-          version: '1.0.0',
-          environment: 'test',
-          timestamp: expect.any(String),
-        },
-      }));
+      const mockSuccessResponse = new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            service: 'Draw It, Play It, Ship It API',
+            version: '1.0.0',
+            environment: 'test',
+            timestamp: expect.any(String),
+          },
+        })
+      );
 
       vi.mocked(successResponse).mockReturnValue(mockSuccessResponse);
 
-      const response = await app.request('/', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(successResponse).toHaveBeenCalledWith({
         service: 'Draw It, Play It, Ship It API',
@@ -80,16 +86,23 @@ describe('Main App', () => {
   describe('404 handling', () => {
     it('should return 404 for unknown routes', async () => {
       const { errorResponse } = await import('./utils/index.js');
-      const mockErrorResponse = new Response(JSON.stringify({
-        success: false,
-        error: 'Not found',
-      }), { status: 404 });
+      const mockErrorResponse = new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Not found',
+        }),
+        { status: 404 }
+      );
 
       vi.mocked(errorResponse).mockReturnValue(mockErrorResponse);
 
-      const response = await app.request('/unknown-route', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/unknown-route',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(errorResponse).toHaveBeenCalledWith('Not found', 404);
     });
@@ -98,11 +111,15 @@ describe('Main App', () => {
   describe('Route mounting', () => {
     it('should mount players routes at /api/players', async () => {
       const { players } = await import('./routes/players.js');
-      
+
       // Test that the route is mounted by making a request
-      const response = await app.request('/api/players/test/stats', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/api/players/test/stats',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       // The route should be called (we're not testing the route implementation here)
       // Just that it's properly mounted
@@ -110,19 +127,27 @@ describe('Main App', () => {
     });
 
     it('should mount scores routes at /api/scores', async () => {
-      const response = await app.request('/api/scores', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      }, mockEnv);
+      const response = await app.request(
+        '/api/scores',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        },
+        mockEnv
+      );
 
       expect(response).toBeDefined();
     });
 
     it('should mount leaderboard routes at /api/leaderboard', async () => {
-      const response = await app.request('/api/leaderboard', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/api/leaderboard',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(response).toBeDefined();
     });
@@ -130,37 +155,51 @@ describe('Main App', () => {
 
   describe('Middleware', () => {
     it('should apply rate limiting to API routes', async () => {
-      const { rateLimitMiddleware } = await import('./middleware/rate-limit.js');
-      
-      const response = await app.request('/api/players/test/stats', {
-        method: 'GET',
-      }, mockEnv);
+      const { rateLimitMiddleware } = await import(
+        './middleware/rate-limit.js'
+      );
+
+      const response = await app.request(
+        '/api/players/test/stats',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(rateLimitMiddleware).toHaveBeenCalledWith('general');
     });
 
     it('should handle CORS with environment-specific origin', async () => {
-      const response = await app.request('/', {
-        method: 'OPTIONS',
-        headers: {
-          'Origin': 'https://example.com',
-          'Access-Control-Request-Method': 'GET',
+      const response = await app.request(
+        '/',
+        {
+          method: 'OPTIONS',
+          headers: {
+            Origin: 'https://example.com',
+            'Access-Control-Request-Method': 'GET',
+          },
         },
-      }, mockEnv);
+        mockEnv
+      );
 
       // The response should be processed by CORS middleware
       expect(response).toBeDefined();
     });
 
     it('should handle CORS preflight requests', async () => {
-      const response = await app.request('/api/scores', {
-        method: 'OPTIONS',
-        headers: {
-          'Origin': 'https://example.com',
-          'Access-Control-Request-Method': 'POST',
-          'Access-Control-Request-Headers': 'Content-Type',
+      const response = await app.request(
+        '/api/scores',
+        {
+          method: 'OPTIONS',
+          headers: {
+            Origin: 'https://example.com',
+            'Access-Control-Request-Method': 'POST',
+            'Access-Control-Request-Headers': 'Content-Type',
+          },
         },
-      }, mockEnv);
+        mockEnv
+      );
 
       expect(response).toBeDefined();
     });
@@ -212,32 +251,44 @@ describe('Main App', () => {
 
   describe('Request processing', () => {
     it('should handle JSON requests properly', async () => {
-      const response = await app.request('/api/scores', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await app.request(
+        '/api/scores',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            player_name: 'TestPlayer',
+            score: 1500,
+          }),
         },
-        body: JSON.stringify({
-          player_name: 'TestPlayer',
-          score: 1500,
-        }),
-      }, mockEnv);
+        mockEnv
+      );
 
       expect(response).toBeDefined();
     });
 
     it('should handle query parameters', async () => {
-      const response = await app.request('/api/leaderboard?limit=50&offset=25', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/api/leaderboard?limit=50&offset=25',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(response).toBeDefined();
     });
 
     it('should handle URL parameters', async () => {
-      const response = await app.request('/api/players/TestPlayer/stats', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/api/players/TestPlayer/stats',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(response).toBeDefined();
     });
@@ -245,31 +296,43 @@ describe('Main App', () => {
 
   describe('HTTP Methods', () => {
     it('should handle GET requests', async () => {
-      const response = await app.request('/', {
-        method: 'GET',
-      }, mockEnv);
+      const response = await app.request(
+        '/',
+        {
+          method: 'GET',
+        },
+        mockEnv
+      );
 
       expect(response).toBeDefined();
     });
 
     it('should handle POST requests', async () => {
-      const response = await app.request('/api/scores', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      }, mockEnv);
+      const response = await app.request(
+        '/api/scores',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        },
+        mockEnv
+      );
 
       expect(response).toBeDefined();
     });
 
     it('should handle OPTIONS requests (CORS preflight)', async () => {
-      const response = await app.request('/api/scores', {
-        method: 'OPTIONS',
-        headers: {
-          'Origin': 'https://example.com',
-          'Access-Control-Request-Method': 'POST',
+      const response = await app.request(
+        '/api/scores',
+        {
+          method: 'OPTIONS',
+          headers: {
+            Origin: 'https://example.com',
+            'Access-Control-Request-Method': 'POST',
+          },
         },
-      }, mockEnv);
+        mockEnv
+      );
 
       expect(response).toBeDefined();
     });
@@ -282,9 +345,13 @@ describe('Main App', () => {
         CORS_ORIGIN: 'https://different-origin.com',
       };
 
-      const response = await app.request('/', {
-        method: 'GET',
-      }, testEnv);
+      const response = await app.request(
+        '/',
+        {
+          method: 'GET',
+        },
+        testEnv
+      );
 
       expect(response).toBeDefined();
     });
@@ -295,9 +362,13 @@ describe('Main App', () => {
         ENVIRONMENT: 'production',
       };
 
-      const response = await app.request('/', {
-        method: 'GET',
-      }, testEnv);
+      const response = await app.request(
+        '/',
+        {
+          method: 'GET',
+        },
+        testEnv
+      );
 
       expect(response).toBeDefined();
     });
