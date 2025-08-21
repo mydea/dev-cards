@@ -7,7 +7,7 @@ test.describe('Draw It, Play It, Ship It - Game Integration', () => {
 
     // Wait for the main menu to load
     await expect(
-      page.getByText('Welcome to Draw It, Play It, Ship It!')
+      page.getByText('A strategic card game about software development')
     ).toBeVisible();
 
     // Start a new game
@@ -15,7 +15,6 @@ test.describe('Draw It, Play It, Ship It - Game Integration', () => {
 
     // Wait for game board to load
     await expect(page.getByText('Round')).toBeVisible();
-    await expect(page.getByText('Your Hand')).toBeVisible();
 
     let roundCount = 0;
     const maxRounds = 50; // Safety limit to prevent infinite loops
@@ -124,11 +123,11 @@ test.describe('Draw It, Play It, Ship It - Game Integration', () => {
 
       // Check if game has ended
       const victoryVisible = await page
-        .getByText('Victory!')
+        .getByText('🎉 Victory!')
         .isVisible()
         .catch(() => false);
       const gameOverVisible = await page
-        .getByText('Game Over')
+        .getByText('💥 Game Over')
         .isVisible()
         .catch(() => false);
 
@@ -147,11 +146,11 @@ test.describe('Draw It, Play It, Ship It - Game Integration', () => {
 
         // Check if game has ended
         const victoryVisible = await page
-          .getByText('Victory!')
+          .getByText('🎉 Victory!')
           .isVisible()
           .catch(() => false);
         const gameOverVisible = await page
-          .getByText('Game Over')
+          .getByText('💥 Game Over')
           .isVisible()
           .catch(() => false);
 

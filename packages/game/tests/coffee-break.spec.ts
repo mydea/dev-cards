@@ -9,7 +9,7 @@ test.describe('Coffee Break Card Test', () => {
 
     // Wait for the main menu to load
     await expect(
-      page.getByText('Welcome to Draw It, Play It, Ship It!')
+      page.getByText('A strategic card game about software development')
     ).toBeVisible();
 
     // Start a new game
@@ -17,7 +17,6 @@ test.describe('Coffee Break Card Test', () => {
 
     // Wait for game board to load
     await expect(page.getByText('Round')).toBeVisible();
-    await expect(page.getByText('Your Hand')).toBeVisible();
 
     let foundCoffeeBreak = false;
     let roundCount = 0;

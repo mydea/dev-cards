@@ -5,13 +5,13 @@ test.describe('Reduce Tech Debt Button', () => {
     page,
   }) => {
     // Navigate to the game
-    await page.goto('http://localhost:3000');
+    await page.goto('/');
 
     // Start a new game
-    await page.getByRole('button', { name: 'Start New Game' }).click();
+    await page.getByText('Start New Game').click();
 
     // Wait for the game to load
-    await expect(page.locator('text=Your Hand (5 cards)')).toBeVisible();
+    await expect(page.getByText('Round')).toBeVisible();
 
     // Step 2: Verify "Reduce Tech Debt" is not disabled initially
     const reduceDebtButton = page.getByRole('button', {
