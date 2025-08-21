@@ -89,7 +89,7 @@ interface CoinFlipOverlayProps {
 }
 
 const COIN_FLIP_DURATION = 1000;
-const RESULT_DISPLAY_DURATION = 3000;
+const RESULT_DISPLAY_DURATION = 1500;
 
 function CoinFlipOverlay({ queue, onAllComplete }: CoinFlipOverlayProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -211,8 +211,7 @@ function CoinFlipOverlay({ queue, onAllComplete }: CoinFlipOverlayProps) {
                   }
                 : {
                     // When not flipping, immediately snap to final result
-                    rotateY:
-                      currentEffect.result === 'heads' ? 720 * 2 : 900 * 2,
+                    rotateY: currentEffect.result === 'heads' ? 900 * 2 : 900,
                     scale: 1,
                   }
             }
