@@ -11,17 +11,26 @@ vi.mock('./middleware/rate-limit.js', () => ({
   rateLimitMiddleware: vi.fn(() => (c: any, next: any) => next()),
 }));
 
-vi.mock('./routes/players.js', () => ({
-  players: { fetch: vi.fn() },
-}));
+vi.mock('./routes/players.js', () => {
+  const { Hono } = require('hono');
+  const players = new Hono();
+  players.get('/:name/stats', (c) => c.json({ success: true }));
+  return { players };
+});
 
-vi.mock('./routes/scores.js', () => ({
-  scores: { fetch: vi.fn() },
-}));
+vi.mock('./routes/scores.js', () => {
+  const { Hono } = require('hono');
+  const scores = new Hono();
+  scores.post('/', (c) => c.json({ success: true }));
+  return { scores };
+});
 
-vi.mock('./routes/leaderboard.js', () => ({
-  leaderboard: { fetch: vi.fn() },
-}));
+vi.mock('./routes/leaderboard.js', () => {
+  const { Hono } = require('hono');
+  const leaderboard = new Hono();
+  leaderboard.get('/', (c) => c.json({ success: true }));
+  return { leaderboard };
+});
 
 vi.mock('./utils/index.js', () => ({
   successResponse: vi.fn(),

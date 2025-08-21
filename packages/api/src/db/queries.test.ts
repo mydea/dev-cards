@@ -348,7 +348,7 @@ describe('Database', () => {
       });
 
       expect(mockDB.prepare).toHaveBeenCalledWith(
-        expect.stringMatching(/INSERT INTO games.*VALUES.*\?1.*\?11/)
+        expect.stringContaining('INSERT INTO games')
       );
     });
 

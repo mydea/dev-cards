@@ -28,20 +28,20 @@ describe('Utils', () => {
       expect(id1).not.toBe(id2);
     });
 
-    it('should work when crypto.randomUUID is not available', () => {
-      // Mock crypto to be undefined
-      const originalCrypto = global.crypto;
+        it('should work when crypto.randomUUID is not available', () => {
+      // Mock crypto.randomUUID to be undefined
+      const originalRandomUUID = global.crypto.randomUUID;
       // @ts-ignore
-      global.crypto = undefined;
-
+      global.crypto.randomUUID = undefined;
+      
       const id = generateId();
       const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
+      
       expect(id).toMatch(uuidRegex);
-
+      
       // Restore crypto
-      global.crypto = originalCrypto;
+      global.crypto.randomUUID = originalRandomUUID;
     });
   });
 

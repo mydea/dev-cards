@@ -15,7 +15,9 @@ import { getClientIP, errorResponse } from '../utils/index.js';
 const createTestApp = (type: 'general' | 'score' = 'general') => {
   const app = new Hono<{ Bindings: Bindings }>();
   app.use('*', rateLimitMiddleware(type));
-  app.get('/', (c) => c.json({ success: true }));
+  app.get('/', (c) => {
+    return c.json({ success: true });
+  });
   return app;
 };
 
