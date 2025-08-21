@@ -11,16 +11,15 @@ vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
-const createMockCardInstance = (overrides: any = {}): CardInstance => ({
-  id: 'card-123',
-  card: {
+const createMockCardInstance = (overrides: any = {}): CardInstance => {
+  const baseCard = {
     id: 'test-card',
     name: 'Test Card',
     description: 'A test card for unit testing',
     cost: 2,
     image: '/test-card.png',
     category: 'FEATURE',
-    requirements: [], // Add missing requirements property
+    requirements: [],
     effects: [
       {
         type: 'ADD_PROGRESS',
@@ -28,10 +27,21 @@ const createMockCardInstance = (overrides: any = {}): CardInstance => ({
         randomType: 'STATIC',
       },
     ],
-    ...overrides.card,
-  },
-  ...overrides,
-});
+  };
+
+  return {
+    id: 'card-123',
+    card: {
+      ...baseCard,
+      ...overrides.card,
+      // Ensure requirements array always exists
+      requirements: overrides.card?.requirements || baseCard.requirements,
+      // Ensure effects array always exists  
+      effects: overrides.card?.effects || baseCard.effects,
+    },
+    ...overrides,
+  };
+};
 
 describe('Card', () => {
   const mockOnClick = vi.fn();
@@ -67,7 +77,7 @@ describe('Card', () => {
       );
 
       const cardElement = container.firstChild as HTMLElement;
-      expect(cardElement).toHaveStyle('background-color: red');
+      expect(cardElement).toHaveStyle('background-color: rgb(255, 0, 0)');
       expect(cardElement).toHaveStyle('margin: 10px');
     });
   });
