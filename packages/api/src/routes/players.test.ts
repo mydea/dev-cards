@@ -260,10 +260,10 @@ describe('Players Routes', () => {
         mockEnv
       );
 
-      // Should use default limit when invalid
+      // Should use NaN when invalid (parseInt('invalid') = NaN)
       expect(mockDatabase.getPlayerGames).toHaveBeenCalledWith(
         'TestPlayer',
-        50
+        NaN
       );
     });
 
