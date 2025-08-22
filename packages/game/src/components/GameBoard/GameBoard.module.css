@@ -293,13 +293,12 @@
   display: flex;
   justify-content: center;
   gap: var(--spacing-xl);
-  margin-bottom: var(--spacing-lg);
 }
 
 .handArea {
   display: flex;
   justify-content: center;
-  min-height: calc(var(--card-height) + 140px);
+  min-height: calc(var(--card-height) + 50px);
 }
 
 .actions {

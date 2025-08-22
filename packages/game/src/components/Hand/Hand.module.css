@@ -19,11 +19,7 @@
   align-items: center;
   flex-wrap: wrap;
   max-width: 100%;
-  padding: var(--spacing-md);
-  padding-top: var(--spacing-xl); /* Extra space for tooltips */
 }
-
-
 
 .emptyHand {
   display: flex;
@@ -69,12 +65,6 @@
   .handLabel {
     font-size: var(--font-size-base);
   }
-
-  .cards {
-    padding: var(--spacing-sm);
-  }
-
-
 
   .emptyHand {
     padding: var(--spacing-xl);
