@@ -81,8 +81,6 @@ function Hand({
     },
   };
 
-  const showHint = !disabled && animatingCardIds.size === 0 && cards.length > 0;
-
   return (
     <motion.div
       className={styles.hand}
@@ -132,21 +130,6 @@ function Hand({
           );
         })}
       </div>
-
-      <AnimatePresence>
-        {showHint && (
-          <motion.div
-            className={styles.handHint}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={!showHint ? { delay: 0.5 } : { delay: 0, duration: 0 }}
-          >
-            <span className={styles.hintIcon}>💡</span>
-            Click on cards to play them
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }

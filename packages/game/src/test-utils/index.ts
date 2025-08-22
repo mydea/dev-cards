@@ -45,9 +45,16 @@ export const mockCardInstance = {
 };
 
 // Mock framer-motion components for testing
-export const mockMotionDiv = ({ children, ...props }: any) => (
-  <div {...props}>{children}</div>
-);
+export const mockMotionDiv = ({ children, ...props }: any) => {
+  const element = document.createElement('div');
+  Object.assign(element, props);
+  if (typeof children === 'string') {
+    element.textContent = children;
+  } else if (children) {
+    element.appendChild(children);
+  }
+  return element;
+};
 
 // Export commonly used testing utilities
 export { vi } from 'vitest';

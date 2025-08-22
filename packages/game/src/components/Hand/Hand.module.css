@@ -23,19 +23,7 @@
   padding-top: var(--spacing-xl); /* Extra space for tooltips */
 }
 
-.handHint {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-xs);
-  font-size: var(--font-size-sm);
-  color: var(--text-muted);
-  font-style: italic;
-}
 
-.hintIcon {
-  font-size: 1rem;
-}
 
 .emptyHand {
   display: flex;
@@ -86,9 +74,7 @@
     padding: var(--spacing-sm);
   }
 
-  .handHint {
-    font-size: var(--font-size-xs);
-  }
+
 
   .emptyHand {
     padding: var(--spacing-xl);
