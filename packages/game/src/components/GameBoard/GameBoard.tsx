@@ -59,6 +59,8 @@ function GameBoard({
     }>;
     cardInstanceId?: string;
     cardsToDiscard?: CardInstance[];
+    cardElement?: HTMLElement;
+    cardInstance?: CardInstance;
   }>({
     effects: [],
   });
@@ -179,7 +181,10 @@ function GameBoard({
         effects: preparation.coinFlipEffects,
         cardInstanceId,
         cardsToDiscard: preparation.cardsToDiscard,
+        cardElement,
+        cardInstance,
       });
+
       return; // Wait for coin flip animations to complete
     }
 
@@ -227,10 +232,10 @@ function GameBoard({
       resolvedValue: number;
     }>
   ) => {
-    const { cardInstanceId } = coinFlipQueue;
+    const { cardInstanceId, cardElement, cardInstance } = coinFlipQueue;
 
-    if (!cardInstanceId) {
-      console.error('No card instance ID in coin flip queue');
+    if (!cardInstanceId || !cardInstance) {
+      console.error('Missing card information in coin flip queue');
       return;
     }
 
@@ -276,16 +281,48 @@ function GameBoard({
           (result.data as { appliedEffects: any[]; cardsToDraw?: number })
             ?.cardsToDraw || 0;
 
-        // Handle draw cards from effects (coin flip cards already animated to graveyard visually)
-        if (cardsToDraw > 0) {
-          console.log(
-            `Drawing ${cardsToDraw} cards from coin flip card effects`
+        // Now animate the card to graveyard after coin flip effects are processed
+        if (cardElement && graveyardRef.current) {
+          setIsAnimating(true);
+          setAnimatingCardIds((prev) => new Set(prev).add(cardInstanceId));
+
+          animationLayerRef.current?.animateCardToGraveyard(
+            cardInstance,
+            cardElement,
+            graveyardRef.current,
+            () => {
+              // Animation complete - remove from animating set
+              setAnimatingCardIds((prev) => {
+                const newSet = new Set(prev);
+                newSet.delete(cardInstanceId);
+                return newSet;
+              });
+
+              // If there are cards to draw from effects, animate them now
+              if (cardsToDraw > 0) {
+                console.log(
+                  `Drawing ${cardsToDraw} cards from coin flip card effects`
+                );
+                drawCards(cardsToDraw, () => {
+                  setIsAnimating(false);
+                });
+              } else {
+                setIsAnimating(false);
+              }
+            }
           );
-          drawCards(cardsToDraw, () => {
-            setIsAnimating(false);
-          });
         } else {
-          setIsAnimating(false);
+          // Fallback: no animation, just handle card draw if needed
+          if (cardsToDraw > 0) {
+            console.log(
+              `Drawing ${cardsToDraw} cards from coin flip card effects`
+            );
+            drawCards(cardsToDraw, () => {
+              setIsAnimating(false);
+            });
+          } else {
+            setIsAnimating(false);
+          }
         }
       } else {
         console.error('Card play failed after coin flip:', result.error);
