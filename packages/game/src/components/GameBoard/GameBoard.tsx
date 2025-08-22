@@ -214,9 +214,13 @@ function GameBoard({
 
         // If there are cards to draw from effects, animate them now
         if (playResult.cardsToDraw && playResult.cardsToDraw > 0) {
-          drawCards(playResult.cardsToDraw, () => {
-            setIsAnimating(false);
-          });
+          drawCards(
+            playResult.cardsToDraw,
+            () => {
+              setIsAnimating(false);
+            },
+            playResult.newState
+          );
         } else {
           setIsAnimating(false);
         }
@@ -303,9 +307,13 @@ function GameBoard({
                 console.log(
                   `Drawing ${cardsToDraw} cards from coin flip card effects`
                 );
-                drawCards(cardsToDraw, () => {
-                  setIsAnimating(false);
-                });
+                drawCards(
+                  cardsToDraw,
+                  () => {
+                    setIsAnimating(false);
+                  },
+                  result.newState
+                );
               } else {
                 setIsAnimating(false);
               }
@@ -317,9 +325,13 @@ function GameBoard({
             console.log(
               `Drawing ${cardsToDraw} cards from coin flip card effects`
             );
-            drawCards(cardsToDraw, () => {
-              setIsAnimating(false);
-            });
+            drawCards(
+              cardsToDraw,
+              () => {
+                setIsAnimating(false);
+              },
+              result.newState
+            );
           } else {
             setIsAnimating(false);
           }
@@ -420,8 +432,12 @@ function GameBoard({
   };
 
   // Unified function to draw cards with animation (used by both end turn and card effects)
-  const drawCards = (numCards: number, onComplete: () => void) => {
-    const currentState = gameEngine.getGameState()!;
+  const drawCards = (
+    numCards: number,
+    onComplete: () => void,
+    sourceState?: GameState
+  ) => {
+    const currentState = sourceState || gameEngine.getGameState()!;
     const drawPlan = gameEngine.getDrawCardsPlan(currentState, numCards);
 
     if (!drawPlan.canDraw) {
@@ -609,7 +625,7 @@ function GameBoard({
     const drawnCardIds = new Set(
       drawnCards.map((card: CardInstance) => card.instanceId)
     );
-    setAnimatingCardIds(drawnCardIds);
+    setAnimatingCardIds((prev) => new Set([...prev, ...drawnCardIds]));
 
     // Animation completion tracking
     let completedAnimations = 0;

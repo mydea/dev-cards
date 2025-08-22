@@ -390,12 +390,12 @@ export class GameEngine {
     // Create new state with deep clone to ensure immutability
     let newState = cloneGameState(this.gameState);
 
-    // Pay requirements
-    newState = this.payRequirements(cardInstance, newState);
-
-    // Remove card from hand and put in graveyard
+    // Remove card from hand and put in graveyard FIRST
     newState.piles.hand.splice(cardIndex, 1);
     newState.piles.graveyard.push(cardInstance);
+
+    // Pay requirements (now the played card is safely in graveyard)
+    newState = this.payRequirements(cardInstance, newState);
 
     // Apply card effects
     const effectResult = resolveAndApplyEffects(
@@ -492,12 +492,12 @@ export class GameEngine {
     // Create new state with deep clone to ensure immutability
     let newState = cloneGameState(this.gameState);
 
-    // Pay requirements
-    newState = this.payRequirements(cardInstance, newState);
-
-    // Remove card from hand and put in graveyard
+    // Remove card from hand and put in graveyard FIRST
     newState.piles.hand.splice(cardIndex, 1);
     newState.piles.graveyard.push(cardInstance);
+
+    // Pay requirements (now the played card is safely in graveyard)
+    newState = this.payRequirements(cardInstance, newState);
 
     // Create predetermined outcomes map
     const predeterminedOutcomes: { [effectIndex: number]: 'heads' | 'tails' } =
@@ -811,17 +811,25 @@ export class GameEngine {
           break;
 
         case REQUIREMENT_TYPE_DISCARD_CARDS:
-          // Remove random cards from hand to discard
+          // Remove random cards from hand to discard (excluding the card being played)
           for (let i = 0; i < requirement.value; i++) {
-            if (newState.piles.hand.length > 0) {
+            const availableCards = newState.piles.hand.filter(
+              (card) => card.instanceId !== cardInstance.instanceId
+            );
+            if (availableCards.length > 0) {
               const randomIndex = Math.floor(
-                Math.random() * newState.piles.hand.length
+                Math.random() * availableCards.length
               );
-              const discardedCard = newState.piles.hand.splice(
-                randomIndex,
-                1
-              )[0];
-              newState.piles.discard.push(discardedCard);
+              const cardToDiscard = availableCards[randomIndex];
+
+              // Find and remove the card from hand
+              const handIndex = newState.piles.hand.findIndex(
+                (card) => card.instanceId === cardToDiscard.instanceId
+              );
+              if (handIndex !== -1) {
+                newState.piles.hand.splice(handIndex, 1);
+                newState.piles.discard.push(cardToDiscard);
+              }
             }
           }
           break;
